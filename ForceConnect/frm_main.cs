@@ -211,6 +211,7 @@ namespace ForceConnect
                 lbl_dnsStatus.Text = "Disconnected";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
+                iconConnect.Image = Properties.Resources.connectIcon;
             }
             lbl_status.Text = "CLOSING THE PROGRAM";
             await delay(2000);
