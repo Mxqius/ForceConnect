@@ -1,4 +1,5 @@
 ﻿using ForceConnect.API;
+using ForceConnect.DNS;
 using ForceConnect.Services;
 using Guna.UI2.WinForms;
 using System;
@@ -14,12 +15,12 @@ namespace ForceConnect
         private bool dragging = false;
         private Point dragCursorPoint, dragFormPoint;
 
-        public DnsAddress Shecan, Electro, Online403, Google, Cloudflare, RadarGame;
+        private DnsAddressItems DnsAddress;
         public DnsAddress currentDNS, connectedDNS;
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
-        private bool _connected, _internetConnection = true;
+        private bool _connected, pendingRequest, _internetConnection = true;
         public frm_main()
         {
             InitializeComponent();
@@ -28,49 +29,8 @@ namespace ForceConnect
             btn_home.ImageSize = new Size(45, 45);
             btn_home.FillColor = Color.FromArgb(32, 32, 32);
             btn_home.Text = "HOME";
-            // Setup default servers
-            Shecan = new DnsAddress()
-            {
-                dnsAddress = new string[] { "178.22.122.100", "185.51.200.2" },
-                Latency = 170,
-                Name = "Shecan",
-                Picture = Properties.Resources.shecan
-            };
-            Electro = new DnsAddress()
-            {
-                dnsAddress = new string[] { "78.157.42.101", "78.157.42.100" },
-                Latency = 100,
-                Name = "Electro",
-                Picture = Properties.Resources.electro
-            };
-            RadarGame = new DnsAddress()
-            {
-                dnsAddress = new string[] { "10.202.10.10", "10.202.10.11" },
-                Latency = 70,
-                Name = "RadarGame",
-                Picture = Properties.Resources.radargame
-            };
-            Online403 = new DnsAddress()
-            {
-                dnsAddress = new string[] { "10.202.10.202", "10.202.10.102" },
-                Latency = 80,
-                Name = "403.Online",
-                Picture = Properties.Resources.online403
-            };
-            Google = new DnsAddress()
-            {
-                dnsAddress = new string[] { "8.8.8.8", "8.8.4.4" },
-                Latency = 24,
-                Name = "Google",
-                Picture = Properties.Resources.google
-            };
-            Cloudflare = new DnsAddress()
-            {
-                dnsAddress = new string[] { "1.1.1.1", "1.0.0.1" },
-                Latency = 50,
-                Name = "Cloudflare",
-                Picture = Properties.Resources.cloudflare
-            };
+
+            DnsAddress = new DnsAddressItems();
 
         }
         private void checkInternetConnection()
@@ -131,27 +91,27 @@ namespace ForceConnect
             switch (cb_selectDns.Text)
             {
                 case "Shecan":
-                    currentDNS = Shecan;
+                    currentDNS = DnsAddress.Shecan;
                     break;
 
                 case "Electro":
-                    currentDNS = Electro;
+                    currentDNS = DnsAddress.Electro;
                     break;
 
                 case "Google":
-                    currentDNS = Google;
+                    currentDNS = DnsAddress.Google;
                     break;
 
                 case "Radar Game":
-                    currentDNS = RadarGame;
+                    currentDNS = DnsAddress.RadarGame;
                     break;
 
                 case "Cloudflare":
-                    currentDNS = Cloudflare;
+                    currentDNS = DnsAddress.Cloudflare;
                     break;
 
                 case "403.online":
-                    currentDNS = Online403;
+                    currentDNS = DnsAddress.Online403;
                     break;
             }
             showInformation();
@@ -260,15 +220,16 @@ namespace ForceConnect
 
         private async void connectEvent(object sender, EventArgs e)
         {
-            if (!_internetConnection) return;
+            if (!_internetConnection || pendingRequest) return;
             if (!_connected)
             {
+                pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                lbl_dnsStatus.Text = "Connecting";
-                lbl_status.Text = "APPLIYNG DNS";
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
+                lbl_dnsStatus.Text = "Connecting";
+                lbl_status.Text = "APPLIYNG DNS";
                 await delay(3000);
                 DnsManager.setDNS(currentDNS.dnsAddress);
                 connectedDNS = currentDNS;
@@ -280,15 +241,18 @@ namespace ForceConnect
                 // Sync Latency
                 await syncLatency();
                 btn_sync.Enabled = true;
+                new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
+                pendingRequest = false;
             }
             else
             {
+                pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                lbl_dnsStatus.Text = "Disconnecting";
-                lbl_status.Text = "RESTORING";
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
+                lbl_dnsStatus.Text = "Disconnecting";
+                lbl_status.Text = "RESTORING";
                 await delay(3000);
                 DnsManager.clearDNS();
                 shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
@@ -300,6 +264,8 @@ namespace ForceConnect
                 // Sync Latency           
                 await syncLatency();
                 btn_sync.Enabled = true;
+                new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
+                pendingRequest = false;
             }
             _connected = !_connected;
         }
@@ -365,7 +331,7 @@ namespace ForceConnect
                     if (pnl_container.Controls.ContainsKey("frm_settings"))
                         pnl_container.Controls.Remove(currentFormLoaded);
 
-                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_explore(), pnl_container);
+                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_explore(this), pnl_container);
                     break;
             }
         }

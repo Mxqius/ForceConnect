@@ -50,6 +50,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.lbl_message = new System.Windows.Forms.Label();
             this.lbl_status = new System.Windows.Forms.Label();
+            this.pb_header = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
@@ -63,6 +64,7 @@
             this.pnl_control.SuspendLayout();
             this.pnl_container.SuspendLayout();
             this.pnl_information.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
@@ -71,9 +73,9 @@
             // lbl_title
             // 
             this.lbl_title.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_title.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_title.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_title.ForeColor = System.Drawing.Color.White;
-            this.lbl_title.Location = new System.Drawing.Point(10, 13);
+            this.lbl_title.Location = new System.Drawing.Point(57, 13);
             this.lbl_title.Name = "lbl_title";
             this.lbl_title.Size = new System.Drawing.Size(191, 22);
             this.lbl_title.TabIndex = 0;
@@ -94,6 +96,7 @@
             // pnl_control
             // 
             this.pnl_control.Controls.Add(this.lbl_title);
+            this.pnl_control.Controls.Add(this.pb_header);
             this.pnl_control.Controls.Add(this.btn_minimize);
             this.pnl_control.Controls.Add(this.btn_exit);
             this.pnl_control.Dock = System.Windows.Forms.DockStyle.Top;
@@ -163,9 +166,11 @@
             // 
             // wp_dnsProgress
             // 
+            this.wp_dnsProgress.AnimationSpeed = 85;
+            this.wp_dnsProgress.AutoStart = true;
             this.wp_dnsProgress.BackColor = System.Drawing.Color.White;
             this.wp_dnsProgress.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.wp_dnsProgress.Location = new System.Drawing.Point(143, 118);
+            this.wp_dnsProgress.Location = new System.Drawing.Point(143, 119);
             this.wp_dnsProgress.Name = "wp_dnsProgress";
             this.wp_dnsProgress.NumberOfCircles = 9;
             this.wp_dnsProgress.ProgressColor = System.Drawing.Color.DarkGray;
@@ -344,6 +349,19 @@
             this.lbl_status.TabIndex = 13;
             this.lbl_status.Text = "CLICK TO CONNECT";
             this.lbl_status.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // pb_header
+            // 
+            this.pb_header.BackColor = System.Drawing.Color.Transparent;
+            this.pb_header.Image = global::ForceConnect.Properties.Resources.headerIcon;
+            this.pb_header.ImageRotate = 0F;
+            this.pb_header.Location = new System.Drawing.Point(12, 6);
+            this.pb_header.Name = "pb_header";
+            this.pb_header.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.pb_header.Size = new System.Drawing.Size(39, 34);
+            this.pb_header.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_header.TabIndex = 8;
+            this.pb_header.TabStop = false;
             // 
             // iconConnect
             // 
@@ -555,6 +573,7 @@
             this.pnl_control.ResumeLayout(false);
             this.pnl_container.ResumeLayout(false);
             this.pnl_information.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
@@ -592,6 +611,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbl_status;
         private System.Windows.Forms.Label lbl_message;
+        private Guna.UI2.WinForms.Guna2CirclePictureBox pb_header;
     }
 }
 
