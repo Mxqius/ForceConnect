@@ -218,5 +218,17 @@
   <ItemGroup>
     <None Include="Icons\headerIcon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\connectIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\connected.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\connectedIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\no_internet.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

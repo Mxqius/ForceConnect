@@ -44,7 +44,10 @@ namespace ForceConnect
         {
             _internetConnection = internetConnection;
             if (_internetConnection && _connected) return;
+
             lbl_status.Text = (internetConnection) ? "CLICK TO CONNECT" : "NO CONNECTION";
+            iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
+
         }
         public async Task<bool> delay(int milisecound)
         {
@@ -123,7 +126,7 @@ namespace ForceConnect
             lbl_name.Text = currentDNS.Name;
             lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
             if (_internetConnection)
-                await syncLatency();
+                await syncLatencyDNS();
             else
                 lbl_latency.Text = "-1 ms";
         }
@@ -163,6 +166,18 @@ namespace ForceConnect
                 this.Invoke(new MethodInvoker(delegate
                 {
                     lbl_latency.Text = Latency.MeasureLatency("google.com").ToString() + " ms";
+                }));
+                return true;
+            });
+
+        }
+        private async Task<bool> syncLatencyDNS()
+        {
+            return await Task.Run(() =>
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lbl_latency.Text = Latency.MeasureLatency(currentDNS.dnsAddress[0]).ToString() + " ms";
                 }));
                 return true;
             });
@@ -213,7 +228,6 @@ namespace ForceConnect
         private void frm_main_Load(object sender, EventArgs e)
         {
             currentFormLoaded = this;
-            hiddenHomeForm(true);
             changeServer();
             checkInternetConnection();
         }
@@ -226,8 +240,11 @@ namespace ForceConnect
                 pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                wp_dnsProgress.Visible = true;
-                wp_dnsProgress.Start();
+                wp_dnsProgress.Invoke(new MethodInvoker(delegate
+                {
+                    wp_dnsProgress.Visible = true;
+                    wp_dnsProgress.Start();
+                }));
                 lbl_dnsStatus.Text = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
                 await delay(3000);
@@ -235,13 +252,17 @@ namespace ForceConnect
                 connectedDNS = currentDNS;
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
-                lbl_status.Text = "CLICK TO DISCONNECT";
-                wp_dnsProgress.Visible = false;
-                wp_dnsProgress.Stop();
+                lbl_status.Text = "DISCONNECT";
+                wp_dnsProgress.Invoke(new MethodInvoker(delegate
+                {
+                    wp_dnsProgress.Visible = false;
+                    wp_dnsProgress.Stop();
+                }));
                 // Sync Latency
                 await syncLatency();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
+                iconConnect.Image = Properties.Resources.connectedIcon;
                 pendingRequest = false;
             }
             else
@@ -249,8 +270,11 @@ namespace ForceConnect
                 pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                wp_dnsProgress.Visible = true;
-                wp_dnsProgress.Start();
+                wp_dnsProgress.Invoke(new MethodInvoker(delegate
+                {
+                    wp_dnsProgress.Visible = true;
+                    wp_dnsProgress.Start();
+                }));
                 lbl_dnsStatus.Text = "Disconnecting";
                 lbl_status.Text = "RESTORING";
                 await delay(3000);
@@ -259,12 +283,16 @@ namespace ForceConnect
                 lbl_message.Text = "BETA VERSION";
                 lbl_dnsStatus.Text = "Disconnected";
                 lbl_status.Text = "CLICK TO CONNECT";
-                wp_dnsProgress.Visible = false;
-                wp_dnsProgress.Stop();
+                wp_dnsProgress.Invoke(new MethodInvoker(delegate
+                {
+                    wp_dnsProgress.Visible = false;
+                    wp_dnsProgress.Stop();
+                }));
                 // Sync Latency           
                 await syncLatency();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
+                iconConnect.Image = Properties.Resources.connectIcon;
                 pendingRequest = false;
             }
             _connected = !_connected;
@@ -303,8 +331,8 @@ namespace ForceConnect
 
         private void hiddenHomeForm(bool visible)
         {
-
-            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = pnl_information.Visible = shape_connect.Visible = cb_selectDns.Visible = visible;
+            wp_dnsProgress.Visible = !visible;
+            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = cb_selectDns.Visible = visible;
         }
         private void clickControlMenu(object sender, EventArgs e)
         {
@@ -330,7 +358,6 @@ namespace ForceConnect
                     hiddenHomeForm(false);
                     if (pnl_container.Controls.ContainsKey("frm_settings"))
                         pnl_container.Controls.Remove(currentFormLoaded);
-
                     currentFormLoaded = FormManager.openChildFormInPanel(new frm_explore(this), pnl_container);
                     break;
             }

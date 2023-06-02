@@ -42,16 +42,23 @@ namespace ForceConnect
             lbl_previewAddress.Text = _mainForm.currentDNS.dnsAddress[0] + " " + _mainForm.currentDNS.dnsAddress[1];
         }
 
-        private void changeInformationCardDNS(DnsAddress DNS)
+        private async Task<bool> changeInformationCardDNS(DnsAddress DNS)
         {
-            lbl_name.Text = DNS.Name;
-            lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];            
-            pb_dnsPicture.Image = DNS.Picture;
-            lbl_latency.Text = Latency.MeasureLatency(DNS.dnsAddress[0]).ToString() + " ms";
+            return await Task.Run(() =>
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lbl_name.Text = DNS.Name;
+                    lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
+                    pb_dnsPicture.Image = DNS.Picture;
+                    lbl_latency.Text = Latency.MeasureLatency(DNS.dnsAddress[0]).ToString() + " ms";
+                }));
+                return true;
+            });
         }
-        private void frm_explore_Load(object sender, EventArgs e)
+        private async void frm_explore_Load(object sender, EventArgs e)
         {
-            changeInformationCardDNS(listOfDNS[currentIndex]);
+            await changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
         }
         private void updateCounter()

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pnl_explore = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2CustomGradientPanel1 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.lbl_name = new System.Windows.Forms.Label();
             this.lbl_previewAddress = new System.Windows.Forms.Label();
@@ -38,31 +37,17 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_latency = new System.Windows.Forms.Label();
             this.btn_addDNS = new Guna.UI2.WinForms.Guna2Button();
-            this.lbl_counter = new System.Windows.Forms.Label();
             this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.lbl_counter = new System.Windows.Forms.Label();
             this.btn_next = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.pnl_explore.SuspendLayout();
+            this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.guna2CustomGradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pnl_explore
-            // 
-            this.pnl_explore.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
-            this.pnl_explore.Controls.Add(this.guna2CustomGradientPanel1);
-            this.pnl_explore.Controls.Add(this.btn_previous);
-            this.pnl_explore.Controls.Add(this.btn_next);
-            this.pnl_explore.Controls.Add(this.lbl_counter);
-            this.pnl_explore.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnl_explore.Location = new System.Drawing.Point(0, 0);
-            this.pnl_explore.Name = "pnl_explore";
-            this.pnl_explore.Size = new System.Drawing.Size(884, 408);
-            this.pnl_explore.TabIndex = 0;
             // 
             // guna2CustomGradientPanel1
             // 
@@ -201,18 +186,6 @@
             this.btn_addDNS.TabIndex = 14;
             this.btn_addDNS.Text = "Add DNS";
             // 
-            // lbl_counter
-            // 
-            this.lbl_counter.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_counter.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_counter.ForeColor = System.Drawing.Color.White;
-            this.lbl_counter.Location = new System.Drawing.Point(377, 370);
-            this.lbl_counter.Name = "lbl_counter";
-            this.lbl_counter.Size = new System.Drawing.Size(111, 19);
-            this.lbl_counter.TabIndex = 9;
-            this.lbl_counter.Text = "1 / 6";
-            this.lbl_counter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // pb_latencyPicture
             // 
             this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
@@ -239,21 +212,17 @@
             this.pb_dnsPicture.TabIndex = 13;
             this.pb_dnsPicture.TabStop = false;
             // 
-            // btn_previous
+            // lbl_counter
             // 
-            this.btn_previous.BackColor = System.Drawing.Color.Transparent;
-            this.btn_previous.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_previous.FillColor = System.Drawing.Color.Transparent;
-            this.btn_previous.Image = global::ForceConnect.Properties.Resources.previous;
-            this.btn_previous.ImageRotate = 0F;
-            this.btn_previous.Location = new System.Drawing.Point(37, 160);
-            this.btn_previous.Name = "btn_previous";
-            this.btn_previous.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_previous.Size = new System.Drawing.Size(50, 47);
-            this.btn_previous.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btn_previous.TabIndex = 0;
-            this.btn_previous.TabStop = false;
-            this.btn_previous.Click += new System.EventHandler(this.btn_previous_Click);
+            this.lbl_counter.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_counter.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_counter.ForeColor = System.Drawing.Color.White;
+            this.lbl_counter.Location = new System.Drawing.Point(377, 370);
+            this.lbl_counter.Name = "lbl_counter";
+            this.lbl_counter.Size = new System.Drawing.Size(111, 19);
+            this.lbl_counter.TabIndex = 9;
+            this.lbl_counter.Text = "1 / 6";
+            this.lbl_counter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btn_next
             // 
@@ -271,12 +240,32 @@
             this.btn_next.TabStop = false;
             this.btn_next.Click += new System.EventHandler(this.btn_next_Click);
             // 
+            // btn_previous
+            // 
+            this.btn_previous.BackColor = System.Drawing.Color.Transparent;
+            this.btn_previous.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_previous.FillColor = System.Drawing.Color.Transparent;
+            this.btn_previous.Image = global::ForceConnect.Properties.Resources.previous;
+            this.btn_previous.ImageRotate = 0F;
+            this.btn_previous.Location = new System.Drawing.Point(37, 160);
+            this.btn_previous.Name = "btn_previous";
+            this.btn_previous.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.btn_previous.Size = new System.Drawing.Size(50, 47);
+            this.btn_previous.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.btn_previous.TabIndex = 0;
+            this.btn_previous.TabStop = false;
+            this.btn_previous.Click += new System.EventHandler(this.btn_previous_Click);
+            // 
             // frm_explore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
-            this.Controls.Add(this.pnl_explore);
+            this.Controls.Add(this.btn_previous);
+            this.Controls.Add(this.btn_next);
+            this.Controls.Add(this.lbl_counter);
+            this.Controls.Add(this.guna2CustomGradientPanel1);
             this.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MinimizeBox = false;
@@ -284,21 +273,16 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Explore";
             this.Load += new System.EventHandler(this.frm_explore_Load);
-            this.pnl_explore.ResumeLayout(false);
             this.guna2CustomGradientPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private Guna.UI2.WinForms.Guna2Panel pnl_explore;
-        private Guna.UI2.WinForms.Guna2CirclePictureBox btn_next;
-        private Guna.UI2.WinForms.Guna2CirclePictureBox btn_previous;
         private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel1;
         private Guna.UI2.WinForms.Guna2CirclePictureBox pb_dnsPicture;
         private System.Windows.Forms.Label lbl_name;
@@ -311,5 +295,7 @@
         private Guna.UI2.WinForms.Guna2CirclePictureBox pb_latencyPicture;
         private Guna.UI2.WinForms.Guna2Button btn_addDNS;
         private System.Windows.Forms.Label lbl_counter;
+        private Guna.UI2.WinForms.Guna2CirclePictureBox btn_next;
+        private Guna.UI2.WinForms.Guna2CirclePictureBox btn_previous;
     }
 }
