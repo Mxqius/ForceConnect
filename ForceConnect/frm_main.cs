@@ -12,19 +12,19 @@ namespace ForceConnect
     public partial class frm_main : Form
     {
         private bool dragging = false;
-        private Point dragCursorPoint;
-        private Point dragFormPoint;
+        private Point dragCursorPoint, dragFormPoint;
 
         public DnsAddress Shecan, Electro, Online403, Google, Cloudflare, RadarGame;
-        public DnsAddress currentDNS;
+        public DnsAddress currentDNS, connectedDNS;
         private Guna2Button currentSelectedMenuOption;
+        public Form currentFormLoaded;
 
-        private bool _connected;
-        private bool _internetConnection = true;
+        private bool _connected, _internetConnection = true;
         public frm_main()
         {
             InitializeComponent();
             currentSelectedMenuOption = btn_home;
+
             btn_home.ImageSize = new Size(45, 45);
             btn_home.FillColor = Color.FromArgb(32, 32, 32);
             btn_home.Text = "HOME";
@@ -83,9 +83,10 @@ namespace ForceConnect
         private void changeAppStatus(bool internetConnection)
         {
             _internetConnection = internetConnection;
-            lbl_status.Text = internetConnection ? "CLICK TO CONNECT" : "NO CONNECTION";
+            if (_internetConnection && _connected) return;
+            lbl_status.Text = (internetConnection) ? "CLICK TO CONNECT" : "NO CONNECTION";
         }
-        private async Task<bool> delay(int milisecound)
+        public async Task<bool> delay(int milisecound)
         {
             return await Task<bool>.Run(() =>
             {
@@ -95,7 +96,7 @@ namespace ForceConnect
         }
         private void btn_exit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            disconnectFromApp();
         }
 
         private void btn_minimize_Click(object sender, EventArgs e)
@@ -115,6 +116,13 @@ namespace ForceConnect
 
         private void cb_selectDns_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (connectedDNS != null)
+            {
+                if (connectedDNS.Name.ToLower() != cb_selectDns.Text.ToLower() && _connected)
+                    lbl_message.Text = $"YOU ARE STILL CONNECT TO PERVIOSLY DNS ({connectedDNS.Name})";
+                if (connectedDNS.Name.ToLower() == cb_selectDns.Text.ToLower())
+                    lbl_message.Text = "BETA VERSION";
+            }
             changeServer();
         }
 
@@ -200,6 +208,42 @@ namespace ForceConnect
             });
 
         }
+        private async void disconnectFromApp()
+        {
+            Guna2MessageDialog message = new Guna2MessageDialog()
+            {
+                Buttons = MessageDialogButtons.YesNo,
+                Icon = MessageDialogIcon.Warning,
+                Style = MessageDialogStyle.Dark,
+                Text = "If you leave the program, your DNS will be disabled. Are you sure?",
+                Caption = "Exit Program"
+            };
+            if (message.Show() == DialogResult.No)
+                return;
+
+            if (_connected)
+            {
+                btn_sync.Enabled = false;
+                shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                lbl_dnsStatus.Text = "Disconnecting";
+                lbl_status.Text = "RESTORING";
+                wp_dnsProgress.Visible = true;
+                wp_dnsProgress.Start();
+                await delay(3000);
+                DnsManager.clearDNS();
+                shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
+                lbl_message.Text = "BETA VERSION";
+                lbl_dnsStatus.Text = "Disconnected";
+                wp_dnsProgress.Visible = false;
+                wp_dnsProgress.Stop();
+            }
+            lbl_status.Text = "CLOSING THE PROGRAM";
+            await delay(2000);
+            this.Close();
+
+
+        }
+
         private async void btn_sync_Click(object sender, EventArgs e)
         {
             await syncLatency();
@@ -208,6 +252,8 @@ namespace ForceConnect
 
         private void frm_main_Load(object sender, EventArgs e)
         {
+            currentFormLoaded = this;
+            hiddenHomeForm(true);
             changeServer();
             checkInternetConnection();
         }
@@ -217,6 +263,7 @@ namespace ForceConnect
             if (!_internetConnection) return;
             if (!_connected)
             {
+                btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
                 lbl_dnsStatus.Text = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
@@ -224,18 +271,19 @@ namespace ForceConnect
                 wp_dnsProgress.Start();
                 await delay(3000);
                 DnsManager.setDNS(currentDNS.dnsAddress);
+                connectedDNS = currentDNS;
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
                 lbl_status.Text = "CLICK TO DISCONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
                 // Sync Latency
-                lbl_latency.Text = "Loading..";
-                await delay(2000);
                 await syncLatency();
+                btn_sync.Enabled = true;
             }
             else
             {
+                btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
                 lbl_dnsStatus.Text = "Disconnecting";
                 lbl_status.Text = "RESTORING";
@@ -244,17 +292,18 @@ namespace ForceConnect
                 await delay(3000);
                 DnsManager.clearDNS();
                 shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
+                lbl_message.Text = "BETA VERSION";
                 lbl_dnsStatus.Text = "Disconnected";
                 lbl_status.Text = "CLICK TO CONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
-                // Sync Latency
-                lbl_latency.Text = "Loading..";
-                await delay(2000);
+                // Sync Latency           
                 await syncLatency();
+                btn_sync.Enabled = true;
             }
             _connected = !_connected;
         }
+
         private void selectMenuOption(object sender, bool clickEvent)
         {
             if (((Guna2Button)sender) == currentSelectedMenuOption && !clickEvent) return;
@@ -286,13 +335,39 @@ namespace ForceConnect
             ((Guna2Button)sender).Text = string.Empty;
         }
 
+        private void hiddenHomeForm(bool visible)
+        {
+
+            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = pnl_information.Visible = shape_connect.Visible = cb_selectDns.Visible = visible;
+        }
         private void clickControlMenu(object sender, EventArgs e)
         {
+            if (currentSelectedMenuOption == ((Guna2Button)sender)) return;
             currentSelectedMenuOption.ImageSize = new Size(40, 40);
             currentSelectedMenuOption.FillColor = Color.Transparent;
             currentSelectedMenuOption.Text = string.Empty;
             currentSelectedMenuOption = ((Guna2Button)sender);
             selectMenuOption(sender, true);
+            switch (currentSelectedMenuOption.Name)
+            {
+                case "btn_settings":
+                    hiddenHomeForm(false);
+                    if (pnl_container.Controls.ContainsKey("frm_explore"))
+                        pnl_container.Controls.Remove(currentFormLoaded);
+                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_settings(), pnl_container);
+                    break;
+                case "btn_home":
+                    hiddenHomeForm(true);
+                    pnl_container.Controls.Remove(currentFormLoaded);
+                    break;
+                case "btn_explore":
+                    hiddenHomeForm(false);
+                    if (pnl_container.Controls.ContainsKey("frm_settings"))
+                        pnl_container.Controls.Remove(currentFormLoaded);
+
+                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_explore(), pnl_container);
+                    break;
+            }
         }
     }
 }
