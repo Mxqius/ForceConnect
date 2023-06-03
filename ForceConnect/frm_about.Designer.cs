@@ -33,11 +33,11 @@
             this.lbl_description = new System.Windows.Forms.Label();
             this.lbl_titleDescription = new System.Windows.Forms.Label();
             this.pnl_developreCard = new Guna.UI2.WinForms.Guna2Panel();
+            this.lbl_descriptionDeveloper = new System.Windows.Forms.Label();
+            this.lbl_nameDeveloper = new System.Windows.Forms.Label();
             this.btn_github = new Guna.UI2.WinForms.Guna2CircleButton();
             this.btn_instagram = new Guna.UI2.WinForms.Guna2CircleButton();
             this.btn_telegram = new Guna.UI2.WinForms.Guna2CircleButton();
-            this.lbl_descriptionDeveloper = new System.Windows.Forms.Label();
-            this.lbl_nameDeveloper = new System.Windows.Forms.Label();
             this.pb_aboutPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.pnl_descriptionAbout.SuspendLayout();
             this.pnl_developreCard.SuspendLayout();
@@ -66,7 +66,6 @@
             this.lbl_description.Size = new System.Drawing.Size(360, 231);
             this.lbl_description.TabIndex = 1;
             this.lbl_description.Text = resources.GetString("lbl_description.Text");
-            this.lbl_description.UseCompatibleTextRendering = true;
             // 
             // lbl_titleDescription
             // 
@@ -94,6 +93,26 @@
             this.pnl_developreCard.Name = "pnl_developreCard";
             this.pnl_developreCard.Size = new System.Drawing.Size(339, 325);
             this.pnl_developreCard.TabIndex = 0;
+            // 
+            // lbl_descriptionDeveloper
+            // 
+            this.lbl_descriptionDeveloper.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_descriptionDeveloper.Location = new System.Drawing.Point(66, 195);
+            this.lbl_descriptionDeveloper.Name = "lbl_descriptionDeveloper";
+            this.lbl_descriptionDeveloper.Size = new System.Drawing.Size(209, 15);
+            this.lbl_descriptionDeveloper.TabIndex = 1;
+            this.lbl_descriptionDeveloper.Text = "Founder , Lead Developer";
+            this.lbl_descriptionDeveloper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lbl_nameDeveloper
+            // 
+            this.lbl_nameDeveloper.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_nameDeveloper.Location = new System.Drawing.Point(94, 157);
+            this.lbl_nameDeveloper.Name = "lbl_nameDeveloper";
+            this.lbl_nameDeveloper.Size = new System.Drawing.Size(147, 28);
+            this.lbl_nameDeveloper.TabIndex = 1;
+            this.lbl_nameDeveloper.Text = "MXQIUS";
+            this.lbl_nameDeveloper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btn_github
             // 
@@ -160,26 +179,6 @@
             this.btn_telegram.Click += new System.EventHandler(this.btn_telegram_Click);
             this.btn_telegram.MouseLeave += new System.EventHandler(this.unFocusSocialMedia);
             this.btn_telegram.MouseMove += new System.Windows.Forms.MouseEventHandler(this.focusSocialMedia);
-            // 
-            // lbl_descriptionDeveloper
-            // 
-            this.lbl_descriptionDeveloper.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_descriptionDeveloper.Location = new System.Drawing.Point(66, 195);
-            this.lbl_descriptionDeveloper.Name = "lbl_descriptionDeveloper";
-            this.lbl_descriptionDeveloper.Size = new System.Drawing.Size(209, 15);
-            this.lbl_descriptionDeveloper.TabIndex = 1;
-            this.lbl_descriptionDeveloper.Text = "Founder , Lead Developer";
-            this.lbl_descriptionDeveloper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lbl_nameDeveloper
-            // 
-            this.lbl_nameDeveloper.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_nameDeveloper.Location = new System.Drawing.Point(94, 157);
-            this.lbl_nameDeveloper.Name = "lbl_nameDeveloper";
-            this.lbl_nameDeveloper.Size = new System.Drawing.Size(147, 28);
-            this.lbl_nameDeveloper.TabIndex = 1;
-            this.lbl_nameDeveloper.Text = "MXQIUS";
-            this.lbl_nameDeveloper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pb_aboutPicture
             // 

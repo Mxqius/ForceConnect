@@ -105,6 +105,12 @@
     <Compile Include="frm_explore.Designer.cs">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </Compile>
+    <Compile Include="frm_service.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_service.Designer.cs">
+      <DependentUpon>frm_service.cs</DependentUpon>
+    </Compile>
     <Compile Include="frm_settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +125,12 @@
     <Compile Include="NotificationForm.Designer.cs">
       <DependentUpon>NotificationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Service.cs" />
     <Compile Include="Utility\FormManager.cs" />
     <Compile Include="frm_main.cs">
       <SubType>Form</SubType>
@@ -136,6 +148,9 @@
     <EmbeddedResource Include="frm_explore.resx">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frm_service.resx">
+      <DependentUpon>frm_service.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frm_settings.resx">
       <DependentUpon>frm_settings.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,14 +162,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -277,6 +287,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\exploreIcons\delete.png" />
+    <None Include="Icons\exploreIcons\services.png" />
+    <None Include="Icons\close.png" />
+    <None Include="Icons\latencyIcons\signalYellow.png" />
+    <None Include="Icons\latencyIcons\signalRed.png" />
+    <None Include="Icons\latencyIcons\signalGreen.png" />
+    <None Include="Icons\sginalLatency.png" />
     <None Include="Icons\SocialIcons\github48.png" />
     <None Include="Icons\SocialIcons\instagram48.png" />
     <None Include="Icons\SocialIcons\telegram48.png" />

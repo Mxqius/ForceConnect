@@ -128,7 +128,7 @@
             this.btn_updateSofware.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_updateSofware.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_updateSofware.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_updateSofware.FillColor = System.Drawing.Color.Transparent;
+            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
             this.btn_updateSofware.Location = new System.Drawing.Point(21, 278);

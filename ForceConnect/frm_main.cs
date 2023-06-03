@@ -21,11 +21,12 @@ namespace ForceConnect
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
-        private bool _connected, pendingRequest,_internetConnection = true;
+        private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         public frm_main()
         {
             InitializeComponent();
+            updateVersion();
             currentSelectedMenuOption = btn_home;
 
             btn_home.ImageSize = new Size(45, 45);
@@ -128,7 +129,10 @@ namespace ForceConnect
             lbl_name.Text = currentDNS.Name;
             lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
             if (_internetConnection)
+            {
                 await syncLatencyDNS();
+                updateLatencyPicture();
+            }
             else
                 lbl_latency.Text = "-1 ms";
         }
@@ -225,6 +229,7 @@ namespace ForceConnect
         private async void btn_sync_Click(object sender, EventArgs e)
         {
             await syncLatency();
+            updateLatencyPicture();
             checkInternetConnection();
         }
 
@@ -235,12 +240,20 @@ namespace ForceConnect
         }
         private void frm_main_Load(object sender, EventArgs e)
         {
-            currentFormLoaded = this;
-            updateVersion();
+            currentFormLoaded = this;            
             changeServer();
             checkInternetConnection();
         }
-
+        private void updateLatencyPicture()
+        {
+            int latency = int.Parse(lbl_latency.Text.Split(' ')[0]);
+            if (latency >= 180 || latency == -1)
+                pb_latencyPicture.Image = Properties.Resources.signalRed;
+            else if (latency >= 120)
+                pb_latencyPicture.Image = Properties.Resources.signalYellow;
+            else
+                pb_latencyPicture.Image = Properties.Resources.signalGreen;
+        }
         private async void connectEvent(object sender, EventArgs e)
         {
             if (!_internetConnection || pendingRequest) return;
@@ -261,7 +274,7 @@ namespace ForceConnect
                 connectedDNS = currentDNS;
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
-                lbl_status.Text = "DISCONNECT";
+                lbl_status.Text = "CLICK TO DISCONNECT";
                 wp_dnsProgress.Invoke(new MethodInvoker(delegate
                 {
                     wp_dnsProgress.Visible = false;
@@ -269,6 +282,7 @@ namespace ForceConnect
                 }));
                 // Sync Latency
                 await syncLatency();
+                updateLatencyPicture();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
                 iconConnect.Image = Properties.Resources.connectedIcon;
@@ -299,6 +313,7 @@ namespace ForceConnect
                 }));
                 // Sync Latency           
                 await syncLatency();
+                updateLatencyPicture();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
                 iconConnect.Image = Properties.Resources.connectIcon;
