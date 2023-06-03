@@ -315,6 +315,9 @@ namespace ForceConnect
                 case "btn_home":
                     ((Guna2Button)sender).Text = "HOME";
                     break;
+                case "btn_about":
+                    ((Guna2Button)sender).Text = "ABOUT";
+                    break;
             }
         }
         private void moveControlMenu(object sender, MouseEventArgs e)
@@ -347,7 +350,7 @@ namespace ForceConnect
             {
                 case "btn_settings":
                     hiddenHomeForm(false);
-                    if (pnl_container.Controls.ContainsKey("frm_explore"))
+                    if (pnl_container.Controls.ContainsKey("frm_explore") || pnl_container.Controls.ContainsKey("frm_about"))
                         pnl_container.Controls.Remove(currentFormLoaded);
                     currentFormLoaded = FormManager.openChildFormInPanel(new frm_settings(), pnl_container);
                     break;
@@ -357,9 +360,15 @@ namespace ForceConnect
                     break;
                 case "btn_explore":
                     hiddenHomeForm(false);
-                    if (pnl_container.Controls.ContainsKey("frm_settings"))
+                    if (pnl_container.Controls.ContainsKey("frm_settings") || pnl_container.Controls.ContainsKey("frm_about"))
                         pnl_container.Controls.Remove(currentFormLoaded);
                     currentFormLoaded = FormManager.openChildFormInPanel(new frm_explore(this), pnl_container);
+                    break;
+                case "btn_about":
+                    hiddenHomeForm(false);
+                    if (pnl_container.Controls.ContainsKey("frm_settings") || pnl_container.Controls.ContainsKey("frm_explore"))
+                        pnl_container.Controls.Remove(currentFormLoaded);
+                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_about(), pnl_container);
                     break;
             }
         }

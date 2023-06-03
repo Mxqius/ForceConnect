@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
+            this.cb_autoUpdate = new Guna.UI2.WinForms.Guna2ToggleSwitch();
+            this.cb_launchOnWindows = new Guna.UI2.WinForms.Guna2ToggleSwitch();
+            this.lbl_automaticUpdate = new System.Windows.Forms.Label();
             this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
+            this.lbl_launchOnWindows = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lbl_descriptionOption1 = new System.Windows.Forms.Label();
             this.cb_selectDns = new Guna.UI2.WinForms.Guna2ComboBox();
-            this.cb_launchOnWindows = new Guna.UI2.WinForms.Guna2ToggleSwitch();
-            this.lbl_launchOnWindows = new System.Windows.Forms.Label();
-            this.lbl_automaticUpdate = new System.Windows.Forms.Label();
-            this.cb_autoUpdate = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,6 +57,67 @@
             this.guna2Panel1.Size = new System.Drawing.Size(433, 339);
             this.guna2Panel1.TabIndex = 0;
             // 
+            // cb_autoUpdate
+            // 
+            this.cb_autoUpdate.Animated = true;
+            this.cb_autoUpdate.AutoRoundedCorners = true;
+            this.cb_autoUpdate.BackColor = System.Drawing.Color.Transparent;
+            this.cb_autoUpdate.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_autoUpdate.CheckedState.BorderRadius = 11;
+            this.cb_autoUpdate.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_autoUpdate.CheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.cb_autoUpdate.CheckedState.InnerBorderRadius = 7;
+            this.cb_autoUpdate.CheckedState.InnerColor = System.Drawing.Color.White;
+            this.cb_autoUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cb_autoUpdate.Location = new System.Drawing.Point(24, 202);
+            this.cb_autoUpdate.Name = "cb_autoUpdate";
+            this.cb_autoUpdate.Size = new System.Drawing.Size(55, 24);
+            this.cb_autoUpdate.TabIndex = 23;
+            this.cb_autoUpdate.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.cb_autoUpdate.UncheckedState.BorderRadius = 11;
+            this.cb_autoUpdate.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.cb_autoUpdate.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.cb_autoUpdate.UncheckedState.InnerBorderRadius = 7;
+            this.cb_autoUpdate.UncheckedState.InnerColor = System.Drawing.Color.White;
+            this.cb_autoUpdate.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
+            // 
+            // cb_launchOnWindows
+            // 
+            this.cb_launchOnWindows.Animated = true;
+            this.cb_launchOnWindows.AutoRoundedCorners = true;
+            this.cb_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
+            this.cb_launchOnWindows.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_launchOnWindows.CheckedState.BorderRadius = 11;
+            this.cb_launchOnWindows.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_launchOnWindows.CheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.cb_launchOnWindows.CheckedState.InnerBorderRadius = 7;
+            this.cb_launchOnWindows.CheckedState.InnerColor = System.Drawing.Color.White;
+            this.cb_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cb_launchOnWindows.Location = new System.Drawing.Point(24, 111);
+            this.cb_launchOnWindows.Name = "cb_launchOnWindows";
+            this.cb_launchOnWindows.Size = new System.Drawing.Size(55, 24);
+            this.cb_launchOnWindows.TabIndex = 23;
+            this.cb_launchOnWindows.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.cb_launchOnWindows.UncheckedState.BorderRadius = 11;
+            this.cb_launchOnWindows.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.cb_launchOnWindows.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.cb_launchOnWindows.UncheckedState.InnerBorderRadius = 7;
+            this.cb_launchOnWindows.UncheckedState.InnerColor = System.Drawing.Color.White;
+            this.cb_launchOnWindows.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
+            // 
+            // lbl_automaticUpdate
+            // 
+            this.lbl_automaticUpdate.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_automaticUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lbl_automaticUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lbl_automaticUpdate.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_automaticUpdate.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.lbl_automaticUpdate.Location = new System.Drawing.Point(85, 202);
+            this.lbl_automaticUpdate.Name = "lbl_automaticUpdate";
+            this.lbl_automaticUpdate.Size = new System.Drawing.Size(239, 28);
+            this.lbl_automaticUpdate.TabIndex = 21;
+            this.lbl_automaticUpdate.Text = "Automatic Update";
+            // 
             // btn_updateSofware
             // 
             this.btn_updateSofware.Animated = true;
@@ -75,6 +136,20 @@
             this.btn_updateSofware.Size = new System.Drawing.Size(163, 45);
             this.btn_updateSofware.TabIndex = 22;
             this.btn_updateSofware.Text = "Check Update";
+            // 
+            // lbl_launchOnWindows
+            // 
+            this.lbl_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lbl_launchOnWindows.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lbl_launchOnWindows.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_launchOnWindows.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.lbl_launchOnWindows.Location = new System.Drawing.Point(85, 111);
+            this.lbl_launchOnWindows.Name = "lbl_launchOnWindows";
+            this.lbl_launchOnWindows.Size = new System.Drawing.Size(239, 28);
+            this.lbl_launchOnWindows.TabIndex = 21;
+            this.lbl_launchOnWindows.Text = "Launch On Windows";
+            this.lbl_launchOnWindows.Click += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
             // 
             // label1
             // 
@@ -123,79 +198,6 @@
             this.cb_selectDns.Size = new System.Drawing.Size(408, 46);
             this.cb_selectDns.StartIndex = 0;
             this.cb_selectDns.TabIndex = 19;
-            // 
-            // cb_launchOnWindows
-            // 
-            this.cb_launchOnWindows.Animated = true;
-            this.cb_launchOnWindows.AutoRoundedCorners = true;
-            this.cb_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
-            this.cb_launchOnWindows.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cb_launchOnWindows.CheckedState.BorderRadius = 11;
-            this.cb_launchOnWindows.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cb_launchOnWindows.CheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.cb_launchOnWindows.CheckedState.InnerBorderRadius = 7;
-            this.cb_launchOnWindows.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_launchOnWindows.Location = new System.Drawing.Point(24, 111);
-            this.cb_launchOnWindows.Name = "cb_launchOnWindows";
-            this.cb_launchOnWindows.Size = new System.Drawing.Size(55, 24);
-            this.cb_launchOnWindows.TabIndex = 23;
-            this.cb_launchOnWindows.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.cb_launchOnWindows.UncheckedState.BorderRadius = 11;
-            this.cb_launchOnWindows.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.cb_launchOnWindows.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.cb_launchOnWindows.UncheckedState.InnerBorderRadius = 7;
-            this.cb_launchOnWindows.UncheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_launchOnWindows.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
-            // 
-            // lbl_launchOnWindows
-            // 
-            this.lbl_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_launchOnWindows.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.lbl_launchOnWindows.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_launchOnWindows.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_launchOnWindows.Location = new System.Drawing.Point(85, 111);
-            this.lbl_launchOnWindows.Name = "lbl_launchOnWindows";
-            this.lbl_launchOnWindows.Size = new System.Drawing.Size(239, 28);
-            this.lbl_launchOnWindows.TabIndex = 21;
-            this.lbl_launchOnWindows.Text = "Launch On Windows";
-            this.lbl_launchOnWindows.Click += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
-            // 
-            // lbl_automaticUpdate
-            // 
-            this.lbl_automaticUpdate.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_automaticUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.lbl_automaticUpdate.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_automaticUpdate.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_automaticUpdate.Location = new System.Drawing.Point(85, 202);
-            this.lbl_automaticUpdate.Name = "lbl_automaticUpdate";
-            this.lbl_automaticUpdate.Size = new System.Drawing.Size(239, 28);
-            this.lbl_automaticUpdate.TabIndex = 21;
-            this.lbl_automaticUpdate.Text = "Automatic Update";
-            // 
-            // cb_autoUpdate
-            // 
-            this.cb_autoUpdate.Animated = true;
-            this.cb_autoUpdate.AutoRoundedCorners = true;
-            this.cb_autoUpdate.BackColor = System.Drawing.Color.Transparent;
-            this.cb_autoUpdate.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cb_autoUpdate.CheckedState.BorderRadius = 11;
-            this.cb_autoUpdate.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cb_autoUpdate.CheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.cb_autoUpdate.CheckedState.InnerBorderRadius = 7;
-            this.cb_autoUpdate.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_autoUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_autoUpdate.Location = new System.Drawing.Point(24, 202);
-            this.cb_autoUpdate.Name = "cb_autoUpdate";
-            this.cb_autoUpdate.Size = new System.Drawing.Size(55, 24);
-            this.cb_autoUpdate.TabIndex = 23;
-            this.cb_autoUpdate.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.cb_autoUpdate.UncheckedState.BorderRadius = 11;
-            this.cb_autoUpdate.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.cb_autoUpdate.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.cb_autoUpdate.UncheckedState.InnerBorderRadius = 7;
-            this.cb_autoUpdate.UncheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_autoUpdate.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
             // 
             // frm_settings
             // 

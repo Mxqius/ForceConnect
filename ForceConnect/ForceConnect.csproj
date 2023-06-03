@@ -59,6 +59,12 @@
   <ItemGroup>
     <Compile Include="API\Latency.cs" />
     <Compile Include="DNS\DnsAddressItems.cs" />
+    <Compile Include="frm_about.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_about.Designer.cs">
+      <DependentUpon>frm_about.cs</DependentUpon>
+    </Compile>
     <Compile Include="frm_explore.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DnsAddress.cs" />
     <Compile Include="Services\DnsManager.cs" />
+    <EmbeddedResource Include="frm_about.resx">
+      <DependentUpon>frm_about.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frm_explore.resx">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </EmbeddedResource>
@@ -235,6 +244,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\SocialIcons\github48.png" />
+    <None Include="Icons\SocialIcons\instagram48.png" />
+    <None Include="Icons\SocialIcons\telegram48.png" />
+    <None Include="Icons\SocialIcons\github.png" />
+    <None Include="Icons\SocialIcons\instagram.png" />
+    <None Include="Icons\SocialIcons\telegram.png" />
+    <None Include="Resources\df68e403b0b6cfe5d0a2e79684b8888c.jpg" />
+    <None Include="Icons\menuIcons\about.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
