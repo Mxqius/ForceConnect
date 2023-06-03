@@ -22,7 +22,7 @@ namespace ForceConnect
         public Form currentFormLoaded;
 
         private bool _connected, pendingRequest, _internetConnection = true;
-        private string versionApp = Application.ProductVersion;
+        private Version version = Version.Parse(Application.ProductVersion);
         public frm_main()
         {
             InitializeComponent();
@@ -230,7 +230,8 @@ namespace ForceConnect
 
         private string updateVersion()
         {
-            return lbl_message.Text = "VERSION " + versionApp;
+
+            return lbl_message.Text = "VERSION " + version.Major + "." + version.Minor;
         }
         private void frm_main_Load(object sender, EventArgs e)
         {

@@ -63,7 +63,7 @@
             this.lbl_description.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.lbl_description.Location = new System.Drawing.Point(22, 68);
             this.lbl_description.Name = "lbl_description";
-            this.lbl_description.Size = new System.Drawing.Size(367, 231);
+            this.lbl_description.Size = new System.Drawing.Size(360, 231);
             this.lbl_description.TabIndex = 1;
             this.lbl_description.Text = resources.GetString("lbl_description.Text");
             this.lbl_description.UseCompatibleTextRendering = true;
