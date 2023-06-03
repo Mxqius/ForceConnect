@@ -4,6 +4,7 @@ using ForceConnect.Services;
 using Guna.UI2.WinForms;
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,7 @@ namespace ForceConnect
         public Form currentFormLoaded;
 
         private bool _connected, pendingRequest, _internetConnection = true;
+        private string versionApp = Application.ProductVersion;
         public frm_main()
         {
             InitializeComponent();
@@ -84,7 +86,7 @@ namespace ForceConnect
                 if (connectedDNS.Name.ToLower() != cb_selectDns.Text.ToLower() && _connected)
                     lbl_message.Text = $"YOU ARE STILL CONNECT TO PERVIOSLY DNS ({connectedDNS.Name})";
                 if (connectedDNS.Name.ToLower() == cb_selectDns.Text.ToLower())
-                    lbl_message.Text = "BETA VERSION";
+                    updateVersion();
             }
             changeServer();
         }
@@ -207,7 +209,7 @@ namespace ForceConnect
                 await delay(3000);
                 DnsManager.clearDNS();
                 shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
-                lbl_message.Text = "BETA VERSION";
+                updateVersion();
                 lbl_dnsStatus.Text = "Disconnected";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
@@ -226,9 +228,14 @@ namespace ForceConnect
             checkInternetConnection();
         }
 
+        private string updateVersion()
+        {
+            return lbl_message.Text = "VERSION " + versionApp;
+        }
         private void frm_main_Load(object sender, EventArgs e)
         {
             currentFormLoaded = this;
+            updateVersion();
             changeServer();
             checkInternetConnection();
         }
@@ -281,7 +288,7 @@ namespace ForceConnect
                 await delay(3000);
                 DnsManager.clearDNS();
                 shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
-                lbl_message.Text = "BETA VERSION";
+                updateVersion();
                 lbl_dnsStatus.Text = "Disconnected";
                 lbl_status.Text = "CLICK TO CONNECT";
                 wp_dnsProgress.Invoke(new MethodInvoker(delegate

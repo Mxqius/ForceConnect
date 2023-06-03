@@ -147,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Icons\letancyIcons\" />
-    <Folder Include="UserInterface\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\settings.png" />
