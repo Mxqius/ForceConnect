@@ -21,8 +21,8 @@ namespace ForceConnect
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
-        private bool _connected, pendingRequest, _internetConnection = true;
-        private Version version = Version.Parse(Application.ProductVersion);
+        private bool _connected, pendingRequest,_internetConnection = true;
+        private readonly Version version = Version.Parse(Application.ProductVersion);
         public frm_main()
         {
             InitializeComponent();

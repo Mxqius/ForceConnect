@@ -315,9 +315,9 @@
             // wp_dnsProgress
             // 
             this.wp_dnsProgress.AnimationSpeed = 80;
-            this.wp_dnsProgress.BackColor = System.Drawing.Color.White;
+            this.wp_dnsProgress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
             this.wp_dnsProgress.CircleSize = 2F;
-            this.wp_dnsProgress.Location = new System.Drawing.Point(143, 115);
+            this.wp_dnsProgress.Location = new System.Drawing.Point(142, 113);
             this.wp_dnsProgress.Name = "wp_dnsProgress";
             this.wp_dnsProgress.NumberOfCircles = 9;
             this.wp_dnsProgress.ProgressColor = System.Drawing.Color.DarkGray;
@@ -327,12 +327,12 @@
             // 
             // iconConnect
             // 
-            this.iconConnect.BackColor = System.Drawing.Color.White;
+            this.iconConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
             this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
             this.iconConnect.Image = global::ForceConnect.Properties.Resources.connectIcon;
             this.iconConnect.ImageRotate = 0F;
             this.iconConnect.InitialImage = global::ForceConnect.Properties.Resources.connectIcon;
-            this.iconConnect.Location = new System.Drawing.Point(137, 115);
+            this.iconConnect.Location = new System.Drawing.Point(132, 107);
             this.iconConnect.Name = "iconConnect";
             this.iconConnect.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             this.iconConnect.Size = new System.Drawing.Size(143, 132);
@@ -345,13 +345,13 @@
             // 
             this.shape_connect.BorderColor = System.Drawing.Color.Transparent;
             this.shape_connect.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.shape_connect.FillColor = System.Drawing.Color.White;
-            this.shape_connect.Location = new System.Drawing.Point(80, 57);
+            this.shape_connect.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
+            this.shape_connect.Location = new System.Drawing.Point(75, 50);
             this.shape_connect.Name = "shape_connect";
             this.shape_connect.PolygonSkip = 1;
             this.shape_connect.Rotate = 0F;
             this.shape_connect.Shape = Guna.UI2.WinForms.Enums.ShapeType.Ellipse;
-            this.shape_connect.Size = new System.Drawing.Size(254, 242);
+            this.shape_connect.Size = new System.Drawing.Size(259, 249);
             this.shape_connect.TabIndex = 15;
             this.shape_connect.Text = "guna2Shapes1";
             this.shape_connect.Zoom = 80;

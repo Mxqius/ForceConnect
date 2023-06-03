@@ -164,11 +164,11 @@
             // lbl_descriptionDeveloper
             // 
             this.lbl_descriptionDeveloper.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_descriptionDeveloper.Location = new System.Drawing.Point(88, 195);
+            this.lbl_descriptionDeveloper.Location = new System.Drawing.Point(66, 195);
             this.lbl_descriptionDeveloper.Name = "lbl_descriptionDeveloper";
-            this.lbl_descriptionDeveloper.Size = new System.Drawing.Size(161, 15);
+            this.lbl_descriptionDeveloper.Size = new System.Drawing.Size(209, 15);
             this.lbl_descriptionDeveloper.TabIndex = 1;
-            this.lbl_descriptionDeveloper.Text = "Back-End Developer";
+            this.lbl_descriptionDeveloper.Text = "Founder , Lead Developer";
             this.lbl_descriptionDeveloper.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lbl_nameDeveloper
