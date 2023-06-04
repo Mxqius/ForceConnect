@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace ForceConnect.DNS
+namespace ForceConnect.Services
 {
     internal class DnsAddressItems
     {

@@ -93,6 +93,7 @@
             this.btn_removeDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             this.btn_removeDNS.Size = new System.Drawing.Size(44, 40);
             this.btn_removeDNS.TabIndex = 17;
+            this.btn_removeDNS.Visible = false;
             // 
             // pb_latencyPicture
             // 

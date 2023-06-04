@@ -1,17 +1,10 @@
 ﻿using ForceConnect.API;
-using ForceConnect.DNS;
 using ForceConnect.Services;
-using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace ForceConnect
 {
@@ -73,7 +66,7 @@ namespace ForceConnect
                 this.Invoke(new MethodInvoker(delegate
                 {
                     lbl_name.Text = DNS.Name;
-                    if(DNS.dnsAddress.Length > 1)
+                    if (DNS.dnsAddress.Length > 1)
                         lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
                     else
                         lbl_previewAddress.Text = DNS.dnsAddress[0];

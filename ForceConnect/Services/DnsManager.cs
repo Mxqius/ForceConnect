@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Management;
-using System.Net;
 using System.Net.NetworkInformation;
-using System.Security.Cryptography;
-using static Guna.UI2.Native.WinApi;
 using System.Windows.Forms;
 
 public class DnsManager

@@ -1,5 +1,5 @@
 ﻿using ForceConnect.API;
-using ForceConnect.DNS;
+using ForceConnect.Services;
 using ForceConnect.Services;
 using Guna.UI2.WinForms;
 using System;
@@ -17,12 +17,12 @@ namespace ForceConnect
         private bool dragging = false;
         private Point dragCursorPoint, dragFormPoint;
 
-        private DnsAddressItems DnsAddress;
         public DnsAddress currentDNS, connectedDNS;
         private List<DnsAddress> servicesUser;
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
+        private byte currentSelectedIndexComboBox = 0;
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         public frm_main()
@@ -35,9 +35,14 @@ namespace ForceConnect
             btn_home.FillColor = Color.FromArgb(32, 32, 32);
             btn_home.Text = "HOME";
 
-            DnsAddress = new DnsAddressItems();
             servicesUser = DnsAddressItems.GetServicesUser();
             currentDNS = servicesUser[0];
+
+        }
+        private void updateServices()
+        {
+            servicesUser.Clear();
+            servicesUser = DnsAddressItems.GetServicesUser();
 
         }
         private void updateDNSBox()
@@ -94,6 +99,7 @@ namespace ForceConnect
 
         private void cb_selectDns_SelectedIndexChanged(object sender, EventArgs e)
         {
+            currentSelectedIndexComboBox = (byte)cb_selectDns.SelectedIndex;
             if (connectedDNS != null)
             {
                 if (connectedDNS.Name.ToLower() != cb_selectDns.Text.ToLower() && _connected)
@@ -373,6 +379,9 @@ namespace ForceConnect
                     currentFormLoaded = FormManager.openChildFormInPanel(new frm_settings(), pnl_container);
                     break;
                 case "btn_home":
+                    updateServices();
+                    updateDNSBox();
+                    cb_selectDns.SelectedIndex = currentSelectedIndexComboBox;
                     hiddenHomeForm(true);
                     pnl_container.Controls.Remove(currentFormLoaded);
                     break;
