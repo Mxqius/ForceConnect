@@ -3,6 +3,7 @@ using ForceConnect.DNS;
 using ForceConnect.Services;
 using Guna.UI2.WinForms;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
 using System.Threading;
@@ -18,6 +19,7 @@ namespace ForceConnect
 
         private DnsAddressItems DnsAddress;
         public DnsAddress currentDNS, connectedDNS;
+        private List<DnsAddress> servicesUser;
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
@@ -34,7 +36,17 @@ namespace ForceConnect
             btn_home.Text = "HOME";
 
             DnsAddress = new DnsAddressItems();
+            servicesUser = DnsAddressItems.GetServicesUser();
+            currentDNS = servicesUser[0];
 
+        }
+        private void updateDNSBox()
+        {
+            cb_selectDns.Items.Clear();
+            foreach (DnsAddress dns in servicesUser)
+            {
+                cb_selectDns.Items.Add(dns.Name);
+            }
         }
         private void checkInternetConnection()
         {
@@ -94,32 +106,9 @@ namespace ForceConnect
 
         private void changeServer()
         {
-            switch (cb_selectDns.Text)
-            {
-                case "Shecan":
-                    currentDNS = DnsAddress.Shecan;
-                    break;
+            if (servicesUser.Exists(x => x.Name == cb_selectDns.Text))
+                currentDNS = servicesUser.Find(item => item.Name == cb_selectDns.Text);
 
-                case "Electro":
-                    currentDNS = DnsAddress.Electro;
-                    break;
-
-                case "Google":
-                    currentDNS = DnsAddress.Google;
-                    break;
-
-                case "Radar Game":
-                    currentDNS = DnsAddress.RadarGame;
-                    break;
-
-                case "Cloudflare":
-                    currentDNS = DnsAddress.Cloudflare;
-                    break;
-
-                case "403.online":
-                    currentDNS = DnsAddress.Online403;
-                    break;
-            }
             showInformation();
         }
         private async void showInformation()
@@ -127,7 +116,11 @@ namespace ForceConnect
             pb_dnsPicture.Image = currentDNS.Picture;
             lbl_latency.Text = currentDNS.Latency.ToString() + " ms";
             lbl_name.Text = currentDNS.Name;
-            lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
+            if (currentDNS.dnsAddress.Length > 1)
+                lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
+            else
+                lbl_previewAddress.Text = currentDNS.dnsAddress[0];
+
             if (_internetConnection)
             {
                 await syncLatencyDNS();
@@ -240,7 +233,9 @@ namespace ForceConnect
         }
         private void frm_main_Load(object sender, EventArgs e)
         {
-            currentFormLoaded = this;            
+            updateDNSBox();
+            cb_selectDns.SelectedIndex = 0;
+            currentFormLoaded = this;
             changeServer();
             checkInternetConnection();
         }

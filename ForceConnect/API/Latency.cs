@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using System.Web.Configuration;
+﻿using System.Net.NetworkInformation;
 
 namespace ForceConnect.API
 {
@@ -28,7 +20,7 @@ namespace ForceConnect.API
                     return -1; // Indicate failure or unreachable host
                 }
             }
-            catch (Exception e)
+            catch
             {
                 return -1;
             }

@@ -287,6 +287,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\dns.png" />
     <None Include="Icons\exploreIcons\delete.png" />
     <None Include="Icons\exploreIcons\services.png" />
     <None Include="Icons\close.png" />

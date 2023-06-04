@@ -33,13 +33,13 @@
             this.txt_address2 = new Guna.UI2.WinForms.Guna2TextBox();
             this.txt_address1 = new Guna.UI2.WinForms.Guna2TextBox();
             this.txt_name = new Guna.UI2.WinForms.Guna2TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.lbl_ping = new System.Windows.Forms.Label();
             this.btn_ping = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_cancel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_addService = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_clear = new Guna.UI2.WinForms.Guna2Button();
             this.bf_form = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnl_services.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -56,7 +56,7 @@
             this.pnl_services.Controls.Add(this.label1);
             this.pnl_services.Controls.Add(this.lbl_ping);
             this.pnl_services.Controls.Add(this.btn_ping);
-            this.pnl_services.Controls.Add(this.btn_clear);
+            this.pnl_services.Controls.Add(this.btn_cancel);
             this.pnl_services.Controls.Add(this.btn_addService);
             this.pnl_services.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnl_services.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
@@ -88,6 +88,7 @@
             this.txt_address2.SelectedText = "";
             this.txt_address2.Size = new System.Drawing.Size(319, 38);
             this.txt_address2.TabIndex = 2;
+            this.txt_address2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyAddress);
             // 
             // txt_address1
             // 
@@ -112,6 +113,7 @@
             this.txt_address1.SelectedText = "";
             this.txt_address1.Size = new System.Drawing.Size(319, 38);
             this.txt_address1.TabIndex = 1;
+            this.txt_address1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onlyAddress);
             // 
             // txt_name
             // 
@@ -137,6 +139,30 @@
             this.txt_name.SelectedText = "";
             this.txt_name.Size = new System.Drawing.Size(319, 38);
             this.txt_name.TabIndex = 0;
+            // 
+            // label3
+            // 
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(223, 119);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(151, 27);
+            this.label3.TabIndex = 23;
+            this.label3.Text = "Enter Address:";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(223, 29);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(117, 27);
+            this.label1.TabIndex = 23;
+            this.label1.Text = "Enter Name:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbl_ping
             // 
@@ -170,6 +196,26 @@
             this.btn_ping.Text = "Ping";
             this.btn_ping.Click += new System.EventHandler(this.btn_ping_Click);
             // 
+            // btn_cancel
+            // 
+            this.btn_cancel.Animated = true;
+            this.btn_cancel.BackColor = System.Drawing.Color.Transparent;
+            this.btn_cancel.BorderRadius = 15;
+            this.btn_cancel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_cancel.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_cancel.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_cancel.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_cancel.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_cancel.FillColor = System.Drawing.Color.WhiteSmoke;
+            this.btn_cancel.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Bold);
+            this.btn_cancel.ForeColor = System.Drawing.Color.Black;
+            this.btn_cancel.Location = new System.Drawing.Point(219, 320);
+            this.btn_cancel.Name = "btn_cancel";
+            this.btn_cancel.Size = new System.Drawing.Size(155, 39);
+            this.btn_cancel.TabIndex = 5;
+            this.btn_cancel.Text = "Cancel";
+            this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
+            // 
             // btn_addService
             // 
             this.btn_addService.Animated = true;
@@ -190,26 +236,6 @@
             this.btn_addService.Text = "Submit";
             this.btn_addService.Click += new System.EventHandler(this.btn_addService_Click);
             // 
-            // btn_clear
-            // 
-            this.btn_clear.Animated = true;
-            this.btn_clear.BackColor = System.Drawing.Color.Transparent;
-            this.btn_clear.BorderRadius = 15;
-            this.btn_clear.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_clear.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_clear.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_clear.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_clear.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_clear.FillColor = System.Drawing.Color.WhiteSmoke;
-            this.btn_clear.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Bold);
-            this.btn_clear.ForeColor = System.Drawing.Color.Black;
-            this.btn_clear.Location = new System.Drawing.Point(219, 320);
-            this.btn_clear.Name = "btn_clear";
-            this.btn_clear.Size = new System.Drawing.Size(155, 39);
-            this.btn_clear.TabIndex = 5;
-            this.btn_clear.Text = "Cancel";
-            this.btn_clear.Click += new System.EventHandler(this.btn_clear_Click);
-            // 
             // bf_form
             // 
             this.bf_form.AnimationInterval = 250;
@@ -220,30 +246,6 @@
             this.bf_form.ResizeForm = false;
             this.bf_form.ShadowColor = System.Drawing.Color.WhiteSmoke;
             this.bf_form.TransparentWhileDrag = true;
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(223, 29);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(117, 27);
-            this.label1.TabIndex = 23;
-            this.label1.Text = "Enter Name:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label3
-            // 
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(223, 119);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(151, 27);
-            this.label3.TabIndex = 23;
-            this.label3.Text = "Enter Address:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pb_latencyPicture
             // 
@@ -266,6 +268,8 @@
             this.Controls.Add(this.pnl_services);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frm_service";
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Service ";
             this.pnl_services.ResumeLayout(false);
@@ -284,7 +288,7 @@
         private System.Windows.Forms.Label lbl_ping;
         private Guna.UI2.WinForms.Guna2Button btn_ping;
         private Guna.UI2.WinForms.Guna2Button btn_addService;
-        private Guna.UI2.WinForms.Guna2Button btn_clear;
+        private Guna.UI2.WinForms.Guna2Button btn_cancel;
         private Guna.UI2.WinForms.Guna2BorderlessForm bf_form;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;

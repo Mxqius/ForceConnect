@@ -21,19 +21,24 @@ namespace ForceConnect
         private byte currentIndex = 0;
         private List<DnsAddress> listOfDNS = new List<DnsAddress>();
 
-        private DnsAddressItems DnsAddress;
-
         public frm_explore(frm_main mainForm)
         {
             InitializeComponent();
             _mainForm = mainForm;
-            DnsAddress = new DnsAddressItems();
-            listOfDNS.Add(DnsAddress.Shecan);
-            listOfDNS.Add(DnsAddress.Electro);
-            listOfDNS.Add(DnsAddress.Online403);
-            listOfDNS.Add(DnsAddress.Cloudflare);
-            listOfDNS.Add(DnsAddress.Google);
-            listOfDNS.Add(DnsAddress.RadarGame);
+            listOfDNS.AddRange(DnsAddressItems.GetServicesUser());
+        }
+        private async Task<bool> updateList()
+        {
+            return await Task.Run(async () =>
+            {
+                listOfDNS.Clear();
+                listOfDNS.AddRange(DnsAddressItems.GetServicesUser());
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    updateCounter();
+                }));
+                return true;
+            });
         }
 
         private async void lbl_previewAddress_Click(object sender, EventArgs e)
@@ -53,16 +58,27 @@ namespace ForceConnect
             else
                 pb_latencyPicture.Image = Properties.Resources.signalGreen;
         }
-        private async Task<bool> changeInformationCardDNS(DnsAddress DNS)
+        private async Task<long> getLatencyDNS(string address)
         {
             return await Task.Run(() =>
             {
+                return Latency.MeasureLatency(address);
+            });
+        }
+        private async Task<bool> changeInformationCardDNS(DnsAddress DNS)
+        {
+            return await Task.Run(async () =>
+            {
+                long latency = await getLatencyDNS(DNS.dnsAddress[0]);
                 this.Invoke(new MethodInvoker(delegate
                 {
                     lbl_name.Text = DNS.Name;
-                    lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
+                    if(DNS.dnsAddress.Length > 1)
+                        lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
+                    else
+                        lbl_previewAddress.Text = DNS.dnsAddress[0];
                     pb_dnsPicture.Image = DNS.Picture;
-                    lbl_latency.Text = Latency.MeasureLatency(DNS.dnsAddress[0]).ToString() + " ms";
+                    lbl_latency.Text = latency.ToString() + " ms";
                     updateLatencyPicture();
                 }));
                 return true;
@@ -88,20 +104,25 @@ namespace ForceConnect
 
         private async void btn_previous_Click(object sender, EventArgs e)
         {
-            if (currentIndex > 1) currentIndex--;
+            if (currentIndex > 0) currentIndex--;
             else currentIndex = (byte)((byte)listOfDNS.Count - 1);
             await changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
         }
-        private void onlyAddress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != '.')
-                e.Handled = true;
-        }
 
-        private void btn_openServices_Click(object sender, EventArgs e)
+        private async void btn_openServices_Click(object sender, EventArgs e)
         {
-            new frm_service().ShowDialog();
+            if (new frm_service().ShowDialog() == DialogResult.OK)
+            {
+                await updateList();
+                currentIndex = ((byte)(listOfDNS.Count - 1));
+                await changeInformationCardDNS(listOfDNS[currentIndex]);
+            }
+
+        }
+        private async void btn_refresh_Click(object sender, EventArgs e)
+        {
+            await updateList();
         }
     }
 }

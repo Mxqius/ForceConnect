@@ -29,24 +29,25 @@
         private void InitializeComponent()
         {
             this.pnl_cardDns = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
-            this.lbl_latency = new System.Windows.Forms.Label();
-            this.lbl_name = new System.Windows.Forms.Label();
-            this.lbl_previewAddress = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lbl_counter = new System.Windows.Forms.Label();
-            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
-            this.btn_openServices = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btn_next = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.btn_removeDNS = new Guna.UI2.WinForms.Guna2CircleButton();
             this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.lbl_name = new System.Windows.Forms.Label();
+            this.lbl_latency = new System.Windows.Forms.Label();
+            this.lbl_previewAddress = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
+            this.lbl_counter = new System.Windows.Forms.Label();
+            this.btn_openServices = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.btn_next = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
             this.pnl_cardDns.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btn_next)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_next)).BeginInit();
             this.SuspendLayout();
             // 
             // pnl_cardDns
@@ -73,17 +74,50 @@
             this.pnl_cardDns.Size = new System.Drawing.Size(611, 231);
             this.pnl_cardDns.TabIndex = 1;
             // 
-            // lbl_latency
+            // btn_removeDNS
             // 
-            this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_latency.Font = new System.Drawing.Font("JetBrains Mono", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_latency.ForeColor = System.Drawing.Color.White;
-            this.lbl_latency.Location = new System.Drawing.Point(337, 156);
-            this.lbl_latency.Name = "lbl_latency";
-            this.lbl_latency.Size = new System.Drawing.Size(71, 22);
-            this.lbl_latency.TabIndex = 9;
-            this.lbl_latency.Text = "120 ms";
-            this.lbl_latency.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btn_removeDNS.Animated = true;
+            this.btn_removeDNS.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btn_removeDNS.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_removeDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_removeDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_removeDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_removeDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_removeDNS.FillColor = System.Drawing.Color.Transparent;
+            this.btn_removeDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btn_removeDNS.ForeColor = System.Drawing.Color.White;
+            this.btn_removeDNS.Image = global::ForceConnect.Properties.Resources.delete;
+            this.btn_removeDNS.ImageSize = new System.Drawing.Size(30, 30);
+            this.btn_removeDNS.Location = new System.Drawing.Point(562, 7);
+            this.btn_removeDNS.Name = "btn_removeDNS";
+            this.btn_removeDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.btn_removeDNS.Size = new System.Drawing.Size(44, 40);
+            this.btn_removeDNS.TabIndex = 17;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(303, 151);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(28, 26);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 15;
+            this.pb_latencyPicture.TabStop = false;
+            // 
+            // pb_dnsPicture
+            // 
+            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
+            this.pb_dnsPicture.ImageRotate = 0F;
+            this.pb_dnsPicture.Location = new System.Drawing.Point(26, 30);
+            this.pb_dnsPicture.Name = "pb_dnsPicture";
+            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.pb_dnsPicture.Size = new System.Drawing.Size(48, 48);
+            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_dnsPicture.TabIndex = 13;
+            this.pb_dnsPicture.TabStop = false;
             // 
             // lbl_name
             // 
@@ -96,6 +130,18 @@
             this.lbl_name.TabIndex = 9;
             this.lbl_name.Text = "Shecan";
             this.lbl_name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lbl_latency
+            // 
+            this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_latency.Font = new System.Drawing.Font("JetBrains Mono", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_latency.ForeColor = System.Drawing.Color.White;
+            this.lbl_latency.Location = new System.Drawing.Point(337, 156);
+            this.lbl_latency.Name = "lbl_latency";
+            this.lbl_latency.Size = new System.Drawing.Size(71, 22);
+            this.lbl_latency.TabIndex = 9;
+            this.lbl_latency.Text = "??? ms";
+            this.lbl_latency.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbl_previewAddress
             // 
@@ -135,18 +181,6 @@
             this.label4.Text = "Address";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lbl_counter
-            // 
-            this.lbl_counter.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_counter.Font = new System.Drawing.Font("JetBrains Mono ExtraBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_counter.ForeColor = System.Drawing.Color.White;
-            this.lbl_counter.Location = new System.Drawing.Point(374, 361);
-            this.lbl_counter.Name = "lbl_counter";
-            this.lbl_counter.Size = new System.Drawing.Size(111, 19);
-            this.lbl_counter.TabIndex = 9;
-            this.lbl_counter.Text = "1 / 6";
-            this.lbl_counter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // guna2Shapes1
             // 
             this.guna2Shapes1.BorderThickness = 0;
@@ -159,6 +193,18 @@
             this.guna2Shapes1.Size = new System.Drawing.Size(320, 388);
             this.guna2Shapes1.TabIndex = 18;
             this.guna2Shapes1.Zoom = 80;
+            // 
+            // lbl_counter
+            // 
+            this.lbl_counter.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_counter.Font = new System.Drawing.Font("JetBrains Mono ExtraBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_counter.ForeColor = System.Drawing.Color.White;
+            this.lbl_counter.Location = new System.Drawing.Point(374, 361);
+            this.lbl_counter.Name = "lbl_counter";
+            this.lbl_counter.Size = new System.Drawing.Size(111, 19);
+            this.lbl_counter.TabIndex = 9;
+            this.lbl_counter.Text = "? / ?";
+            this.lbl_counter.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btn_openServices
             // 
@@ -214,50 +260,26 @@
             this.btn_next.TabStop = false;
             this.btn_next.Click += new System.EventHandler(this.btn_next_Click);
             // 
-            // btn_removeDNS
+            // btn_refresh
             // 
-            this.btn_removeDNS.Animated = true;
-            this.btn_removeDNS.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.btn_removeDNS.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_removeDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_removeDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_removeDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_removeDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_removeDNS.FillColor = System.Drawing.Color.Transparent;
-            this.btn_removeDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_removeDNS.ForeColor = System.Drawing.Color.White;
-            this.btn_removeDNS.Image = global::ForceConnect.Properties.Resources.delete;
-            this.btn_removeDNS.ImageSize = new System.Drawing.Size(30, 30);
-            this.btn_removeDNS.Location = new System.Drawing.Point(562, 7);
-            this.btn_removeDNS.Name = "btn_removeDNS";
-            this.btn_removeDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_removeDNS.Size = new System.Drawing.Size(44, 40);
-            this.btn_removeDNS.TabIndex = 17;
-            // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(303, 151);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(28, 26);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 15;
-            this.pb_latencyPicture.TabStop = false;
-            // 
-            // pb_dnsPicture
-            // 
-            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
-            this.pb_dnsPicture.ImageRotate = 0F;
-            this.pb_dnsPicture.Location = new System.Drawing.Point(26, 30);
-            this.pb_dnsPicture.Name = "pb_dnsPicture";
-            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.pb_dnsPicture.Size = new System.Drawing.Size(48, 48);
-            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_dnsPicture.TabIndex = 13;
-            this.pb_dnsPicture.TabStop = false;
+            this.btn_refresh.Animated = true;
+            this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
+            this.btn_refresh.BorderRadius = 15;
+            this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_refresh.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_refresh.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_refresh.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btn_refresh.ForeColor = System.Drawing.Color.White;
+            this.btn_refresh.ImageOffset = new System.Drawing.Point(-10, 0);
+            this.btn_refresh.Location = new System.Drawing.Point(578, 12);
+            this.btn_refresh.Name = "btn_refresh";
+            this.btn_refresh.Size = new System.Drawing.Size(144, 43);
+            this.btn_refresh.TabIndex = 0;
+            this.btn_refresh.Text = "Refresh";
+            this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);
             // 
             // frm_explore
             // 
@@ -265,6 +287,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
+            this.Controls.Add(this.btn_refresh);
             this.Controls.Add(this.btn_openServices);
             this.Controls.Add(this.btn_previous);
             this.Controls.Add(this.btn_next);
@@ -279,10 +302,10 @@
             this.Text = "Explore";
             this.Load += new System.EventHandler(this.frm_explore_Load);
             this.pnl_cardDns.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btn_next)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.btn_next)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -302,5 +325,6 @@
         private Guna.UI2.WinForms.Guna2CircleButton btn_removeDNS;
         private Guna.UI2.WinForms.Guna2Button btn_openServices;
         private Guna.UI2.WinForms.Guna2Shapes guna2Shapes1;
+        private Guna.UI2.WinForms.Guna2Button btn_refresh;
     }
 }
