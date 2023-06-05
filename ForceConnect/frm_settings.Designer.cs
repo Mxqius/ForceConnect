@@ -34,21 +34,23 @@
             this.lbl_automaticUpdate = new System.Windows.Forms.Label();
             this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_launchOnWindows = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lbl_descriptionOption2 = new System.Windows.Forms.Label();
             this.lbl_descriptionOption1 = new System.Windows.Forms.Label();
             this.cb_selectDns = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // guna2Panel1
             // 
             this.guna2Panel1.BorderRadius = 15;
+            this.guna2Panel1.Controls.Add(this.guna2Shapes1);
             this.guna2Panel1.Controls.Add(this.cb_autoUpdate);
             this.guna2Panel1.Controls.Add(this.cb_launchOnWindows);
             this.guna2Panel1.Controls.Add(this.lbl_automaticUpdate);
             this.guna2Panel1.Controls.Add(this.btn_updateSofware);
             this.guna2Panel1.Controls.Add(this.lbl_launchOnWindows);
-            this.guna2Panel1.Controls.Add(this.label1);
+            this.guna2Panel1.Controls.Add(this.lbl_descriptionOption2);
             this.guna2Panel1.Controls.Add(this.lbl_descriptionOption1);
             this.guna2Panel1.Controls.Add(this.cb_selectDns);
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
@@ -69,7 +71,7 @@
             this.cb_autoUpdate.CheckedState.InnerBorderRadius = 7;
             this.cb_autoUpdate.CheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_autoUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_autoUpdate.Location = new System.Drawing.Point(24, 202);
+            this.cb_autoUpdate.Location = new System.Drawing.Point(19, 190);
             this.cb_autoUpdate.Name = "cb_autoUpdate";
             this.cb_autoUpdate.Size = new System.Drawing.Size(55, 24);
             this.cb_autoUpdate.TabIndex = 23;
@@ -79,7 +81,7 @@
             this.cb_autoUpdate.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.cb_autoUpdate.UncheckedState.InnerBorderRadius = 7;
             this.cb_autoUpdate.UncheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_autoUpdate.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
+            this.cb_autoUpdate.CheckedChanged += new System.EventHandler(this.cb_autoUpdate_CheckedChanged);
             // 
             // cb_launchOnWindows
             // 
@@ -93,7 +95,7 @@
             this.cb_launchOnWindows.CheckedState.InnerBorderRadius = 7;
             this.cb_launchOnWindows.CheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_launchOnWindows.Location = new System.Drawing.Point(24, 111);
+            this.cb_launchOnWindows.Location = new System.Drawing.Point(19, 99);
             this.cb_launchOnWindows.Name = "cb_launchOnWindows";
             this.cb_launchOnWindows.Size = new System.Drawing.Size(55, 24);
             this.cb_launchOnWindows.TabIndex = 23;
@@ -112,7 +114,7 @@
             this.lbl_automaticUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_automaticUpdate.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_automaticUpdate.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_automaticUpdate.Location = new System.Drawing.Point(85, 202);
+            this.lbl_automaticUpdate.Location = new System.Drawing.Point(80, 190);
             this.lbl_automaticUpdate.Name = "lbl_automaticUpdate";
             this.lbl_automaticUpdate.Size = new System.Drawing.Size(239, 28);
             this.lbl_automaticUpdate.TabIndex = 21;
@@ -131,11 +133,12 @@
             this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
-            this.btn_updateSofware.Location = new System.Drawing.Point(21, 278);
+            this.btn_updateSofware.Location = new System.Drawing.Point(27, 279);
             this.btn_updateSofware.Name = "btn_updateSofware";
-            this.btn_updateSofware.Size = new System.Drawing.Size(163, 45);
+            this.btn_updateSofware.Size = new System.Drawing.Size(156, 44);
             this.btn_updateSofware.TabIndex = 22;
             this.btn_updateSofware.Text = "Check Update";
+            this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
             // 
             // lbl_launchOnWindows
             // 
@@ -144,32 +147,32 @@
             this.lbl_launchOnWindows.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_launchOnWindows.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_launchOnWindows.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_launchOnWindows.Location = new System.Drawing.Point(85, 111);
+            this.lbl_launchOnWindows.Location = new System.Drawing.Point(80, 99);
             this.lbl_launchOnWindows.Name = "lbl_launchOnWindows";
             this.lbl_launchOnWindows.Size = new System.Drawing.Size(239, 28);
             this.lbl_launchOnWindows.TabIndex = 21;
             this.lbl_launchOnWindows.Text = "Launch On Windows";
             this.lbl_launchOnWindows.Click += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
             // 
-            // label1
+            // lbl_descriptionOption2
             // 
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label1.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.label1.Location = new System.Drawing.Point(31, 239);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(385, 36);
-            this.label1.TabIndex = 21;
-            this.label1.Text = "Download and Install Automaticly Updates";
+            this.lbl_descriptionOption2.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_descriptionOption2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lbl_descriptionOption2.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_descriptionOption2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.lbl_descriptionOption2.Location = new System.Drawing.Point(26, 227);
+            this.lbl_descriptionOption2.Name = "lbl_descriptionOption2";
+            this.lbl_descriptionOption2.Size = new System.Drawing.Size(385, 36);
+            this.lbl_descriptionOption2.TabIndex = 21;
+            this.lbl_descriptionOption2.Text = "Download and Install Automaticly Updates";
             // 
             // lbl_descriptionOption1
             // 
             this.lbl_descriptionOption1.BackColor = System.Drawing.Color.Transparent;
             this.lbl_descriptionOption1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.lbl_descriptionOption1.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_descriptionOption1.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_descriptionOption1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.lbl_descriptionOption1.Location = new System.Drawing.Point(31, 143);
+            this.lbl_descriptionOption1.Location = new System.Drawing.Point(26, 132);
             this.lbl_descriptionOption1.Name = "lbl_descriptionOption1";
             this.lbl_descriptionOption1.Size = new System.Drawing.Size(399, 52);
             this.lbl_descriptionOption1.TabIndex = 21;
@@ -199,6 +202,20 @@
             this.cb_selectDns.StartIndex = 0;
             this.cb_selectDns.TabIndex = 19;
             // 
+            // guna2Shapes1
+            // 
+            this.guna2Shapes1.BorderThickness = 0;
+            this.guna2Shapes1.FillColor = System.Drawing.Color.Silver;
+            this.guna2Shapes1.LineThickness = 1;
+            this.guna2Shapes1.Location = new System.Drawing.Point(11, 259);
+            this.guna2Shapes1.Name = "guna2Shapes1";
+            this.guna2Shapes1.PolygonSkip = 1;
+            this.guna2Shapes1.Rotate = 0F;
+            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Line;
+            this.guna2Shapes1.Size = new System.Drawing.Size(404, 10);
+            this.guna2Shapes1.TabIndex = 24;
+            this.guna2Shapes1.Zoom = 100;
+            // 
             // frm_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -222,11 +239,12 @@
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2ComboBox cb_selectDns;
         private System.Windows.Forms.Label lbl_descriptionOption1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbl_descriptionOption2;
         private Guna.UI2.WinForms.Guna2Button btn_updateSofware;
         private Guna.UI2.WinForms.Guna2ToggleSwitch cb_launchOnWindows;
         private System.Windows.Forms.Label lbl_launchOnWindows;
         private Guna.UI2.WinForms.Guna2ToggleSwitch cb_autoUpdate;
         private System.Windows.Forms.Label lbl_automaticUpdate;
+        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes1;
     }
 }

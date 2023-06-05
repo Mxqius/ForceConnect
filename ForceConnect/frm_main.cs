@@ -1,11 +1,10 @@
 ﻿using ForceConnect.API;
-using ForceConnect.Services;
+using ForceConnect.Launch;
 using ForceConnect.Services;
 using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -58,7 +57,10 @@ namespace ForceConnect
             if (Latency.MeasureLatency("google.com") == -1)
                 changeAppStatus(false);
             else
+            {
                 changeAppStatus(true);
+                checkAutoUpdate();
+            }
         }
         private void changeAppStatus(bool internetConnection)
         {
@@ -190,15 +192,23 @@ namespace ForceConnect
         }
         private async void disconnectFromApp()
         {
-            Guna2MessageDialog message = new Guna2MessageDialog()
+            //Guna2MessageDialog message = new Guna2MessageDialog()
+            //{
+            //    Buttons = MessageDialogButtons.YesNo,
+            //    Icon = MessageDialogIcon.Warning,
+            //    Style = MessageDialogStyle.Dark,
+            //    Text = "If you leave the program, your DNS will be disabled. Are you sure?",
+            //    Caption = "Exit Program"
+            //};
+            frm_messageBox message = new frm_messageBox()
             {
-                Buttons = MessageDialogButtons.YesNo,
-                Icon = MessageDialogIcon.Warning,
-                Style = MessageDialogStyle.Dark,
-                Text = "If you leave the program, your DNS will be disabled. Are you sure?",
-                Caption = "Exit Program"
+                MessageText = "If you leave the program, your DNS will be disabled. Are you sure?",
+                MessageCaption = "Exit",
+                MessageButtons = frm_messageBox.Buttons.YesNo,
+                MessageIcon = frm_messageBox.Icon.Warning
             };
-            if (message.Show() == DialogResult.No)
+
+            if (message.ShowMessage() == DialogResult.No)
                 return;
 
             if (_connected)
@@ -236,6 +246,40 @@ namespace ForceConnect
         {
 
             return lbl_message.Text = "VERSION " + version.Major + "." + version.Minor;
+        }
+        private async Task<string> getLastestVersionApplication()
+        {
+            return await Task.Run(() =>
+            {
+                return LaunchUpdate.GetLatestVersionFromGitHub("Mxqius", "ForceConnect"); ;
+            });
+        }
+        private async void checkAutoUpdate()
+        {
+            string isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
+            if (isAutoUpdate == "false" || isAutoUpdate == null) return;
+            string lastestVersion = await getLastestVersionApplication();
+            bool updateAvailable = LaunchUpdate.IsUpdateAvailable(lastestVersion, LaunchUpdate.getVersionApplication().ToString());
+            if (updateAvailable)
+            {
+                new frm_messageBox()
+                {
+                    MessageText = $"Update is available v{lastestVersion}",
+                    MessageCaption = "Update Log",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Success
+                }.ShowMessage();
+            }
+            else
+            {
+                new frm_messageBox()
+                {
+                    MessageText = $"Update is not available v{lastestVersion}",
+                    MessageCaption = "Update Log",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Error
+                }.ShowMessage();
+            }
         }
         private void frm_main_Load(object sender, EventArgs e)
         {

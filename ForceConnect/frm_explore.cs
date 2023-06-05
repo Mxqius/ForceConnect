@@ -22,7 +22,7 @@ namespace ForceConnect
         }
         private async Task<bool> updateList()
         {
-            return await Task.Run(async () =>
+            return await Task.Run(() =>
             {
                 listOfDNS.Clear();
                 listOfDNS.AddRange(DnsAddressItems.GetServicesUser());
@@ -58,28 +58,22 @@ namespace ForceConnect
                 return Latency.MeasureLatency(address);
             });
         }
-        private async Task<bool> changeInformationCardDNS(DnsAddress DNS)
+
+        private async void changeInformationCardDNS(DnsAddress DNS)
         {
-            return await Task.Run(async () =>
-            {
-                long latency = await getLatencyDNS(DNS.dnsAddress[0]);
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    lbl_name.Text = DNS.Name;
-                    if (DNS.dnsAddress.Length > 1)
-                        lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
-                    else
-                        lbl_previewAddress.Text = DNS.dnsAddress[0];
-                    pb_dnsPicture.Image = DNS.Picture;
-                    lbl_latency.Text = latency.ToString() + " ms";
-                    updateLatencyPicture();
-                }));
-                return true;
-            });
+            long latency = await getLatencyDNS(DNS.dnsAddress[0]);
+            lbl_name.Text = DNS.Name;
+            if (DNS.dnsAddress.Length > 1)
+                lbl_previewAddress.Text = DNS.dnsAddress[0] + " " + DNS.dnsAddress[1];
+            else
+                lbl_previewAddress.Text = DNS.dnsAddress[0];
+            pb_dnsPicture.Image = DNS.Picture;
+            lbl_latency.Text = latency.ToString() + " ms";
+            updateLatencyPicture();
         }
-        private async void frm_explore_Load(object sender, EventArgs e)
+        private  void frm_explore_Load(object sender, EventArgs e)
         {
-            await changeInformationCardDNS(listOfDNS[currentIndex]);
+            changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
         }
         private void updateCounter()
@@ -87,19 +81,19 @@ namespace ForceConnect
             lbl_counter.Text = $"{currentIndex + 1} / {listOfDNS.Count}";
         }
 
-        private async void btn_next_Click(object sender, EventArgs e)
+        private  void btn_next_Click(object sender, EventArgs e)
         {
             if (currentIndex < listOfDNS.Count - 1) currentIndex++;
             else currentIndex = 0;
-            await changeInformationCardDNS(listOfDNS[currentIndex]);
+            changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
         }
 
-        private async void btn_previous_Click(object sender, EventArgs e)
+        private  void btn_previous_Click(object sender, EventArgs e)
         {
             if (currentIndex > 0) currentIndex--;
             else currentIndex = (byte)((byte)listOfDNS.Count - 1);
-            await changeInformationCardDNS(listOfDNS[currentIndex]);
+            changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
         }
 
@@ -109,7 +103,7 @@ namespace ForceConnect
             {
                 await updateList();
                 currentIndex = ((byte)(listOfDNS.Count - 1));
-                await changeInformationCardDNS(listOfDNS[currentIndex]);
+                changeInformationCardDNS(listOfDNS[currentIndex]);
             }
 
         }

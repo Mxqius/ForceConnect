@@ -235,4 +235,16 @@
   <data name="dns" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\dns.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="errorMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\messageBoxIcons\error.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="infoMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\messageBoxIcons\info.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="successMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\messageBoxIcons\success.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="warningMessage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\messageBoxIcons\warning.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

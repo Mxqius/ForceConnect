@@ -1,21 +1,19 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ForceConnect.Launch
 {
     internal class LaunchUpdate
     {
-        public string GetLatestVersionFromGitHub(string repositoryOwner, string repositoryName)
+        public static string GetLatestVersionFromGitHub(string repositoryOwner, string repositoryName)
         {
             try
             {
                 string apiUrl = $"https://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases/latest";
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(apiUrl);
                 request.UserAgent = "Mozilla/5.0";
                 string responseJson;
@@ -28,27 +26,40 @@ namespace ForceConnect.Launch
                 }
 
                 dynamic release = JsonConvert.DeserializeObject(responseJson);
-                string latestVersion = release.tag_name;
+                string name = release.name;
+                // Use name to get version of release
+                string latestVersion = name.Split(' ')[1];
                 return latestVersion;
             }
             catch
             {
-                return "ERROR"; 
+                return "ERROR";
             }
         }
-        public bool IsUpdateAvailable(string latestVersion, string currentVersion)
+        public static bool IsUpdateAvailable(string latestVersion, string currentVersion)
         {
-            Version latest = new Version(latestVersion);
-            Version current = new Version(currentVersion);
+            try
+            {
+                Version latest = new Version(latestVersion);
+                Version current = new Version(currentVersion);
 
-            return latest > current;
+                return latest > current;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        public void DownloadUpdate(string repositoryOwner, string repositoryName, string downloadUrl, string savePath)
+        public static void DownloadUpdate(string repositoryOwner, string repositoryName, string downloadUrl, string savePath)
         {
             using (WebClient client = new WebClient())
             {
                 client.DownloadFile(downloadUrl, savePath);
             }
+        }
+        public static Version getVersionApplication()
+        {
+            return Version.Parse(Application.ProductVersion);
         }
     }
 }
