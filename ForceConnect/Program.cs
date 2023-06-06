@@ -21,7 +21,20 @@ namespace ForceConnect
             SetProcessDPIAware();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frm_main());
+            try
+            {
+                Application.Run(new frm_main());
+            }
+            catch
+            {
+              new frm_messageBox()
+                {
+                    MessageText = "An error occurred during program execution",
+                    MessageCaption = "Error",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Error
+                }.ShowMessage();
+            }
         }
     }
 }

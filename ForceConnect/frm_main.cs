@@ -24,6 +24,7 @@ namespace ForceConnect
         private byte currentSelectedIndexComboBox = 0;
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
+        private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         public frm_main()
         {
             InitializeComponent();
@@ -52,14 +53,18 @@ namespace ForceConnect
                 cb_selectDns.Items.Add(dns.Name);
             }
         }
-        private void checkInternetConnection()
+        private async void checkInternetConnection()
         {
-            if (Latency.MeasureLatency("google.com") == -1)
+            if (await getLatencyDNS("google.com") == -1)
+            {
                 changeAppStatus(false);
+                updateLatencyPicture();
+            }
+
             else
             {
                 changeAppStatus(true);
-                checkAutoUpdate();
+                updateLatencyPicture();
             }
         }
         private void changeAppStatus(bool internetConnection)
@@ -73,7 +78,7 @@ namespace ForceConnect
         }
         public async Task<bool> delay(int milisecound)
         {
-            return await Task<bool>.Run(() =>
+            return await Task.Run(() =>
             {
                 Thread.Sleep(milisecound);
                 return true;
@@ -119,7 +124,7 @@ namespace ForceConnect
 
             showInformation();
         }
-        private async void showInformation()
+        private void showInformation()
         {
             pb_dnsPicture.Image = currentDNS.Picture;
             lbl_latency.Text = currentDNS.Latency.ToString() + " ms";
@@ -131,11 +136,12 @@ namespace ForceConnect
 
             if (_internetConnection)
             {
-                await syncLatencyDNS();
+                syncLatencyDNS();
                 updateLatencyPicture();
             }
             else
                 lbl_latency.Text = "-1 ms";
+            checkInternetConnection();
         }
 
         private void pnl_control_MouseDown(object sender, MouseEventArgs e)
@@ -166,28 +172,24 @@ namespace ForceConnect
             await delay(1000);
             lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
         }
-        private async Task<bool> syncLatency()
+        private async Task<long> getLatencyDNS(string address)
         {
             return await Task.Run(() =>
             {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    lbl_latency.Text = Latency.MeasureLatency("google.com").ToString() + " ms";
-                }));
-                return true;
+                return Latency.MeasureLatency(address);
             });
+        }
+        private async void syncLatency()
+        {
+
+            long latency = await getLatencyDNS("google.com");
+            lbl_latency.Text = latency.ToString() + " ms";
 
         }
-        private async Task<bool> syncLatencyDNS()
+        private async void syncLatencyDNS()
         {
-            return await Task.Run(() =>
-            {
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    lbl_latency.Text = Latency.MeasureLatency(currentDNS.dnsAddress[0]).ToString() + " ms";
-                }));
-                return true;
-            });
+            long latency = await getLatencyDNS(currentDNS.dnsAddress[0]);
+            lbl_latency.Text = latency.ToString() + " ms";
 
         }
         private async void disconnectFromApp()
@@ -235,11 +237,14 @@ namespace ForceConnect
 
         }
 
-        private async void btn_sync_Click(object sender, EventArgs e)
+        private void btn_sync_Click(object sender, EventArgs e)
         {
-            await syncLatency();
+            if (pendingRequest) return;
+            pendingRequest = true;
+            syncLatency();
             updateLatencyPicture();
             checkInternetConnection();
+            pendingRequest = false;
         }
 
         private string updateVersion()
@@ -256,31 +261,55 @@ namespace ForceConnect
         }
         private async void checkAutoUpdate()
         {
+            if (await getLatencyDNS("google.com") == -1) return;
             string isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
             if (isAutoUpdate == "false" || isAutoUpdate == null) return;
             string lastestVersion = await getLastestVersionApplication();
             bool updateAvailable = LaunchUpdate.IsUpdateAvailable(lastestVersion, LaunchUpdate.getVersionApplication().ToString());
             if (updateAvailable)
             {
-                new frm_messageBox()
+                //timer_updateCheck.Enabled = true;
+                DialogResult result = new frm_messageBox()
                 {
-                    MessageText = $"Update is available v{lastestVersion}",
-                    MessageCaption = "Update Log",
-                    MessageButtons = frm_messageBox.Buttons.OK,
-                    MessageIcon = frm_messageBox.Icon.Success
+                    MessageText = $"Update is available, Would you like to download and install it? v{lastestVersion}",
+                    MessageCaption = "Update Check",
+                    MessageButtons = frm_messageBox.Buttons.YesNo,
+                    MessageIcon = frm_messageBox.Icon.Info
                 }.ShowMessage();
-            }
-            else
-            {
-                new frm_messageBox()
+                if (result == DialogResult.Yes)
                 {
-                    MessageText = $"Update is not available v{lastestVersion}",
-                    MessageCaption = "Update Log",
-                    MessageButtons = frm_messageBox.Buttons.OK,
-                    MessageIcon = frm_messageBox.Icon.Error
-                }.ShowMessage();
+                    pendingRequest = true;
+                    wp_dnsProgress.Visible = true;
+                    wp_dnsProgress.Start();
+                    lbl_status.Text = "DOWNLOADING UPDATE";
+                    string download_url = await getLastestVersionDownlaodUrl();
+                    string savePath = Application.StartupPath + "\\ForceConnect_Update.exe";
+                    await DownloadUpdateTask(download_url, savePath);
+                    wp_dnsProgress.Visible = false;
+                    wp_dnsProgress.Stop();
+                    lbl_status.Text = "UPDATING COMPLETED";
+                    await delay(1000);
+                    lbl_status.Text = (_connected) ? "CLICK TO DISCONNECT" : "CLICK TO CONNECT";
+                    pendingRequest = false;
+                }
             }
         }
+        private async Task DownloadUpdateTask(string download_url, string savePath)
+        {
+            await Task.Run(() =>
+           {
+               LaunchUpdate.DownloadUpdate(download_url, savePath);
+           });
+        }
+
+        private async Task<string> getLastestVersionDownlaodUrl()
+        {
+            return await Task.Run(() =>
+            {
+                return LaunchUpdate.GetLastestVersionDownloadUrl(_repositoryOwner, _repositoryName);
+            });
+        }
+
         private void frm_main_Load(object sender, EventArgs e)
         {
             updateDNSBox();
@@ -288,6 +317,7 @@ namespace ForceConnect
             currentFormLoaded = this;
             changeServer();
             checkInternetConnection();
+            checkAutoUpdate();
         }
         private void updateLatencyPicture()
         {
@@ -307,11 +337,8 @@ namespace ForceConnect
                 pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                wp_dnsProgress.Invoke(new MethodInvoker(delegate
-                {
-                    wp_dnsProgress.Visible = true;
-                    wp_dnsProgress.Start();
-                }));
+                wp_dnsProgress.Visible = true;
+                wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
                 await delay(3000);
@@ -320,13 +347,10 @@ namespace ForceConnect
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
                 lbl_status.Text = "CLICK TO DISCONNECT";
-                wp_dnsProgress.Invoke(new MethodInvoker(delegate
-                {
-                    wp_dnsProgress.Visible = false;
-                    wp_dnsProgress.Stop();
-                }));
+                wp_dnsProgress.Visible = false;
+                wp_dnsProgress.Stop();
                 // Sync Latency
-                await syncLatency();
+                syncLatency();
                 updateLatencyPicture();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
@@ -338,11 +362,8 @@ namespace ForceConnect
                 pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                wp_dnsProgress.Invoke(new MethodInvoker(delegate
-                {
-                    wp_dnsProgress.Visible = true;
-                    wp_dnsProgress.Start();
-                }));
+                wp_dnsProgress.Visible = true;
+                wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Disconnecting";
                 lbl_status.Text = "RESTORING";
                 await delay(3000);
@@ -351,13 +372,10 @@ namespace ForceConnect
                 updateVersion();
                 lbl_dnsStatus.Text = "Disconnected";
                 lbl_status.Text = "CLICK TO CONNECT";
-                wp_dnsProgress.Invoke(new MethodInvoker(delegate
-                {
-                    wp_dnsProgress.Visible = false;
-                    wp_dnsProgress.Stop();
-                }));
+                wp_dnsProgress.Visible = false;
+                wp_dnsProgress.Stop();
                 // Sync Latency           
-                await syncLatency();
+                syncLatency();
                 updateLatencyPicture();
                 btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);

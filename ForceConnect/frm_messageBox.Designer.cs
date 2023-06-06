@@ -196,7 +196,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Title";
+            this.Text = "MessageBox";
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).EndInit();
             this.guna2Panel1.ResumeLayout(false);
             this.ResumeLayout(false);

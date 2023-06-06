@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
+            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.cb_autoUpdate = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.cb_launchOnWindows = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.lbl_automaticUpdate = new System.Windows.Forms.Label();
@@ -37,7 +38,6 @@
             this.lbl_descriptionOption2 = new System.Windows.Forms.Label();
             this.lbl_descriptionOption1 = new System.Windows.Forms.Label();
             this.cb_selectDns = new Guna.UI2.WinForms.Guna2ComboBox();
-            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,6 +58,20 @@
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(433, 339);
             this.guna2Panel1.TabIndex = 0;
+            // 
+            // guna2Shapes1
+            // 
+            this.guna2Shapes1.BorderThickness = 0;
+            this.guna2Shapes1.FillColor = System.Drawing.Color.Silver;
+            this.guna2Shapes1.LineThickness = 1;
+            this.guna2Shapes1.Location = new System.Drawing.Point(0, 259);
+            this.guna2Shapes1.Name = "guna2Shapes1";
+            this.guna2Shapes1.PolygonSkip = 1;
+            this.guna2Shapes1.Rotate = 0F;
+            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Line;
+            this.guna2Shapes1.Size = new System.Drawing.Size(433, 10);
+            this.guna2Shapes1.TabIndex = 24;
+            this.guna2Shapes1.Zoom = 100;
             // 
             // cb_autoUpdate
             // 
@@ -105,7 +119,6 @@
             this.cb_launchOnWindows.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.cb_launchOnWindows.UncheckedState.InnerBorderRadius = 7;
             this.cb_launchOnWindows.UncheckedState.InnerColor = System.Drawing.Color.White;
-            this.cb_launchOnWindows.CheckedChanged += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
             // 
             // lbl_automaticUpdate
             // 
@@ -119,6 +132,7 @@
             this.lbl_automaticUpdate.Size = new System.Drawing.Size(239, 28);
             this.lbl_automaticUpdate.TabIndex = 21;
             this.lbl_automaticUpdate.Text = "Automatic Update";
+            this.lbl_automaticUpdate.Click += new System.EventHandler(this.lbl_automaticUpdate_Click);
             // 
             // btn_updateSofware
             // 
@@ -137,7 +151,7 @@
             this.btn_updateSofware.Name = "btn_updateSofware";
             this.btn_updateSofware.Size = new System.Drawing.Size(156, 44);
             this.btn_updateSofware.TabIndex = 22;
-            this.btn_updateSofware.Text = "Check Update";
+            this.btn_updateSofware.Text = "Check Updates";
             this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
             // 
             // lbl_launchOnWindows
@@ -152,7 +166,7 @@
             this.lbl_launchOnWindows.Size = new System.Drawing.Size(239, 28);
             this.lbl_launchOnWindows.TabIndex = 21;
             this.lbl_launchOnWindows.Text = "Launch On Windows";
-            this.lbl_launchOnWindows.Click += new System.EventHandler(this.cb_launchOnWindows_CheckedChanged);
+            this.lbl_launchOnWindows.Click += new System.EventHandler(this.lbl_launchOnWindows_Click);
             // 
             // lbl_descriptionOption2
             // 
@@ -201,20 +215,6 @@
             this.cb_selectDns.Size = new System.Drawing.Size(408, 46);
             this.cb_selectDns.StartIndex = 0;
             this.cb_selectDns.TabIndex = 19;
-            // 
-            // guna2Shapes1
-            // 
-            this.guna2Shapes1.BorderThickness = 0;
-            this.guna2Shapes1.FillColor = System.Drawing.Color.Silver;
-            this.guna2Shapes1.LineThickness = 1;
-            this.guna2Shapes1.Location = new System.Drawing.Point(11, 259);
-            this.guna2Shapes1.Name = "guna2Shapes1";
-            this.guna2Shapes1.PolygonSkip = 1;
-            this.guna2Shapes1.Rotate = 0F;
-            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Line;
-            this.guna2Shapes1.Size = new System.Drawing.Size(404, 10);
-            this.guna2Shapes1.TabIndex = 24;
-            this.guna2Shapes1.Zoom = 100;
             // 
             // frm_settings
             // 

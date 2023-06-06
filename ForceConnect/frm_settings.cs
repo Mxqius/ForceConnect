@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,7 @@ namespace ForceConnect
     {
         private bool _launchOnWindows, initilizeWait, checkingUpdate;
         private string _isAutoUpdate;
+        private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         public frm_settings()
         {
             InitializeComponent();
@@ -38,7 +41,14 @@ namespace ForceConnect
         {
             return await Task.Run(() =>
             {
-                return LaunchUpdate.GetLatestVersionFromGitHub("Mxqius", "ForceConnect"); ;
+                return LaunchUpdate.GetLatestVersionFromGitHub(_repositoryOwner, _repositoryName); ;
+            });
+        }
+        private async Task<string> getLastestVersionDownlaodUrl()
+        {
+            return await Task.Run(() =>
+            {
+                return LaunchUpdate.GetLastestVersionDownloadUrl(_repositoryOwner, _repositoryName);
             });
         }
         public async Task<bool> delay(int milisecound)
@@ -60,6 +70,16 @@ namespace ForceConnect
                 RegistryApplication.SaveData("AutoUpdate", "false");
         }
 
+        private void lbl_automaticUpdate_Click(object sender, EventArgs e)
+        {
+            cb_autoUpdate.Checked = !cb_autoUpdate.Checked;
+        }
+
+        private void lbl_launchOnWindows_Click(object sender, EventArgs e)
+        {
+            cb_launchOnWindows.Checked = !cb_launchOnWindows.Checked;
+        }
+
         private async void btn_updateSofware_Click(object sender, EventArgs e)
         {
             if (checkingUpdate) return;
@@ -72,22 +92,32 @@ namespace ForceConnect
             bool updateAvailable = LaunchUpdate.IsUpdateAvailable(lastestVersion, LaunchUpdate.getVersionApplication().ToString());
             if (updateAvailable)
             {
-                new frm_messageBox()
+                DialogResult result = new frm_messageBox()
                 {
-                    MessageText = $"Update is available v{lastestVersion}",
-                    MessageCaption = "Update Log",
-                    MessageButtons = frm_messageBox.Buttons.OK,
-                    MessageIcon = frm_messageBox.Icon.Success
+                    MessageText = $"Update is available, Would you like to download and install it? v{lastestVersion}",
+                    MessageCaption = "Update Check",
+                    MessageButtons = frm_messageBox.Buttons.YesNo,
+                    MessageIcon = frm_messageBox.Icon.Info
                 }.ShowMessage();
+                if (result == DialogResult.Yes)
+                {
+                    btn_updateSofware.Text = "Downloading..";
+                    string download_url = await getLastestVersionDownlaodUrl();
+                    string savePath = Application.StartupPath + "\\ForceConnect_Update.exe";
+                    LaunchUpdate.DownloadUpdate(download_url, savePath);
+                    btn_updateSofware.Text = "Completed";
+                    await delay(1000);
+                    btn_updateSofware.Text = "Check Updates";
+                }
             }
             else
             {
                 new frm_messageBox()
                 {
-                    MessageText = $"Update is not available v{lastestVersion}",
-                    MessageCaption = "Update Log",
+                    MessageText = $"You are updated to the latest version of the program. Enjoy❤️",
+                    MessageCaption = "Update Check",
                     MessageButtons = frm_messageBox.Buttons.OK,
-                    MessageIcon = frm_messageBox.Icon.Error
+                    MessageIcon = frm_messageBox.Icon.Success
                 }.ShowMessage();
             }
         }
