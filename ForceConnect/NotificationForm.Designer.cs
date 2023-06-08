@@ -33,6 +33,8 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.progressNotification = new Guna.UI2.WinForms.Guna2ProgressBar();
+            this.timerProgress = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -72,11 +74,27 @@
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
+            // progressNotification
+            // 
+            this.progressNotification.Location = new System.Drawing.Point(1, 68);
+            this.progressNotification.Name = "progressNotification";
+            this.progressNotification.Size = new System.Drawing.Size(350, 10);
+            this.progressNotification.TabIndex = 4;
+            this.progressNotification.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
+            this.progressNotification.Value = 100;
+            // 
+            // timerProgress
+            // 
+            this.timerProgress.Enabled = true;
+            this.timerProgress.Interval = 500;
+            this.timerProgress.Tick += new System.EventHandler(this.timerProgress_Tick);
+            // 
             // NotificationForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Highlight;
             this.ClientSize = new System.Drawing.Size(347, 74);
+            this.Controls.Add(this.progressNotification);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblMsg);
@@ -98,5 +116,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         internal System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private Guna.UI2.WinForms.Guna2ProgressBar progressNotification;
+        private System.Windows.Forms.Timer timerProgress;
     }
 }

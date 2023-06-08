@@ -36,11 +36,6 @@ namespace ForceConnect
 
         private int x, y;
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             switch (this.action)
@@ -83,6 +78,11 @@ namespace ForceConnect
             action = enmAction.close;
         }
 
+        private void timerProgress_Tick(object sender, EventArgs e)
+        {
+            progressNotification.Value -= 10;
+        }
+
         public void showAlert(string msg, enmType type)
         {
             this.Opacity = 0.0;
@@ -112,18 +112,22 @@ namespace ForceConnect
                 case enmType.Success:
                     this.pictureBox1.Image = Resources.success;
                     this.BackColor = Color.SeaGreen;
+                    progressNotification.ProgressColor = progressNotification.ProgressColor2 = Color.SeaGreen;
                     break;
                 case enmType.Error:
                     this.pictureBox1.Image = Resources.error;
                     this.BackColor = Color.DarkRed;
+                    progressNotification.ProgressColor = progressNotification.ProgressColor2 = Color.DarkRed;
                     break;
                 case enmType.Info:
                     this.pictureBox1.Image = Resources.info;
                     this.BackColor = Color.RoyalBlue;
+                    progressNotification.ProgressColor = progressNotification.ProgressColor2 = Color.RoyalBlue;
                     break;
                 case enmType.Warning:
                     this.pictureBox1.Image = Resources.warning;
                     this.BackColor = Color.DarkOrange;
+                    progressNotification.ProgressColor = progressNotification.ProgressColor2 = Color.DarkOrange;
                     break;
             }
 
