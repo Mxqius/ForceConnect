@@ -22,6 +22,7 @@ namespace ForceConnect
         public Form currentFormLoaded;
 
         private byte currentSelectedIndexComboBox = 0;
+        private long _currentLatency = 0;
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
@@ -56,16 +57,11 @@ namespace ForceConnect
         private async void checkInternetConnection()
         {
             if (await getLatencyDNS("google.com") == -1)
-            {
                 changeAppStatus(false);
-                updateLatencyPicture();
-            }
-
             else
-            {
                 changeAppStatus(true);
-                updateLatencyPicture();
-            }
+
+            updateLatencyPicture();
         }
         private void changeAppStatus(bool internetConnection)
         {
@@ -127,7 +123,6 @@ namespace ForceConnect
         private void showInformation()
         {
             pb_dnsPicture.Image = currentDNS.Picture;
-            lbl_latency.Text = currentDNS.Latency.ToString() + " ms";
             lbl_name.Text = currentDNS.Name;
             if (currentDNS.dnsAddress.Length > 1)
                 lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
@@ -135,10 +130,7 @@ namespace ForceConnect
                 lbl_previewAddress.Text = currentDNS.dnsAddress[0];
 
             if (_internetConnection)
-            {
                 syncLatencyDNS();
-                updateLatencyPicture();
-            }
             else
                 lbl_latency.Text = "-1 ms";
             checkInternetConnection();
@@ -182,14 +174,14 @@ namespace ForceConnect
         private async void syncLatency()
         {
 
-            long latency = await getLatencyDNS("google.com");
-            lbl_latency.Text = latency.ToString() + " ms";
+            _currentLatency = await getLatencyDNS("google.com");
+            lbl_latency.Text = _currentLatency.ToString() + " ms";
 
         }
         private async void syncLatencyDNS()
         {
-            long latency = await getLatencyDNS(currentDNS.dnsAddress[0]);
-            lbl_latency.Text = latency.ToString() + " ms";
+            _currentLatency = await getLatencyDNS(currentDNS.dnsAddress[0]);
+            lbl_latency.Text = _currentLatency.ToString() + " ms";
 
         }
         private async void disconnectFromApp()
@@ -202,6 +194,7 @@ namespace ForceConnect
             //    Text = "If you leave the program, your DNS will be disabled. Are you sure?",
             //    Caption = "Exit Program"
             //};
+            pendingRequest = true;
             frm_messageBox message = new frm_messageBox()
             {
                 MessageText = "If you leave the program, your DNS will be disabled. Are you sure?",
@@ -230,6 +223,8 @@ namespace ForceConnect
                 wp_dnsProgress.Stop();
                 iconConnect.Image = Properties.Resources.connectIcon;
             }
+            wp_dnsProgress.Visible = true;
+            wp_dnsProgress.Start();
             lbl_status.Text = "CLOSING THE PROGRAM";
             await delay(2000);
             this.Close();
@@ -242,7 +237,6 @@ namespace ForceConnect
             if (pendingRequest) return;
             pendingRequest = true;
             syncLatency();
-            updateLatencyPicture();
             checkInternetConnection();
             pendingRequest = false;
         }
@@ -313,21 +307,22 @@ namespace ForceConnect
         private void frm_main_Load(object sender, EventArgs e)
         {
             updateDNSBox();
+            cb_selectDns.SelectedIndexChanged -= cb_selectDns_SelectedIndexChanged;
             cb_selectDns.SelectedIndex = 0;
+            cb_selectDns.SelectedIndexChanged += cb_selectDns_SelectedIndexChanged;
             currentFormLoaded = this;
             changeServer();
-            checkInternetConnection();
             checkAutoUpdate();
         }
         private void updateLatencyPicture()
         {
-            int latency = int.Parse(lbl_latency.Text.Split(' ')[0]);
-            if (latency >= 180 || latency == -1)
-                pb_latencyPicture.Image = Properties.Resources.signalRed;
-            else if (latency >= 120)
+            //new NotificationForm().showAlert($"{_currentLatency} Latency", NotificationForm.enmType.Success);
+            if (_currentLatency > 1 && _currentLatency <= 120)
+                pb_latencyPicture.Image = Properties.Resources.signalGreen;
+            else if (_currentLatency > 120 && _currentLatency <= 180)
                 pb_latencyPicture.Image = Properties.Resources.signalYellow;
             else
-                pb_latencyPicture.Image = Properties.Resources.signalGreen;
+                pb_latencyPicture.Image = Properties.Resources.signalRed;
         }
         private async void connectEvent(object sender, EventArgs e)
         {

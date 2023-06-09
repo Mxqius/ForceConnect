@@ -572,7 +572,7 @@
             this.lbl_message.Name = "lbl_message";
             this.lbl_message.Size = new System.Drawing.Size(408, 39);
             this.lbl_message.TabIndex = 13;
-            this.lbl_message.Text = "VERSION 1.0";
+            this.lbl_message.Text = "VERSION ???";
             this.lbl_message.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // frm_main
