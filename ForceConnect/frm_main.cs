@@ -82,7 +82,10 @@ namespace ForceConnect
         }
         private void btn_exit_Click(object sender, EventArgs e)
         {
-            disconnectFromApp();
+            if (!IsMinimizeTrayCheck())
+            { disconnectFromApp(); return; }
+            Hide();
+            notifyForm.Visible = true;
         }
 
         private void btn_minimize_Click(object sender, EventArgs e)
@@ -184,16 +187,17 @@ namespace ForceConnect
             lbl_latency.Text = _currentLatency.ToString() + " ms";
 
         }
+        private void registrySync()
+        {
+            string isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
+            string isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
+            if (isMinimizeTray == null)
+                RegistryApplication.SaveData("MinimizeTray", "false");
+            if (isAutoUpdate == null)
+                RegistryApplication.SaveData("AutoUpdate", "false");
+        }
         private async void disconnectFromApp()
         {
-            //Guna2MessageDialog message = new Guna2MessageDialog()
-            //{
-            //    Buttons = MessageDialogButtons.YesNo,
-            //    Icon = MessageDialogIcon.Warning,
-            //    Style = MessageDialogStyle.Dark,
-            //    Text = "If you leave the program, your DNS will be disabled. Are you sure?",
-            //    Caption = "Exit Program"
-            //};
             pendingRequest = true;
             frm_messageBox message = new frm_messageBox()
             {
@@ -204,8 +208,10 @@ namespace ForceConnect
             };
 
             if (message.ShowMessage() == DialogResult.No)
-                return;
+            { pendingRequest = false; return; }
 
+            if (!Visible)
+                Show();
             if (_connected)
             {
                 btn_sync.Enabled = false;
@@ -306,6 +312,8 @@ namespace ForceConnect
 
         private void frm_main_Load(object sender, EventArgs e)
         {
+            registrySync();
+            tsm_exit.Click += Tsm_exit_Click;
             updateDNSBox();
             cb_selectDns.SelectedIndexChanged -= cb_selectDns_SelectedIndexChanged;
             cb_selectDns.SelectedIndex = 0;
@@ -313,6 +321,8 @@ namespace ForceConnect
             currentFormLoaded = this;
             changeServer();
             checkAutoUpdate();
+            // Update Notify Text
+            notifyForm.Text = $"Version {version.Major}.{version.Minor}.{version.Build}";
         }
         private void updateLatencyPicture()
         {
@@ -341,6 +351,7 @@ namespace ForceConnect
                 connectedDNS = currentDNS;
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
+                tsm_status.Text = "Connected";
                 lbl_status.Text = "CLICK TO DISCONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
@@ -366,6 +377,7 @@ namespace ForceConnect
                 shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
                 updateVersion();
                 lbl_dnsStatus.Text = "Disconnected";
+                tsm_status.Text = "Disconnected";
                 lbl_status.Text = "CLICK TO CONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
@@ -378,6 +390,33 @@ namespace ForceConnect
                 pendingRequest = false;
             }
             _connected = !_connected;
+        }
+
+        private bool IsMinimizeTrayCheck()
+        {
+            string isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
+            return (isMinimizeTray == "true" && isMinimizeTray != null) ? true : false;
+        }
+
+        private void frm_main_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized && IsMinimizeTrayCheck())
+            {
+                Hide();
+                notifyForm.Visible = true;
+            }
+        }      
+
+        private void Tsm_exit_Click(object sender, EventArgs e)
+        {
+            disconnectFromApp();
+        }
+
+        private void notifyForm_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            this.WindowState = FormWindowState.Normal;
+            notifyForm.Visible = false;
         }
 
         private void selectMenuOption(object sender, bool clickEvent)

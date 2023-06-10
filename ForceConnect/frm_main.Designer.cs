@@ -61,6 +61,13 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lbl_message = new System.Windows.Forms.Label();
+            this.notifyForm = new System.Windows.Forms.NotifyIcon(this.components);
+            this.cms_form = new Guna.UI2.WinForms.Guna2ContextMenuStrip();
+            this.tsm_forceConnect = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsm_seprator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsm_status = new System.Windows.Forms.ToolStripMenuItem();
+            this.tss_seprator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsm_exit = new System.Windows.Forms.ToolStripMenuItem();
             this.pnl_footer.SuspendLayout();
             this.pnl_control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
@@ -69,6 +76,7 @@
             this.pnl_information.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
+            this.cms_form.SuspendLayout();
             this.SuspendLayout();
             // 
             // lbl_title
@@ -575,6 +583,68 @@
             this.lbl_message.Text = "VERSION ???";
             this.lbl_message.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // notifyForm
+            // 
+            this.notifyForm.BalloonTipTitle = "ForceConnect";
+            this.notifyForm.ContextMenuStrip = this.cms_form;
+            this.notifyForm.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyForm.Icon")));
+            this.notifyForm.Text = "Show Form";
+            this.notifyForm.DoubleClick += new System.EventHandler(this.notifyForm_DoubleClick);
+            // 
+            // cms_form
+            // 
+            this.cms_form.Font = new System.Drawing.Font("Segoe UI Semibold", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cms_form.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cms_form.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsm_forceConnect,
+            this.tsm_seprator2,
+            this.tsm_status,
+            this.tss_seprator1,
+            this.tsm_exit});
+            this.cms_form.Name = "cms_form";
+            this.cms_form.RenderStyle.ArrowColor = System.Drawing.Color.Gray;
+            this.cms_form.RenderStyle.BorderColor = System.Drawing.Color.Gainsboro;
+            this.cms_form.RenderStyle.ColorTable = null;
+            this.cms_form.RenderStyle.RoundedEdges = true;
+            this.cms_form.RenderStyle.SelectionArrowColor = System.Drawing.Color.White;
+            this.cms_form.RenderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.cms_form.RenderStyle.SelectionForeColor = System.Drawing.Color.White;
+            this.cms_form.RenderStyle.SeparatorColor = System.Drawing.Color.Gainsboro;
+            this.cms_form.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            this.cms_form.Size = new System.Drawing.Size(191, 100);
+            // 
+            // tsm_forceConnect
+            // 
+            this.tsm_forceConnect.Image = global::ForceConnect.Properties.Resources.headerIcon;
+            this.tsm_forceConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tsm_forceConnect.Name = "tsm_forceConnect";
+            this.tsm_forceConnect.Size = new System.Drawing.Size(190, 28);
+            this.tsm_forceConnect.Text = "ForceConnect";
+            this.tsm_forceConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tsm_seprator2
+            // 
+            this.tsm_seprator2.Name = "tsm_seprator2";
+            this.tsm_seprator2.Size = new System.Drawing.Size(187, 6);
+            // 
+            // tsm_status
+            // 
+            this.tsm_status.Name = "tsm_status";
+            this.tsm_status.Size = new System.Drawing.Size(190, 28);
+            this.tsm_status.Text = "Disconnected";
+            this.tsm_status.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tss_seprator1
+            // 
+            this.tss_seprator1.Name = "tss_seprator1";
+            this.tss_seprator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // tsm_exit
+            // 
+            this.tsm_exit.Name = "tsm_exit";
+            this.tsm_exit.Size = new System.Drawing.Size(190, 28);
+            this.tsm_exit.Text = "Exit";
+            // 
             // frm_main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -601,6 +671,7 @@
             this.pnl_information.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
+            this.cms_form.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -637,6 +708,13 @@
         private Guna.UI2.WinForms.Guna2WinProgressIndicator wp_dnsProgress;
         private Guna.UI2.WinForms.Guna2Button btn_about;
         private Guna.UI2.WinForms.Guna2PictureBox pb_latencyPicture;
+        private System.Windows.Forms.NotifyIcon notifyForm;
+        private Guna.UI2.WinForms.Guna2ContextMenuStrip cms_form;
+        private System.Windows.Forms.ToolStripSeparator tss_seprator1;
+        private System.Windows.Forms.ToolStripMenuItem tsm_exit;
+        private System.Windows.Forms.ToolStripMenuItem tsm_forceConnect;
+        private System.Windows.Forms.ToolStripMenuItem tsm_status;
+        private System.Windows.Forms.ToolStripSeparator tsm_seprator2;
     }
 }
 

@@ -17,13 +17,14 @@ namespace ForceConnect
     public partial class frm_settings : Form
     {
         private bool _launchOnWindows, initilizeWait, checkingUpdate;
-        private string _isAutoUpdate;
+        private string _isAutoUpdate, _isMinimizeTray;
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         public frm_settings()
         {
             InitializeComponent();
             _launchOnWindows = LaunchProgram.IsAppSetToRunAtStartup();
             _isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
+            _isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
         }
 
 
@@ -73,6 +74,20 @@ namespace ForceConnect
         private void lbl_automaticUpdate_Click(object sender, EventArgs e)
         {
             cb_autoUpdate.Checked = !cb_autoUpdate.Checked;
+        }
+
+        private void lbl_minimizeInTray_Click(object sender, EventArgs e)
+        {
+            cb_minimizeInTray.Checked = !cb_minimizeInTray.Checked;
+        }     
+        private void cb_minimizeInTray_CheckedChanged(object sender, EventArgs e)
+        {
+            if (initilizeWait) return;
+            string isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
+            if (isMinimizeTray == null || isMinimizeTray == "false")
+                RegistryApplication.SaveData("MinimizeTray", "true");
+            else
+                RegistryApplication.SaveData("MinimizeTray", "false");
         }
 
         private void lbl_launchOnWindows_Click(object sender, EventArgs e)
@@ -126,7 +141,8 @@ namespace ForceConnect
         {
             initilizeWait = true;
             cb_launchOnWindows.Checked = _launchOnWindows;
-            cb_autoUpdate.Checked = (_isAutoUpdate == "true" || _isAutoUpdate != null) ? true : false;
+            cb_autoUpdate.Checked = (_isAutoUpdate == "true" && _isAutoUpdate != null) ? true : false;
+            cb_minimizeInTray.Checked = (_isMinimizeTray == "true" && _isMinimizeTray != null) ? true : false;
             initilizeWait = false;
 
         }
