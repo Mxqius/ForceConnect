@@ -300,6 +300,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\clean.png" />
     <None Include="Icons\messageBoxIcons\warning.png" />
     <None Include="Icons\messageBoxIcons\success.png" />
     <None Include="Icons\messageBoxIcons\info.png" />

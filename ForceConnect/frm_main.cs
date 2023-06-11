@@ -198,6 +198,16 @@ namespace ForceConnect
         }
         private async void disconnectFromApp()
         {
+            if (pendingRequest)
+            {
+                new frm_messageBox()
+                {
+                    MessageText = "It is not possible to leave the program when an operation is in progress!",
+                    MessageCaption = "Warning",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Warning
+                }.ShowMessage(); return;
+            }
             pendingRequest = true;
             frm_messageBox message = new frm_messageBox()
             {
@@ -405,7 +415,7 @@ namespace ForceConnect
                 Hide();
                 notifyForm.Visible = true;
             }
-        }      
+        }
 
         private void Tsm_exit_Click(object sender, EventArgs e)
         {
@@ -417,6 +427,48 @@ namespace ForceConnect
             Show();
             this.WindowState = FormWindowState.Normal;
             notifyForm.Visible = false;
+        }
+
+        private async void btn_flushDNS_Click(object sender, EventArgs e)
+        {
+            if (pendingRequest) return;
+            if (_connected)
+            {
+                new frm_messageBox()
+                {
+                    MessageText = "This cannot be done when you are connected to a DNS service. Please try again",
+                    MessageCaption = "Error",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Error
+                }.ShowMessage(); return;
+            };
+            DialogResult result = new frm_messageBox()
+            {
+                MessageText = "By doing this, all the DNS cache of your system will be cleared. Are you sure?",
+                MessageCaption = "Warning",
+                MessageButtons = frm_messageBox.Buttons.YesNo,
+                MessageIcon = frm_messageBox.Icon.Warning
+            }.ShowMessage();
+            if (result == DialogResult.No) return;
+            pendingRequest = true;
+            //DnsManager.flushDNS();
+            btn_sync.Enabled = false;
+            wp_dnsProgress.Visible = true;
+            wp_dnsProgress.Start();
+            lbl_status.Text = "FLUSHING DNS SYSTEM";
+            await delay(3000);
+            // Sync Latency
+            syncLatency();
+            updateLatencyPicture();
+            wp_dnsProgress.Visible = false;
+            wp_dnsProgress.Stop();
+            lbl_status.Text = "SUCCESSFULLY FLUSHED";
+            await delay(1000);
+            if (_connected)
+                lbl_status.Text = "CLICK TO DISCONNECT";
+            else
+                lbl_status.Text = "CLICK TO CONNECT";
+            pendingRequest = false;
         }
 
         private void selectMenuOption(object sender, bool clickEvent)
