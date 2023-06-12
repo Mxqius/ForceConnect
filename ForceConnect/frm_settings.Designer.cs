@@ -221,7 +221,7 @@
             this.lbl_minimizeDescription.Name = "lbl_minimizeDescription";
             this.lbl_minimizeDescription.Size = new System.Drawing.Size(399, 44);
             this.lbl_minimizeDescription.TabIndex = 21;
-            this.lbl_minimizeDescription.Text = "The program move to tray in background  when you close the program";
+            this.lbl_minimizeDescription.Text = "The program move to tray in background when you close the program";
             // 
             // lbl_descriptionOption2
             // 

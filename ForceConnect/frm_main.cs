@@ -54,22 +54,28 @@ namespace ForceConnect
                 cb_selectDns.Items.Add(dns.Name);
             }
         }
-        private async void checkInternetConnection()
+        private async Task checkInternetConnection()
         {
-            if (await getLatencyDNS("google.com") == -1)
-                changeAppStatus(false);
-            else
-                changeAppStatus(true);
+            await Task.Run(async () =>
+            {
+                if (await getLatencyDNS("google.com") == -1)
+                    changeAppStatus(false);
+                else
+                    changeAppStatus(true);
 
-            updateLatencyPicture();
+                updateLatencyPicture();
+            });
         }
         private void changeAppStatus(bool internetConnection)
         {
             _internetConnection = internetConnection;
             if (_internetConnection && _connected) return;
 
-            lbl_status.Text = (internetConnection) ? "CLICK TO CONNECT" : "NO CONNECTION";
-            iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
+            this.Invoke(new MethodInvoker(delegate
+            {
+                lbl_status.Text = (internetConnection) ? "CLICK TO CONNECT" : "NO CONNECTION";
+                iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
+            }));
 
         }
         public async Task<bool> delay(int milisecound)
@@ -123,7 +129,7 @@ namespace ForceConnect
 
             showInformation();
         }
-        private void showInformation()
+        private async void showInformation()
         {
             pb_dnsPicture.Image = currentDNS.Picture;
             lbl_name.Text = currentDNS.Name;
@@ -133,10 +139,10 @@ namespace ForceConnect
                 lbl_previewAddress.Text = currentDNS.dnsAddress[0];
 
             if (_internetConnection)
-                syncLatencyDNS();
+                await syncLatencyDNS();
             else
                 lbl_latency.Text = "-1 ms";
-            checkInternetConnection();
+            await checkInternetConnection();
         }
 
         private void pnl_control_MouseDown(object sender, MouseEventArgs e)
@@ -174,18 +180,29 @@ namespace ForceConnect
                 return Latency.MeasureLatency(address);
             });
         }
-        private async void syncLatency()
+        private async Task syncLatency()
         {
 
-            _currentLatency = await getLatencyDNS("google.com");
-            lbl_latency.Text = _currentLatency.ToString() + " ms";
+            await Task.Run(async () =>
+            {
+                _currentLatency = await getLatencyDNS("google.com");
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lbl_latency.Text = _currentLatency.ToString() + " ms";
+                }));
+            });
 
         }
-        private async void syncLatencyDNS()
+        private async Task syncLatencyDNS()
         {
-            _currentLatency = await getLatencyDNS(currentDNS.dnsAddress[0]);
-            lbl_latency.Text = _currentLatency.ToString() + " ms";
-
+            await Task.Run(async () =>
+            {
+                _currentLatency = await getLatencyDNS(currentDNS.dnsAddress[0]);
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    lbl_latency.Text = _currentLatency.ToString() + " ms";
+                }));
+            });
         }
         private void registrySync()
         {
@@ -248,18 +265,17 @@ namespace ForceConnect
 
         }
 
-        private void btn_sync_Click(object sender, EventArgs e)
+        private async void btn_sync_Click(object sender, EventArgs e)
         {
             if (pendingRequest) return;
             pendingRequest = true;
-            syncLatency();
-            checkInternetConnection();
+            await syncLatency();
+            await checkInternetConnection();
             pendingRequest = false;
         }
 
         private string updateVersion()
         {
-
             return lbl_message.Text = "VERSION " + version.Major + "." + version.Minor;
         }
         private async Task<string> getLastestVersionApplication()
@@ -336,20 +352,29 @@ namespace ForceConnect
         }
         private void updateLatencyPicture()
         {
-            //new NotificationForm().showAlert($"{_currentLatency} Latency", NotificationForm.enmType.Success);
-            if (_currentLatency > 1 && _currentLatency <= 120)
-                pb_latencyPicture.Image = Properties.Resources.signalGreen;
-            else if (_currentLatency > 120 && _currentLatency <= 180)
-                pb_latencyPicture.Image = Properties.Resources.signalYellow;
-            else
-                pb_latencyPicture.Image = Properties.Resources.signalRed;
+
+            this.Invoke(new MethodInvoker(delegate
+            {
+                if (_currentLatency > 1 && _currentLatency <= 120)
+                    pb_latencyPicture.Image = Properties.Resources.signalGreen;
+                else if (_currentLatency > 120 && _currentLatency <= 180)
+                    pb_latencyPicture.Image = Properties.Resources.signalYellow;
+                else
+                    pb_latencyPicture.Image = Properties.Resources.signalRed;
+            }));
         }
         private async void connectEvent(object sender, EventArgs e)
         {
-            if (!_internetConnection || pendingRequest) return;
+            await checkInternetConnection();
+            await syncLatency();
+            updateLatencyPicture();
+            if (!_internetConnection) return;
+            if (pendingRequest) return;
+            DnsAddress connectingDNS = currentDNS;
             if (!_connected)
             {
                 pendingRequest = true;
+                cb_selectDns.Enabled = false;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
                 wp_dnsProgress.Visible = true;
@@ -357,20 +382,21 @@ namespace ForceConnect
                 lbl_dnsStatus.Text = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
                 await delay(3000);
-                DnsManager.setDNS(currentDNS.dnsAddress);
-                connectedDNS = currentDNS;
+                DnsManager.setDNS(connectingDNS.dnsAddress);
+                connectedDNS = connectingDNS;
                 shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
                 lbl_dnsStatus.Text = "Connected";
                 tsm_status.Text = "Connected";
                 lbl_status.Text = "CLICK TO DISCONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
-                // Sync Latency
-                syncLatency();
-                updateLatencyPicture();
-                btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
                 iconConnect.Image = Properties.Resources.connectedIcon;
+                // Sync Latency
+                await syncLatency();
+                updateLatencyPicture();
+                btn_sync.Enabled = true;
+                cb_selectDns.Enabled = true;
                 pendingRequest = false;
             }
             else
@@ -391,12 +417,12 @@ namespace ForceConnect
                 lbl_status.Text = "CLICK TO CONNECT";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
-                // Sync Latency           
-                syncLatency();
-                updateLatencyPicture();
-                btn_sync.Enabled = true;
                 new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
                 iconConnect.Image = Properties.Resources.connectIcon;
+                // Sync Latency           
+                await syncLatency();
+                updateLatencyPicture();
+                btn_sync.Enabled = true;
                 pendingRequest = false;
             }
             _connected = !_connected;
@@ -431,6 +457,10 @@ namespace ForceConnect
 
         private async void btn_flushDNS_Click(object sender, EventArgs e)
         {
+            await checkInternetConnection();
+            await syncLatency();
+            updateLatencyPicture();
+            if (!_internetConnection) return;
             if (pendingRequest) return;
             if (_connected)
             {
@@ -451,23 +481,25 @@ namespace ForceConnect
             }.ShowMessage();
             if (result == DialogResult.No) return;
             pendingRequest = true;
-            //DnsManager.flushDNS();
+            cb_selectDns.Enabled = false;
+            DnsManager.flushDNS();
             btn_sync.Enabled = false;
             wp_dnsProgress.Visible = true;
             wp_dnsProgress.Start();
             lbl_status.Text = "FLUSHING DNS SYSTEM";
             await delay(3000);
             // Sync Latency
-            syncLatency();
+            await syncLatency();
             updateLatencyPicture();
             wp_dnsProgress.Visible = false;
             wp_dnsProgress.Stop();
             lbl_status.Text = "SUCCESSFULLY FLUSHED";
-            await delay(1000);
+            await delay(1500);
             if (_connected)
                 lbl_status.Text = "CLICK TO DISCONNECT";
             else
                 lbl_status.Text = "CLICK TO CONNECT";
+            cb_selectDns.Enabled = true;
             pendingRequest = false;
         }
 

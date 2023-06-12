@@ -32,14 +32,26 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frm_main));
             this.lbl_title = new System.Windows.Forms.Label();
             this.pnl_footer = new Guna.UI2.WinForms.Guna2Panel();
+            this.btn_home = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_about = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_explore = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_settings = new Guna.UI2.WinForms.Guna2Button();
             this.pnl_control = new Guna.UI2.WinForms.Guna2Panel();
+            this.pb_header = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.btn_minimize = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_exit = new Guna.UI2.WinForms.Guna2Button();
             this.bf_cornerForm = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
             this.pnl_container = new Guna.UI2.WinForms.Guna2Panel();
+            this.btn_flushDNS = new Guna.UI2.WinForms.Guna2CircleButton();
             this.lbl_status = new System.Windows.Forms.Label();
             this.wp_dnsProgress = new Guna.UI2.WinForms.Guna2WinProgressIndicator();
+            this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.shape_connect = new Guna.UI2.WinForms.Guna2Shapes();
             this.cb_selectDns = new Guna.UI2.WinForms.Guna2ComboBox();
             this.pnl_information = new Guna.UI2.WinForms.Guna2Panel();
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
+            this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.btn_sync = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_latency = new System.Windows.Forms.Label();
             this.lbl_name = new System.Windows.Forms.Label();
             this.lbl_previewAddress = new System.Windows.Forms.Label();
@@ -52,32 +64,20 @@
             this.lbl_message = new System.Windows.Forms.Label();
             this.notifyForm = new System.Windows.Forms.NotifyIcon(this.components);
             this.cms_form = new Guna.UI2.WinForms.Guna2ContextMenuStrip();
+            this.tsm_forceConnect = new System.Windows.Forms.ToolStripMenuItem();
             this.tsm_seprator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsm_status = new System.Windows.Forms.ToolStripMenuItem();
             this.tss_seprator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsm_exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.btn_flushDNS = new Guna.UI2.WinForms.Guna2CircleButton();
-            this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
-            this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btn_sync = new Guna.UI2.WinForms.Guna2Button();
-            this.pb_header = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btn_minimize = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_exit = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_home = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_about = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_explore = new Guna.UI2.WinForms.Guna2Button();
-            this.btn_settings = new Guna.UI2.WinForms.Guna2Button();
-            this.tsm_forceConnect = new System.Windows.Forms.ToolStripMenuItem();
             this.pnl_footer.SuspendLayout();
             this.pnl_control.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
             this.pnl_container.SuspendLayout();
-            this.pnl_information.SuspendLayout();
-            this.cms_form.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).BeginInit();
+            this.pnl_information.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
+            this.cms_form.SuspendLayout();
             this.SuspendLayout();
             // 
             // lbl_title
@@ -104,6 +104,110 @@
             this.pnl_footer.Size = new System.Drawing.Size(884, 66);
             this.pnl_footer.TabIndex = 5;
             // 
+            // btn_home
+            // 
+            this.btn_home.Animated = true;
+            this.btn_home.AutoRoundedCorners = true;
+            this.btn_home.BackColor = System.Drawing.Color.Transparent;
+            this.btn_home.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_home.BorderRadius = 23;
+            this.btn_home.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_home.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_home.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_home.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_home.FillColor = System.Drawing.Color.Transparent;
+            this.btn_home.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
+            this.btn_home.ForeColor = System.Drawing.Color.White;
+            this.btn_home.Image = ((System.Drawing.Image)(resources.GetObject("btn_home.Image")));
+            this.btn_home.ImageSize = new System.Drawing.Size(40, 40);
+            this.btn_home.Location = new System.Drawing.Point(60, 8);
+            this.btn_home.Name = "btn_home";
+            this.btn_home.PressedColor = System.Drawing.Color.Transparent;
+            this.btn_home.Size = new System.Drawing.Size(173, 48);
+            this.btn_home.TabIndex = 0;
+            this.btn_home.TextOffset = new System.Drawing.Point(4, 0);
+            this.btn_home.Click += new System.EventHandler(this.clickControlMenu);
+            this.btn_home.MouseLeave += new System.EventHandler(this.leaveControlMenu);
+            this.btn_home.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
+            // 
+            // btn_about
+            // 
+            this.btn_about.Animated = true;
+            this.btn_about.AutoRoundedCorners = true;
+            this.btn_about.BackColor = System.Drawing.Color.Transparent;
+            this.btn_about.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_about.BorderRadius = 23;
+            this.btn_about.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_about.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_about.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_about.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_about.FillColor = System.Drawing.Color.Transparent;
+            this.btn_about.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_about.ForeColor = System.Drawing.Color.White;
+            this.btn_about.Image = global::ForceConnect.Properties.Resources.about;
+            this.btn_about.ImageSize = new System.Drawing.Size(40, 40);
+            this.btn_about.Location = new System.Drawing.Point(448, 8);
+            this.btn_about.Name = "btn_about";
+            this.btn_about.PressedColor = System.Drawing.Color.Transparent;
+            this.btn_about.Size = new System.Drawing.Size(173, 48);
+            this.btn_about.TabIndex = 2;
+            this.btn_about.TextOffset = new System.Drawing.Point(4, 0);
+            this.btn_about.Click += new System.EventHandler(this.clickControlMenu);
+            this.btn_about.MouseLeave += new System.EventHandler(this.leaveControlMenu);
+            this.btn_about.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
+            // 
+            // btn_explore
+            // 
+            this.btn_explore.Animated = true;
+            this.btn_explore.AutoRoundedCorners = true;
+            this.btn_explore.BackColor = System.Drawing.Color.Transparent;
+            this.btn_explore.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_explore.BorderRadius = 23;
+            this.btn_explore.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_explore.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_explore.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_explore.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_explore.FillColor = System.Drawing.Color.Transparent;
+            this.btn_explore.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_explore.ForeColor = System.Drawing.Color.White;
+            this.btn_explore.Image = ((System.Drawing.Image)(resources.GetObject("btn_explore.Image")));
+            this.btn_explore.ImageSize = new System.Drawing.Size(40, 40);
+            this.btn_explore.Location = new System.Drawing.Point(254, 8);
+            this.btn_explore.Name = "btn_explore";
+            this.btn_explore.PressedColor = System.Drawing.Color.Transparent;
+            this.btn_explore.Size = new System.Drawing.Size(173, 48);
+            this.btn_explore.TabIndex = 1;
+            this.btn_explore.TextOffset = new System.Drawing.Point(4, 0);
+            this.btn_explore.Click += new System.EventHandler(this.clickControlMenu);
+            this.btn_explore.MouseLeave += new System.EventHandler(this.leaveControlMenu);
+            this.btn_explore.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
+            // 
+            // btn_settings
+            // 
+            this.btn_settings.Animated = true;
+            this.btn_settings.AutoRoundedCorners = true;
+            this.btn_settings.BackColor = System.Drawing.Color.Transparent;
+            this.btn_settings.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_settings.BorderRadius = 23;
+            this.btn_settings.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_settings.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_settings.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_settings.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_settings.FillColor = System.Drawing.Color.Transparent;
+            this.btn_settings.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
+            this.btn_settings.ForeColor = System.Drawing.Color.White;
+            this.btn_settings.Image = global::ForceConnect.Properties.Resources.setting;
+            this.btn_settings.ImageSize = new System.Drawing.Size(40, 40);
+            this.btn_settings.Location = new System.Drawing.Point(642, 8);
+            this.btn_settings.Name = "btn_settings";
+            this.btn_settings.PressedColor = System.Drawing.Color.Transparent;
+            this.btn_settings.Size = new System.Drawing.Size(173, 48);
+            this.btn_settings.TabIndex = 3;
+            this.btn_settings.TextOffset = new System.Drawing.Point(4, 0);
+            this.btn_settings.Click += new System.EventHandler(this.clickControlMenu);
+            this.btn_settings.MouseLeave += new System.EventHandler(this.leaveControlMenu);
+            this.btn_settings.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
+            // 
             // pnl_control
             // 
             this.pnl_control.Controls.Add(this.lbl_title);
@@ -119,6 +223,65 @@
             this.pnl_control.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnl_control_MouseDown);
             this.pnl_control.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pnl_control_MouseMove);
             this.pnl_control.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pnl_control_MouseUp);
+            // 
+            // pb_header
+            // 
+            this.pb_header.BackColor = System.Drawing.Color.Transparent;
+            this.pb_header.Image = global::ForceConnect.Properties.Resources.headerIcon;
+            this.pb_header.ImageRotate = 0F;
+            this.pb_header.Location = new System.Drawing.Point(12, 6);
+            this.pb_header.Name = "pb_header";
+            this.pb_header.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.pb_header.Size = new System.Drawing.Size(39, 34);
+            this.pb_header.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_header.TabIndex = 8;
+            this.pb_header.TabStop = false;
+            // 
+            // btn_minimize
+            // 
+            this.btn_minimize.Animated = true;
+            this.btn_minimize.BackColor = System.Drawing.Color.Transparent;
+            this.btn_minimize.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_minimize.BorderRadius = 5;
+            this.btn_minimize.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_minimize.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_minimize.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_minimize.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_minimize.FillColor = System.Drawing.Color.Transparent;
+            this.btn_minimize.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_minimize.ForeColor = System.Drawing.Color.Transparent;
+            this.btn_minimize.Image = global::ForceConnect.Properties.Resources.minimize;
+            this.btn_minimize.ImageSize = new System.Drawing.Size(35, 35);
+            this.btn_minimize.Location = new System.Drawing.Point(797, 5);
+            this.btn_minimize.Name = "btn_minimize";
+            this.btn_minimize.Size = new System.Drawing.Size(37, 37);
+            this.btn_minimize.TabIndex = 1;
+            this.btn_minimize.Click += new System.EventHandler(this.btn_minimize_Click);
+            this.btn_minimize.MouseLeave += new System.EventHandler(this.leaveControls);
+            this.btn_minimize.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControls);
+            // 
+            // btn_exit
+            // 
+            this.btn_exit.Animated = true;
+            this.btn_exit.BackColor = System.Drawing.Color.Transparent;
+            this.btn_exit.BorderColor = System.Drawing.Color.Empty;
+            this.btn_exit.BorderRadius = 5;
+            this.btn_exit.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_exit.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_exit.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_exit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_exit.FillColor = System.Drawing.Color.Empty;
+            this.btn_exit.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_exit.ForeColor = System.Drawing.Color.Transparent;
+            this.btn_exit.Image = global::ForceConnect.Properties.Resources.exit;
+            this.btn_exit.ImageSize = new System.Drawing.Size(35, 35);
+            this.btn_exit.Location = new System.Drawing.Point(835, 6);
+            this.btn_exit.Name = "btn_exit";
+            this.btn_exit.Size = new System.Drawing.Size(37, 37);
+            this.btn_exit.TabIndex = 0;
+            this.btn_exit.Click += new System.EventHandler(this.btn_exit_Click);
+            this.btn_exit.MouseLeave += new System.EventHandler(this.leaveControls);
+            this.btn_exit.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControls);
             // 
             // bf_cornerForm
             // 
@@ -148,6 +311,27 @@
             this.pnl_container.Size = new System.Drawing.Size(884, 408);
             this.pnl_container.TabIndex = 9;
             // 
+            // btn_flushDNS
+            // 
+            this.btn_flushDNS.BorderColor = System.Drawing.Color.White;
+            this.btn_flushDNS.BorderThickness = 1;
+            this.btn_flushDNS.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_flushDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_flushDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_flushDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_flushDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_flushDNS.FillColor = System.Drawing.Color.Transparent;
+            this.btn_flushDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btn_flushDNS.ForeColor = System.Drawing.Color.White;
+            this.btn_flushDNS.Image = global::ForceConnect.Properties.Resources.clean;
+            this.btn_flushDNS.ImageSize = new System.Drawing.Size(25, 25);
+            this.btn_flushDNS.Location = new System.Drawing.Point(342, 161);
+            this.btn_flushDNS.Name = "btn_flushDNS";
+            this.btn_flushDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.btn_flushDNS.Size = new System.Drawing.Size(52, 52);
+            this.btn_flushDNS.TabIndex = 24;
+            this.btn_flushDNS.Click += new System.EventHandler(this.btn_flushDNS_Click);
+            // 
             // lbl_status
             // 
             this.lbl_status.Font = new System.Drawing.Font("JetBrains Mono", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -170,6 +354,22 @@
             this.wp_dnsProgress.Size = new System.Drawing.Size(136, 138);
             this.wp_dnsProgress.TabIndex = 23;
             this.wp_dnsProgress.Visible = false;
+            // 
+            // iconConnect
+            // 
+            this.iconConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
+            this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.iconConnect.Image = global::ForceConnect.Properties.Resources.connectIcon;
+            this.iconConnect.ImageRotate = 0F;
+            this.iconConnect.InitialImage = global::ForceConnect.Properties.Resources.connectIcon;
+            this.iconConnect.Location = new System.Drawing.Point(130, 108);
+            this.iconConnect.Name = "iconConnect";
+            this.iconConnect.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.iconConnect.Size = new System.Drawing.Size(148, 139);
+            this.iconConnect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.iconConnect.TabIndex = 21;
+            this.iconConnect.TabStop = false;
+            this.iconConnect.Click += new System.EventHandler(this.connectEvent);
             // 
             // shape_connect
             // 
@@ -208,6 +408,7 @@
             "Google",
             "Cloudflare"});
             this.cb_selectDns.Location = new System.Drawing.Point(427, 83);
+            this.cb_selectDns.MaxDropDownItems = 5;
             this.cb_selectDns.Name = "cb_selectDns";
             this.cb_selectDns.Size = new System.Drawing.Size(408, 46);
             this.cb_selectDns.StartIndex = 0;
@@ -234,6 +435,53 @@
             this.pnl_information.Name = "pnl_information";
             this.pnl_information.Size = new System.Drawing.Size(408, 204);
             this.pnl_information.TabIndex = 14;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(245, 58);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(32, 29);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 9;
+            this.pb_latencyPicture.TabStop = false;
+            // 
+            // pb_dnsPicture
+            // 
+            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
+            this.pb_dnsPicture.ImageRotate = 0F;
+            this.pb_dnsPicture.Location = new System.Drawing.Point(26, 58);
+            this.pb_dnsPicture.Name = "pb_dnsPicture";
+            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.pb_dnsPicture.Size = new System.Drawing.Size(29, 29);
+            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pb_dnsPicture.TabIndex = 8;
+            this.pb_dnsPicture.TabStop = false;
+            // 
+            // btn_sync
+            // 
+            this.btn_sync.Animated = true;
+            this.btn_sync.AutoRoundedCorners = true;
+            this.btn_sync.BackColor = System.Drawing.Color.Transparent;
+            this.btn_sync.BorderColor = System.Drawing.Color.Transparent;
+            this.btn_sync.BorderRadius = 15;
+            this.btn_sync.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_sync.DisabledState.FillColor = System.Drawing.Color.Transparent;
+            this.btn_sync.FillColor = System.Drawing.Color.Transparent;
+            this.btn_sync.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
+            this.btn_sync.ForeColor = System.Drawing.Color.White;
+            this.btn_sync.Image = global::ForceConnect.Properties.Resources.sync;
+            this.btn_sync.ImageSize = new System.Drawing.Size(27, 27);
+            this.btn_sync.Location = new System.Drawing.Point(357, 58);
+            this.btn_sync.Name = "btn_sync";
+            this.btn_sync.PressedColor = System.Drawing.Color.Transparent;
+            this.btn_sync.Size = new System.Drawing.Size(37, 33);
+            this.btn_sync.TabIndex = 4;
+            this.btn_sync.TextOffset = new System.Drawing.Point(4, 0);
+            this.btn_sync.Click += new System.EventHandler(this.btn_sync_Click);
             // 
             // lbl_latency
             // 
@@ -389,6 +637,15 @@
             this.cms_form.RenderStyle.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
             this.cms_form.Size = new System.Drawing.Size(191, 100);
             // 
+            // tsm_forceConnect
+            // 
+            this.tsm_forceConnect.Image = global::ForceConnect.Properties.Resources.headerIcon;
+            this.tsm_forceConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tsm_forceConnect.Name = "tsm_forceConnect";
+            this.tsm_forceConnect.Size = new System.Drawing.Size(190, 28);
+            this.tsm_forceConnect.Text = "ForceConnect";
+            this.tsm_forceConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // tsm_seprator2
             // 
             this.tsm_seprator2.Name = "tsm_seprator2";
@@ -412,262 +669,6 @@
             this.tsm_exit.Size = new System.Drawing.Size(190, 28);
             this.tsm_exit.Text = "Exit";
             // 
-            // btn_flushDNS
-            // 
-            this.btn_flushDNS.BorderColor = System.Drawing.Color.White;
-            this.btn_flushDNS.BorderThickness = 1;
-            this.btn_flushDNS.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_flushDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_flushDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_flushDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_flushDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_flushDNS.FillColor = System.Drawing.Color.Transparent;
-            this.btn_flushDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_flushDNS.ForeColor = System.Drawing.Color.White;
-            this.btn_flushDNS.Image = global::ForceConnect.Properties.Resources.clean;
-            this.btn_flushDNS.ImageSize = new System.Drawing.Size(25, 25);
-            this.btn_flushDNS.Location = new System.Drawing.Point(342, 161);
-            this.btn_flushDNS.Name = "btn_flushDNS";
-            this.btn_flushDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_flushDNS.Size = new System.Drawing.Size(52, 52);
-            this.btn_flushDNS.TabIndex = 24;
-            this.btn_flushDNS.Click += new System.EventHandler(this.btn_flushDNS_Click);
-            // 
-            // iconConnect
-            // 
-            this.iconConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
-            this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.iconConnect.Image = global::ForceConnect.Properties.Resources.connectIcon;
-            this.iconConnect.ImageRotate = 0F;
-            this.iconConnect.InitialImage = global::ForceConnect.Properties.Resources.connectIcon;
-            this.iconConnect.Location = new System.Drawing.Point(130, 108);
-            this.iconConnect.Name = "iconConnect";
-            this.iconConnect.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.iconConnect.Size = new System.Drawing.Size(148, 139);
-            this.iconConnect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.iconConnect.TabIndex = 21;
-            this.iconConnect.TabStop = false;
-            this.iconConnect.Click += new System.EventHandler(this.connectEvent);
-            // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(245, 58);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(32, 29);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 9;
-            this.pb_latencyPicture.TabStop = false;
-            // 
-            // pb_dnsPicture
-            // 
-            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
-            this.pb_dnsPicture.ImageRotate = 0F;
-            this.pb_dnsPicture.Location = new System.Drawing.Point(26, 58);
-            this.pb_dnsPicture.Name = "pb_dnsPicture";
-            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.pb_dnsPicture.Size = new System.Drawing.Size(29, 29);
-            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pb_dnsPicture.TabIndex = 8;
-            this.pb_dnsPicture.TabStop = false;
-            // 
-            // btn_sync
-            // 
-            this.btn_sync.Animated = true;
-            this.btn_sync.AutoRoundedCorners = true;
-            this.btn_sync.BackColor = System.Drawing.Color.Transparent;
-            this.btn_sync.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_sync.BorderRadius = 15;
-            this.btn_sync.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_sync.DisabledState.FillColor = System.Drawing.Color.Transparent;
-            this.btn_sync.FillColor = System.Drawing.Color.Transparent;
-            this.btn_sync.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
-            this.btn_sync.ForeColor = System.Drawing.Color.White;
-            this.btn_sync.Image = global::ForceConnect.Properties.Resources.sync;
-            this.btn_sync.ImageSize = new System.Drawing.Size(27, 27);
-            this.btn_sync.Location = new System.Drawing.Point(357, 58);
-            this.btn_sync.Name = "btn_sync";
-            this.btn_sync.PressedColor = System.Drawing.Color.Transparent;
-            this.btn_sync.Size = new System.Drawing.Size(37, 33);
-            this.btn_sync.TabIndex = 4;
-            this.btn_sync.TextOffset = new System.Drawing.Point(4, 0);
-            this.btn_sync.Click += new System.EventHandler(this.btn_sync_Click);
-            // 
-            // pb_header
-            // 
-            this.pb_header.BackColor = System.Drawing.Color.Transparent;
-            this.pb_header.Image = global::ForceConnect.Properties.Resources.headerIcon;
-            this.pb_header.ImageRotate = 0F;
-            this.pb_header.Location = new System.Drawing.Point(12, 6);
-            this.pb_header.Name = "pb_header";
-            this.pb_header.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.pb_header.Size = new System.Drawing.Size(39, 34);
-            this.pb_header.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_header.TabIndex = 8;
-            this.pb_header.TabStop = false;
-            // 
-            // btn_minimize
-            // 
-            this.btn_minimize.Animated = true;
-            this.btn_minimize.BackColor = System.Drawing.Color.Transparent;
-            this.btn_minimize.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_minimize.BorderRadius = 5;
-            this.btn_minimize.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_minimize.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_minimize.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_minimize.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_minimize.FillColor = System.Drawing.Color.Transparent;
-            this.btn_minimize.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_minimize.ForeColor = System.Drawing.Color.Transparent;
-            this.btn_minimize.Image = global::ForceConnect.Properties.Resources.minimize;
-            this.btn_minimize.ImageSize = new System.Drawing.Size(35, 35);
-            this.btn_minimize.Location = new System.Drawing.Point(797, 5);
-            this.btn_minimize.Name = "btn_minimize";
-            this.btn_minimize.Size = new System.Drawing.Size(37, 37);
-            this.btn_minimize.TabIndex = 1;
-            this.btn_minimize.Click += new System.EventHandler(this.btn_minimize_Click);
-            this.btn_minimize.MouseLeave += new System.EventHandler(this.leaveControls);
-            this.btn_minimize.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControls);
-            // 
-            // btn_exit
-            // 
-            this.btn_exit.Animated = true;
-            this.btn_exit.BackColor = System.Drawing.Color.Transparent;
-            this.btn_exit.BorderColor = System.Drawing.Color.Empty;
-            this.btn_exit.BorderRadius = 5;
-            this.btn_exit.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_exit.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_exit.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_exit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_exit.FillColor = System.Drawing.Color.Empty;
-            this.btn_exit.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_exit.ForeColor = System.Drawing.Color.Transparent;
-            this.btn_exit.Image = global::ForceConnect.Properties.Resources.exit;
-            this.btn_exit.ImageSize = new System.Drawing.Size(35, 35);
-            this.btn_exit.Location = new System.Drawing.Point(835, 6);
-            this.btn_exit.Name = "btn_exit";
-            this.btn_exit.Size = new System.Drawing.Size(37, 37);
-            this.btn_exit.TabIndex = 0;
-            this.btn_exit.Click += new System.EventHandler(this.btn_exit_Click);
-            this.btn_exit.MouseLeave += new System.EventHandler(this.leaveControls);
-            this.btn_exit.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControls);
-            // 
-            // btn_home
-            // 
-            this.btn_home.Animated = true;
-            this.btn_home.AutoRoundedCorners = true;
-            this.btn_home.BackColor = System.Drawing.Color.Transparent;
-            this.btn_home.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_home.BorderRadius = 23;
-            this.btn_home.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_home.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_home.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_home.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_home.FillColor = System.Drawing.Color.Transparent;
-            this.btn_home.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
-            this.btn_home.ForeColor = System.Drawing.Color.White;
-            this.btn_home.Image = ((System.Drawing.Image)(resources.GetObject("btn_home.Image")));
-            this.btn_home.ImageSize = new System.Drawing.Size(40, 40);
-            this.btn_home.Location = new System.Drawing.Point(60, 8);
-            this.btn_home.Name = "btn_home";
-            this.btn_home.PressedColor = System.Drawing.Color.Transparent;
-            this.btn_home.Size = new System.Drawing.Size(173, 48);
-            this.btn_home.TabIndex = 0;
-            this.btn_home.TextOffset = new System.Drawing.Point(4, 0);
-            this.btn_home.Click += new System.EventHandler(this.clickControlMenu);
-            this.btn_home.MouseLeave += new System.EventHandler(this.leaveControlMenu);
-            this.btn_home.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
-            // 
-            // btn_about
-            // 
-            this.btn_about.Animated = true;
-            this.btn_about.AutoRoundedCorners = true;
-            this.btn_about.BackColor = System.Drawing.Color.Transparent;
-            this.btn_about.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_about.BorderRadius = 23;
-            this.btn_about.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_about.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_about.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_about.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_about.FillColor = System.Drawing.Color.Transparent;
-            this.btn_about.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_about.ForeColor = System.Drawing.Color.White;
-            this.btn_about.Image = global::ForceConnect.Properties.Resources.about;
-            this.btn_about.ImageSize = new System.Drawing.Size(40, 40);
-            this.btn_about.Location = new System.Drawing.Point(448, 8);
-            this.btn_about.Name = "btn_about";
-            this.btn_about.PressedColor = System.Drawing.Color.Transparent;
-            this.btn_about.Size = new System.Drawing.Size(173, 48);
-            this.btn_about.TabIndex = 2;
-            this.btn_about.TextOffset = new System.Drawing.Point(4, 0);
-            this.btn_about.Click += new System.EventHandler(this.clickControlMenu);
-            this.btn_about.MouseLeave += new System.EventHandler(this.leaveControlMenu);
-            this.btn_about.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
-            // 
-            // btn_explore
-            // 
-            this.btn_explore.Animated = true;
-            this.btn_explore.AutoRoundedCorners = true;
-            this.btn_explore.BackColor = System.Drawing.Color.Transparent;
-            this.btn_explore.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_explore.BorderRadius = 23;
-            this.btn_explore.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_explore.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_explore.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_explore.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_explore.FillColor = System.Drawing.Color.Transparent;
-            this.btn_explore.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_explore.ForeColor = System.Drawing.Color.White;
-            this.btn_explore.Image = ((System.Drawing.Image)(resources.GetObject("btn_explore.Image")));
-            this.btn_explore.ImageSize = new System.Drawing.Size(40, 40);
-            this.btn_explore.Location = new System.Drawing.Point(254, 8);
-            this.btn_explore.Name = "btn_explore";
-            this.btn_explore.PressedColor = System.Drawing.Color.Transparent;
-            this.btn_explore.Size = new System.Drawing.Size(173, 48);
-            this.btn_explore.TabIndex = 1;
-            this.btn_explore.TextOffset = new System.Drawing.Point(4, 0);
-            this.btn_explore.Click += new System.EventHandler(this.clickControlMenu);
-            this.btn_explore.MouseLeave += new System.EventHandler(this.leaveControlMenu);
-            this.btn_explore.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
-            // 
-            // btn_settings
-            // 
-            this.btn_settings.Animated = true;
-            this.btn_settings.AutoRoundedCorners = true;
-            this.btn_settings.BackColor = System.Drawing.Color.Transparent;
-            this.btn_settings.BorderColor = System.Drawing.Color.Transparent;
-            this.btn_settings.BorderRadius = 23;
-            this.btn_settings.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_settings.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_settings.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_settings.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_settings.FillColor = System.Drawing.Color.Transparent;
-            this.btn_settings.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold);
-            this.btn_settings.ForeColor = System.Drawing.Color.White;
-            this.btn_settings.Image = global::ForceConnect.Properties.Resources.setting;
-            this.btn_settings.ImageSize = new System.Drawing.Size(40, 40);
-            this.btn_settings.Location = new System.Drawing.Point(642, 8);
-            this.btn_settings.Name = "btn_settings";
-            this.btn_settings.PressedColor = System.Drawing.Color.Transparent;
-            this.btn_settings.Size = new System.Drawing.Size(173, 48);
-            this.btn_settings.TabIndex = 3;
-            this.btn_settings.TextOffset = new System.Drawing.Point(4, 0);
-            this.btn_settings.Click += new System.EventHandler(this.clickControlMenu);
-            this.btn_settings.MouseLeave += new System.EventHandler(this.leaveControlMenu);
-            this.btn_settings.MouseMove += new System.Windows.Forms.MouseEventHandler(this.moveControlMenu);
-            // 
-            // tsm_forceConnect
-            // 
-            this.tsm_forceConnect.Image = global::ForceConnect.Properties.Resources.headerIcon;
-            this.tsm_forceConnect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.tsm_forceConnect.Name = "tsm_forceConnect";
-            this.tsm_forceConnect.Size = new System.Drawing.Size(190, 28);
-            this.tsm_forceConnect.Text = "ForceConnect";
-            this.tsm_forceConnect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // frm_main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -688,13 +689,13 @@
             this.Load += new System.EventHandler(this.frm_main_Load);
             this.pnl_footer.ResumeLayout(false);
             this.pnl_control.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).EndInit();
             this.pnl_container.ResumeLayout(false);
-            this.pnl_information.ResumeLayout(false);
-            this.cms_form.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).EndInit();
+            this.pnl_information.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_header)).EndInit();
+            this.cms_form.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
