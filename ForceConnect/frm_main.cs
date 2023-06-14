@@ -26,6 +26,9 @@ namespace ForceConnect
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
+
+        private Thread serviceThread;
+
         public frm_main()
         {
             InitializeComponent();
@@ -373,6 +376,32 @@ namespace ForceConnect
             DnsAddress connectingDNS = currentDNS;
             if (!_connected)
             {
+                Action onCompleted = () =>
+                {
+                    this.Invoke(new MethodInvoker(async delegate
+                    {
+                        connectedDNS = connectingDNS;
+
+                        shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
+                        lbl_dnsStatus.Text = "Connected";
+                        tsm_status.Text = "Connected";
+                        lbl_status.Text = "CLICK TO DISCONNECT";
+                        wp_dnsProgress.Visible = false;
+                        wp_dnsProgress.Stop();
+
+                        new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
+
+                        iconConnect.Image = Properties.Resources.connectedIcon;
+                        // Sync Latency
+                        await syncLatency();
+                        updateLatencyPicture();
+
+                        btn_sync.Enabled = true;
+                        cb_selectDns.Enabled = true;
+                        pendingRequest = false;
+                    }));
+                };
+                // Start Connecting 
                 pendingRequest = true;
                 cb_selectDns.Enabled = false;
                 btn_sync.Enabled = false;
@@ -381,26 +410,41 @@ namespace ForceConnect
                 wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
-                await delay(3000);
-                DnsManager.setDNS(connectingDNS.dnsAddress);
-                connectedDNS = connectingDNS;
-                shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
-                lbl_dnsStatus.Text = "Connected";
-                tsm_status.Text = "Connected";
-                lbl_status.Text = "CLICK TO DISCONNECT";
-                wp_dnsProgress.Visible = false;
-                wp_dnsProgress.Stop();
-                new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
-                iconConnect.Image = Properties.Resources.connectedIcon;
-                // Sync Latency
-                await syncLatency();
-                updateLatencyPicture();
-                btn_sync.Enabled = true;
-                cb_selectDns.Enabled = true;
-                pendingRequest = false;
+                await delay(2000);
+                // Connect Thread 
+                serviceThread = new Thread(() =>
+                {
+                    try
+                    { DnsManager.setDNS(connectingDNS.dnsAddress); }
+                    finally
+                    { onCompleted(); }
+                })
+                { IsBackground = true };
+                serviceThread.Start();
             }
             else
             {
+                Action onCompleted = () =>
+                {
+                    this.Invoke(new MethodInvoker(async delegate
+                    {
+                        shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
+                        updateVersion();
+                        lbl_dnsStatus.Text = "Disconnected";
+                        tsm_status.Text = "Disconnected";
+                        lbl_status.Text = "CLICK TO CONNECT";
+                        wp_dnsProgress.Visible = false;
+                        wp_dnsProgress.Stop();
+                        new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
+                        iconConnect.Image = Properties.Resources.connectIcon;
+                        // Sync Latency           
+                        await syncLatency();
+                        updateLatencyPicture();
+                        btn_sync.Enabled = true;
+                        pendingRequest = false;
+                    }));
+                };
+                // Start Disconnecting
                 pendingRequest = true;
                 btn_sync.Enabled = false;
                 shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
@@ -408,22 +452,15 @@ namespace ForceConnect
                 wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Disconnecting";
                 lbl_status.Text = "RESTORING";
-                await delay(3000);
-                DnsManager.clearDNS();
-                shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
-                updateVersion();
-                lbl_dnsStatus.Text = "Disconnected";
-                tsm_status.Text = "Disconnected";
-                lbl_status.Text = "CLICK TO CONNECT";
-                wp_dnsProgress.Visible = false;
-                wp_dnsProgress.Stop();
-                new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
-                iconConnect.Image = Properties.Resources.connectIcon;
-                // Sync Latency           
-                await syncLatency();
-                updateLatencyPicture();
-                btn_sync.Enabled = true;
-                pendingRequest = false;
+                await delay(2000);
+                // Disconnect Thread
+                serviceThread = new Thread(() =>
+                {
+                    try { DnsManager.clearDNS(); }
+                    finally { onCompleted(); }
+                })
+                { IsBackground = true };
+                serviceThread.Start();
             }
             _connected = !_connected;
         }
@@ -480,29 +517,41 @@ namespace ForceConnect
                 MessageIcon = frm_messageBox.Icon.Warning
             }.ShowMessage();
             if (result == DialogResult.No) return;
+            Action onCompleted = () =>
+            {
+                this.Invoke(new MethodInvoker(async delegate
+                {
+                    btn_sync.Enabled = false;
+                    wp_dnsProgress.Visible = true;
+                    wp_dnsProgress.Start();
+                    lbl_status.Text = "FLUSHING DNS SYSTEM";
+                    await delay(2000);
+                    // Sync Latency
+                    await syncLatency();
+                    updateLatencyPicture();
+                    wp_dnsProgress.Visible = false;
+                    wp_dnsProgress.Stop();
+                    lbl_status.Text = "SUCCESSFULLY FLUSHED";
+                    await delay(1500);
+                    if (_connected)
+                        lbl_status.Text = "CLICK TO DISCONNECT";
+                    else
+                        lbl_status.Text = "CLICK TO CONNECT";
+                    cb_selectDns.Enabled = true;
+                    pendingRequest = false;
+                }));
+            };
             pendingRequest = true;
             cb_selectDns.Enabled = false;
-            DnsManager.flushDNS();
-            btn_sync.Enabled = false;
-            wp_dnsProgress.Visible = true;
-            wp_dnsProgress.Start();
-            lbl_status.Text = "FLUSHING DNS SYSTEM";
-            await delay(3000);
-            // Sync Latency
-            await syncLatency();
-            updateLatencyPicture();
-            wp_dnsProgress.Visible = false;
-            wp_dnsProgress.Stop();
-            lbl_status.Text = "SUCCESSFULLY FLUSHED";
-            await delay(1500);
-            if (_connected)
-                lbl_status.Text = "CLICK TO DISCONNECT";
-            else
-                lbl_status.Text = "CLICK TO CONNECT";
-            cb_selectDns.Enabled = true;
-            pendingRequest = false;
+            // Flush DNS Thread
+            serviceThread = new Thread(() =>
+            {
+                try { DnsManager.flushDNS(); }
+                finally { onCompleted(); }
+            })
+            { IsBackground = true };
+            serviceThread.Start();
         }
-
         private void selectMenuOption(object sender, bool clickEvent)
         {
             if (((Guna2Button)sender) == currentSelectedMenuOption && !clickEvent) return;

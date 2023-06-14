@@ -101,6 +101,13 @@
     <Compile Include="frm_messageBox.Designer.cs">
       <DependentUpon>frm_messageBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="frm_network.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_network.Designer.cs">
+      <DependentUpon>frm_network.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interfaces\NetworkInterfaceInfo.cs" />
     <Compile Include="Launch\RegistryApplication.cs" />
     <Compile Include="Services\DnsAddressItems.cs" />
     <Compile Include="frm_about.cs">
@@ -140,6 +147,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Utility\FormManager.cs" />
     <Compile Include="frm_main.cs">
@@ -157,6 +165,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frm_explore.resx">
       <DependentUpon>frm_explore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_network.resx">
+      <DependentUpon>frm_network.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frm_service.resx">
       <DependentUpon>frm_service.cs</DependentUpon>
@@ -300,6 +311,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\update.png" />
+    <None Include="Icons\network.png" />
     <None Include="Icons\clean.png" />
     <None Include="Icons\messageBoxIcons\warning.png" />
     <None Include="Icons\messageBoxIcons\success.png" />

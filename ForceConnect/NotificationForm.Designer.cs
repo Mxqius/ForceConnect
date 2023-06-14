@@ -102,7 +102,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "NotificationForm";
             this.ShowInTaskbar = false;
-            this.Text = "Form_Alert";
+            this.Text = "Notification";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);

@@ -211,7 +211,9 @@
             // 
             this.btn_openServices.Animated = true;
             this.btn_openServices.BackColor = System.Drawing.Color.Transparent;
-            this.btn_openServices.BorderRadius = 15;
+            this.btn_openServices.BorderColor = System.Drawing.Color.White;
+            this.btn_openServices.BorderRadius = 5;
+            this.btn_openServices.BorderThickness = 1;
             this.btn_openServices.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_openServices.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_openServices.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -222,9 +224,9 @@
             this.btn_openServices.ForeColor = System.Drawing.Color.White;
             this.btn_openServices.Image = global::ForceConnect.Properties.Resources.services;
             this.btn_openServices.ImageOffset = new System.Drawing.Point(-10, 0);
-            this.btn_openServices.Location = new System.Drawing.Point(728, 12);
+            this.btn_openServices.Location = new System.Drawing.Point(729, 12);
             this.btn_openServices.Name = "btn_openServices";
-            this.btn_openServices.Size = new System.Drawing.Size(144, 43);
+            this.btn_openServices.Size = new System.Drawing.Size(144, 37);
             this.btn_openServices.TabIndex = 0;
             this.btn_openServices.Text = "Services";
             this.btn_openServices.Click += new System.EventHandler(this.btn_openServices_Click);
@@ -265,7 +267,9 @@
             // 
             this.btn_refresh.Animated = true;
             this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
-            this.btn_refresh.BorderRadius = 15;
+            this.btn_refresh.BorderColor = System.Drawing.Color.White;
+            this.btn_refresh.BorderRadius = 5;
+            this.btn_refresh.BorderThickness = 1;
             this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_refresh.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -275,9 +279,9 @@
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
             this.btn_refresh.ImageOffset = new System.Drawing.Point(-10, 0);
-            this.btn_refresh.Location = new System.Drawing.Point(578, 12);
+            this.btn_refresh.Location = new System.Drawing.Point(579, 12);
             this.btn_refresh.Name = "btn_refresh";
-            this.btn_refresh.Size = new System.Drawing.Size(144, 43);
+            this.btn_refresh.Size = new System.Drawing.Size(144, 37);
             this.btn_refresh.TabIndex = 0;
             this.btn_refresh.Text = "Refresh";
             this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);

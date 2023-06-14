@@ -35,17 +35,19 @@
             this.cb_launchOnWindows = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.lbl_automaticUpdate = new System.Windows.Forms.Label();
             this.lbl_minimizeInTray = new System.Windows.Forms.Label();
-            this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_launchOnWindows = new System.Windows.Forms.Label();
             this.lbl_minimizeDescription = new System.Windows.Forms.Label();
             this.lbl_descriptionOption2 = new System.Windows.Forms.Label();
             this.lbl_descriptionOption1 = new System.Windows.Forms.Label();
+            this.btn_networkInformation = new Guna.UI2.WinForms.Guna2Button();
+            this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // guna2Panel1
             // 
             this.guna2Panel1.BorderRadius = 15;
+            this.guna2Panel1.Controls.Add(this.btn_networkInformation);
             this.guna2Panel1.Controls.Add(this.guna2Shapes1);
             this.guna2Panel1.Controls.Add(this.cb_autoUpdate);
             this.guna2Panel1.Controls.Add(this.cb_minimizeInTray);
@@ -177,26 +179,6 @@
             this.lbl_minimizeInTray.Text = "Minimize in tray";
             this.lbl_minimizeInTray.Click += new System.EventHandler(this.lbl_minimizeInTray_Click);
             // 
-            // btn_updateSofware
-            // 
-            this.btn_updateSofware.Animated = true;
-            this.btn_updateSofware.BackColor = System.Drawing.Color.Transparent;
-            this.btn_updateSofware.BorderRadius = 12;
-            this.btn_updateSofware.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_updateSofware.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_updateSofware.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_updateSofware.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_updateSofware.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-            this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
-            this.btn_updateSofware.Location = new System.Drawing.Point(28, 299);
-            this.btn_updateSofware.Name = "btn_updateSofware";
-            this.btn_updateSofware.Size = new System.Drawing.Size(156, 38);
-            this.btn_updateSofware.TabIndex = 22;
-            this.btn_updateSofware.Text = "Check Updates";
-            this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
-            // 
             // lbl_launchOnWindows
             // 
             this.lbl_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
@@ -247,6 +229,52 @@
             this.lbl_descriptionOption1.TabIndex = 21;
             this.lbl_descriptionOption1.Text = "Automatic execution of the program when\r\nthe system is turned on";
             // 
+            // btn_networkInformation
+            // 
+            this.btn_networkInformation.Animated = true;
+            this.btn_networkInformation.BorderColor = System.Drawing.Color.White;
+            this.btn_networkInformation.BorderRadius = 5;
+            this.btn_networkInformation.BorderThickness = 1;
+            this.btn_networkInformation.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_networkInformation.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_networkInformation.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_networkInformation.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_networkInformation.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_networkInformation.FillColor = System.Drawing.Color.Transparent;
+            this.btn_networkInformation.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btn_networkInformation.ForeColor = System.Drawing.Color.White;
+            this.btn_networkInformation.Image = global::ForceConnect.Properties.Resources.network;
+            this.btn_networkInformation.Location = new System.Drawing.Point(250, 301);
+            this.btn_networkInformation.Name = "btn_networkInformation";
+            this.btn_networkInformation.Size = new System.Drawing.Size(186, 36);
+            this.btn_networkInformation.TabIndex = 26;
+            this.btn_networkInformation.Text = "Network Information";
+            this.btn_networkInformation.Click += new System.EventHandler(this.btn_networkInformation_Click);
+            // 
+            // btn_updateSofware
+            // 
+            this.btn_updateSofware.Animated = true;
+            this.btn_updateSofware.AnimatedGIF = true;
+            this.btn_updateSofware.BackColor = System.Drawing.Color.Transparent;
+            this.btn_updateSofware.BorderColor = System.Drawing.Color.White;
+            this.btn_updateSofware.BorderRadius = 5;
+            this.btn_updateSofware.BorderThickness = 1;
+            this.btn_updateSofware.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_updateSofware.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btn_updateSofware.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btn_updateSofware.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btn_updateSofware.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
+            this.btn_updateSofware.Image = global::ForceConnect.Properties.Resources.update;
+            this.btn_updateSofware.Location = new System.Drawing.Point(28, 301);
+            this.btn_updateSofware.Name = "btn_updateSofware";
+            this.btn_updateSofware.Size = new System.Drawing.Size(164, 36);
+            this.btn_updateSofware.TabIndex = 22;
+            this.btn_updateSofware.Text = "Check Updates";
+            this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
+            // 
             // frm_settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -279,5 +307,6 @@
         private Guna.UI2.WinForms.Guna2ToggleSwitch cb_minimizeInTray;
         private System.Windows.Forms.Label lbl_minimizeInTray;
         private System.Windows.Forms.Label lbl_minimizeDescription;
+        private Guna.UI2.WinForms.Guna2Button btn_networkInformation;
     }
 }

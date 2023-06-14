@@ -79,7 +79,13 @@ namespace ForceConnect
         private void lbl_minimizeInTray_Click(object sender, EventArgs e)
         {
             cb_minimizeInTray.Checked = !cb_minimizeInTray.Checked;
-        }     
+        }
+
+        private void btn_networkInformation_Click(object sender, EventArgs e)
+        {
+            new frm_network().ShowDialog();
+        }
+
         private void cb_minimizeInTray_CheckedChanged(object sender, EventArgs e)
         {
             if (initilizeWait) return;
@@ -99,11 +105,11 @@ namespace ForceConnect
         {
             if (checkingUpdate) return;
             checkingUpdate = true;
-            btn_updateSofware.Text = "Checking Update..";
+            btn_updateSofware.Text = "Checking Updates..";
             await delay(1500);
             string lastestVersion = await getLastestVersionApplication();
             checkingUpdate = false;
-            btn_updateSofware.Text = "Check Update";
+            btn_updateSofware.Text = "Check Updates";
             bool updateAvailable = LaunchUpdate.IsUpdateAvailable(lastestVersion, LaunchUpdate.getVersionApplication().ToString());
             if (updateAvailable)
             {

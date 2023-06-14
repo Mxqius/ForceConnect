@@ -25,7 +25,7 @@ namespace ForceConnect
             {
                 Application.Run(new frm_main());
             }
-            catch
+            catch(Exception ex)
             {
               new frm_messageBox()
                 {
