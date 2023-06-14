@@ -13,6 +13,6 @@ namespace ForceConnect.Interfaces
         public IPAddress IPAddress { get; set; }
         public IPAddress SubnetMask { get; set; }
         public string HostName { get; set; }
-        public IPAddress DNSIPAddress { get; set; }
+        public IPAddress[] DNSIPAddress { get; set; }
     }
 }

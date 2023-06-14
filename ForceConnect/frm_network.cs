@@ -31,7 +31,10 @@ namespace ForceConnect
                     lbl_ipAddress.Text = information.IPAddress.ToString();
                     lbl_hostName.Text = information.HostName.ToString();
                     lbl_speed.Text = NetworkInformation.ConvertBytesToMbps(information.Speed).ToString() + " Mbp/s";
-                    lbl_activeServices.Text = information.DNSIPAddress.ToString();
+                    if (information.DNSIPAddress.Length > 1)
+                        lbl_activeServices.Text = information.DNSIPAddress[0].ToString() + " " + information.DNSIPAddress[1].ToString();
+                    else
+                        lbl_activeServices.Text = information.DNSIPAddress[0].ToString();
                     lbl_macAddress.Text = information.MACAddress.ToString();
 
                 }));

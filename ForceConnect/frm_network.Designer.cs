@@ -120,9 +120,9 @@
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(59, 240);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(143, 22);
+            this.label4.Size = new System.Drawing.Size(140, 22);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Active Services: ";
+            this.label4.Text = "DNS IP Address";
             // 
             // label5
             // 

@@ -25,7 +25,7 @@ namespace ForceConnect.Services
                 IPAddress ipAddress = ipProperties.UnicastAddresses.FirstOrDefault(a => a.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
                 IPAddress subnetMask = ipProperties.UnicastAddresses.FirstOrDefault(a => a.Address.AddressFamily == AddressFamily.InterNetwork)?.IPv4Mask;
                 string hostName = Dns.GetHostName();
-                IPAddress dnsIpAddress = Dns.GetHostEntry(hostName).AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+                IPAddress[] dnsIPAddresses = ipProperties.DnsAddresses.Where(a => a.AddressFamily == AddressFamily.InterNetwork).ToArray();
 
                 return new NetworkInterfaceInfo
                 {
@@ -37,7 +37,7 @@ namespace ForceConnect.Services
                     IPAddress = ipAddress,
                     SubnetMask = subnetMask,
                     HostName = hostName,
-                    DNSIPAddress = dnsIpAddress
+                    DNSIPAddress = dnsIPAddresses
                 };
             }
             else
