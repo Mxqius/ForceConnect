@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
+    <Compile Include="Utility\FontManager.cs" />
     <Compile Include="Utility\FormManager.cs" />
     <Compile Include="frm_main.cs">
       <SubType>Form</SubType>
@@ -214,6 +215,7 @@
     <None Include="Icons\minimize.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Fonts\" />
     <Folder Include="Icons\letancyIcons\" />
   </ItemGroup>
   <ItemGroup>

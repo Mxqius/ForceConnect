@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using ForceConnect.Utility;
 
 namespace ForceConnect
 {
@@ -18,11 +19,11 @@ namespace ForceConnect
         static void Main()
         {
             // Set the DPI awareness for the application
-            SetProcessDPIAware();
+            SetProcessDPIAware();            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             try
-            {
+            {                
                 Application.Run(new frm_main());
             }
             catch(Exception ex)
