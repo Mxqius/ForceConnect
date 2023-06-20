@@ -1,6 +1,7 @@
 ﻿using ForceConnect.API;
 using ForceConnect.Launch;
 using ForceConnect.Services;
+using ForceConnect.Utility;
 using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
@@ -58,7 +59,7 @@ namespace ForceConnect
             }
         }
         private async Task checkInternetConnection()
-        {
+        {            
             await Task.Run(async () =>
             {
                 if (await getLatencyDNS("google.com") == -1)
@@ -338,9 +339,8 @@ namespace ForceConnect
                 return LaunchUpdate.GetLastestVersionDownloadUrl(_repositoryOwner, _repositoryName);
             });
         }
-
         private void frm_main_Load(object sender, EventArgs e)
-        {
+        {            
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
             updateDNSBox();
@@ -368,11 +368,11 @@ namespace ForceConnect
         }
         private async void connectEvent(object sender, EventArgs e)
         {
+            if (pendingRequest) return;
             await checkInternetConnection();
             await syncLatency();
             updateLatencyPicture();
             if (!_internetConnection) return;
-            if (pendingRequest) return;
             DnsAddress connectingDNS = currentDNS;
             if (!_connected)
             {
@@ -494,11 +494,11 @@ namespace ForceConnect
 
         private async void btn_flushDNS_Click(object sender, EventArgs e)
         {
+            if (pendingRequest) return;
             await checkInternetConnection();
             await syncLatency();
             updateLatencyPicture();
             if (!_internetConnection) return;
-            if (pendingRequest) return;
             if (_connected)
             {
                 new frm_messageBox()

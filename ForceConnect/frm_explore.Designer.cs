@@ -37,7 +37,6 @@
             this.lbl_previewAddress = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.lbl_counter = new System.Windows.Forms.Label();
             this.btn_openServices = new Guna.UI2.WinForms.Guna2Button();
             this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
@@ -64,7 +63,6 @@
             this.pnl_cardDns.Controls.Add(this.lbl_previewAddress);
             this.pnl_cardDns.Controls.Add(this.label1);
             this.pnl_cardDns.Controls.Add(this.label4);
-            this.pnl_cardDns.Controls.Add(this.guna2Shapes1);
             this.pnl_cardDns.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_cardDns.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_cardDns.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
@@ -77,7 +75,7 @@
             // btn_removeDNS
             // 
             this.btn_removeDNS.Animated = true;
-            this.btn_removeDNS.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.btn_removeDNS.BackColor = System.Drawing.Color.Transparent;
             this.btn_removeDNS.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_removeDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_removeDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -88,10 +86,10 @@
             this.btn_removeDNS.ForeColor = System.Drawing.Color.White;
             this.btn_removeDNS.Image = global::ForceConnect.Properties.Resources.delete;
             this.btn_removeDNS.ImageSize = new System.Drawing.Size(30, 30);
-            this.btn_removeDNS.Location = new System.Drawing.Point(562, 7);
+            this.btn_removeDNS.Location = new System.Drawing.Point(564, 18);
             this.btn_removeDNS.Name = "btn_removeDNS";
             this.btn_removeDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_removeDNS.Size = new System.Drawing.Size(44, 40);
+            this.btn_removeDNS.Size = new System.Drawing.Size(33, 30);
             this.btn_removeDNS.TabIndex = 17;
             this.btn_removeDNS.Visible = false;
             // 
@@ -181,19 +179,6 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "Address";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // guna2Shapes1
-            // 
-            this.guna2Shapes1.BorderThickness = 0;
-            this.guna2Shapes1.FillColor = System.Drawing.Color.WhiteSmoke;
-            this.guna2Shapes1.Location = new System.Drawing.Point(414, -111);
-            this.guna2Shapes1.Name = "guna2Shapes1";
-            this.guna2Shapes1.PolygonSkip = 1;
-            this.guna2Shapes1.Rotate = 0F;
-            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Ellipse;
-            this.guna2Shapes1.Size = new System.Drawing.Size(320, 388);
-            this.guna2Shapes1.TabIndex = 18;
-            this.guna2Shapes1.Zoom = 80;
             // 
             // lbl_counter
             // 
@@ -329,7 +314,6 @@
         private Guna.UI2.WinForms.Guna2PictureBox pb_latencyPicture;
         private Guna.UI2.WinForms.Guna2CircleButton btn_removeDNS;
         private Guna.UI2.WinForms.Guna2Button btn_openServices;
-        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes1;
         private Guna.UI2.WinForms.Guna2Button btn_refresh;
     }
 }
