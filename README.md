@@ -13,6 +13,7 @@ Enhance your browsing experience with ForceConnect DNS Changer for Windows. Take
 - Regular Updates
 - Fast and Efficient
 - Simple and Intuitive Interface
+- Show Network Information
 
 
 ## FAQ
@@ -44,16 +45,17 @@ Over time, we try our best to optimize and increase the security and power of th
 
 - Fix Antivirus Problem 🔴
 
-- VPN Mode 🔴
-
 
 ## Screenshots
 
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/e419c221-fcd8-4b91-8cd2-24be99e9a6e8)
+![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/5e20d315-1077-41dc-8186-e8f4845e8890)
 
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/af09c36f-b04d-49ab-97cc-ab7a592b4334)
+![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/4e3ea6b7-31dd-4e6c-86b2-5328dbcccaa7)
 
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/5142e601-d313-4bed-ac85-79c351bac19f)
+![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/54e26cc1-9748-4ceb-9551-70350c10e934)
+
+![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/051bc6b2-ff1f-4e69-9ff1-255634dd640a)
+
 
 ## Support
 
