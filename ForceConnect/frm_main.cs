@@ -59,7 +59,7 @@ namespace ForceConnect
             }
         }
         private async Task checkInternetConnection()
-        {            
+        {
             await Task.Run(async () =>
             {
                 if (await getLatencyDNS("google.com") == -1)
@@ -224,16 +224,16 @@ namespace ForceConnect
                 new frm_messageBox()
                 {
                     MessageText = "It is not possible to leave the program when an operation is in progress!",
-                    MessageCaption = "Warning",
+                    MessageCaption = "Cannot Exit Program",
                     MessageButtons = frm_messageBox.Buttons.OK,
-                    MessageIcon = frm_messageBox.Icon.Warning
+                    MessageIcon = frm_messageBox.Icon.Error
                 }.ShowMessage(); return;
             }
             pendingRequest = true;
             frm_messageBox message = new frm_messageBox()
             {
                 MessageText = "If you leave the program, your DNS will be disabled. Are you sure?",
-                MessageCaption = "Exit",
+                MessageCaption = "Exit Program",
                 MessageButtons = frm_messageBox.Buttons.YesNo,
                 MessageIcon = frm_messageBox.Icon.Warning
             };
@@ -340,7 +340,7 @@ namespace ForceConnect
             });
         }
         private void frm_main_Load(object sender, EventArgs e)
-        {            
+        {
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
             updateDNSBox();
@@ -382,7 +382,9 @@ namespace ForceConnect
                     {
                         connectedDNS = connectingDNS;
 
-                        shapeStatus.FillColor = Color.FromArgb(3, 201, 136);
+                        shapeStatus.FillColor = Color.FromArgb(27, 94, 32);
+                        pnl_statusColor.FillColor = Color.FromArgb(42, 61, 43);
+                        lbl_dnsStatus.ForeColor = Color.FromArgb(63, 160, 79);
                         lbl_dnsStatus.Text = "Connected";
                         tsm_status.Text = "Connected";
                         lbl_status.Text = "CLICK TO DISCONNECT";
@@ -405,7 +407,9 @@ namespace ForceConnect
                 pendingRequest = true;
                 cb_selectDns.Enabled = false;
                 btn_sync.Enabled = false;
-                shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                //pnl_statusColor.FillColor = Color.FromArgb(234, 144, 108);
+                //lbl_dnsStatus.ForeColor = Color.FromArgb(244, 209, 96);
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Connecting";
@@ -428,7 +432,9 @@ namespace ForceConnect
                 {
                     this.Invoke(new MethodInvoker(async delegate
                     {
-                        shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
+                        shapeStatus.FillColor = Color.FromArgb(183, 28, 28);
+                        pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
+                        lbl_dnsStatus.ForeColor = Color.FromArgb(180, 61, 61);
                         updateVersion();
                         lbl_dnsStatus.Text = "Disconnected";
                         tsm_status.Text = "Disconnected";
@@ -447,7 +453,9 @@ namespace ForceConnect
                 // Start Disconnecting
                 pendingRequest = true;
                 btn_sync.Enabled = false;
-                shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                //pnl_statusColor.FillColor = Color.FromArgb(234, 144, 108);
+                //lbl_dnsStatus.ForeColor = Color.FromArgb(244, 209, 96);
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
                 lbl_dnsStatus.Text = "Disconnecting";

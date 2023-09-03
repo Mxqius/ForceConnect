@@ -21,7 +21,7 @@ namespace ForceConnect
 
         private void focusSocialMedia(object sender, MouseEventArgs e)
         {
-            ((Guna2CircleButton)sender).ImageSize = new Size(38,38);
+            ((Guna2CircleButton)sender).ImageSize = new Size(38, 38);
         }
 
         private void unFocusSocialMedia(object sender, EventArgs e)
@@ -42,6 +42,11 @@ namespace ForceConnect
         private void btn_github_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/mxqius");
+        }
+
+        private void pb_aboutPicture_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://mxqius.ir");
         }
     }
 }

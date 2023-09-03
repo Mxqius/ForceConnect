@@ -116,7 +116,7 @@ namespace ForceConnect
                 DialogResult result = new frm_messageBox()
                 {
                     MessageText = $"Update is available, Would you like to download and install it? v{lastestVersion}",
-                    MessageCaption = "Update Check",
+                    MessageCaption = "Update Result",
                     MessageButtons = frm_messageBox.Buttons.YesNo,
                     MessageIcon = frm_messageBox.Icon.Info
                 }.ShowMessage();
@@ -136,7 +136,7 @@ namespace ForceConnect
                 new frm_messageBox()
                 {
                     MessageText = $"You are updated to the latest version of the program. Enjoy❤️",
-                    MessageCaption = "Update Check",
+                    MessageCaption = "Update Result",
                     MessageButtons = frm_messageBox.Buttons.OK,
                     MessageIcon = frm_messageBox.Icon.Success
                 }.ShowMessage();

@@ -109,6 +109,11 @@
     </Compile>
     <Compile Include="Interfaces\NetworkInterfaceInfo.cs" />
     <Compile Include="Launch\RegistryApplication.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\DnsAddressItems.cs" />
     <Compile Include="frm_about.cs">
       <SubType>Form</SubType>
@@ -141,11 +146,6 @@
     </Compile>
     <Compile Include="NotificationForm.Designer.cs">
       <DependentUpon>NotificationForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
@@ -313,6 +313,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\mxqius.png" />
+    <None Include="Resources\mxqius.png" />
+    <None Include="Icons\about-mxqius.png" />
+    <None Include="Icons\messageBoxIcons\warningFlat.png" />
+    <None Include="Icons\messageBoxIcons\waningFlat.png" />
+    <None Include="Icons\messageBoxIcons\successFlat.png" />
+    <None Include="Icons\messageBoxIcons\infoFlat.png" />
+    <None Include="Icons\messageBoxIcons\errorFlat.png" />
     <None Include="Icons\update.png" />
     <None Include="Icons\network.png" />
     <None Include="Icons\clean.png" />

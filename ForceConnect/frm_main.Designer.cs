@@ -69,6 +69,7 @@
             this.tsm_status = new System.Windows.Forms.ToolStripMenuItem();
             this.tss_seprator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsm_exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.pnl_statusColor = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_footer.SuspendLayout();
             this.pnl_control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
@@ -78,6 +79,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
             this.cms_form.SuspendLayout();
+            this.pnl_statusColor.SuspendLayout();
             this.SuspendLayout();
             // 
             // lbl_title
@@ -418,16 +420,15 @@
             // pnl_information
             // 
             this.pnl_information.BorderRadius = 15;
+            this.pnl_information.Controls.Add(this.pnl_statusColor);
             this.pnl_information.Controls.Add(this.pb_latencyPicture);
             this.pnl_information.Controls.Add(this.pb_dnsPicture);
             this.pnl_information.Controls.Add(this.btn_sync);
             this.pnl_information.Controls.Add(this.lbl_latency);
             this.pnl_information.Controls.Add(this.lbl_name);
             this.pnl_information.Controls.Add(this.lbl_previewAddress);
-            this.pnl_information.Controls.Add(this.lbl_dnsStatus);
             this.pnl_information.Controls.Add(this.label5);
             this.pnl_information.Controls.Add(this.label4);
-            this.pnl_information.Controls.Add(this.shapeStatus);
             this.pnl_information.Controls.Add(this.label3);
             this.pnl_information.Controls.Add(this.label2);
             this.pnl_information.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
@@ -441,7 +442,7 @@
             this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
             this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
             this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(245, 58);
+            this.pb_latencyPicture.Location = new System.Drawing.Point(226, 58);
             this.pb_latencyPicture.Name = "pb_latencyPicture";
             this.pb_latencyPicture.Size = new System.Drawing.Size(32, 29);
             this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -475,7 +476,7 @@
             this.btn_sync.ForeColor = System.Drawing.Color.White;
             this.btn_sync.Image = global::ForceConnect.Properties.Resources.sync;
             this.btn_sync.ImageSize = new System.Drawing.Size(27, 27);
-            this.btn_sync.Location = new System.Drawing.Point(357, 58);
+            this.btn_sync.Location = new System.Drawing.Point(348, 58);
             this.btn_sync.Name = "btn_sync";
             this.btn_sync.PressedColor = System.Drawing.Color.Transparent;
             this.btn_sync.Size = new System.Drawing.Size(37, 33);
@@ -486,9 +487,9 @@
             // lbl_latency
             // 
             this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_latency.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_latency.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_latency.ForeColor = System.Drawing.Color.White;
-            this.lbl_latency.Location = new System.Drawing.Point(283, 64);
+            this.lbl_latency.Location = new System.Drawing.Point(264, 64);
             this.lbl_latency.Name = "lbl_latency";
             this.lbl_latency.Size = new System.Drawing.Size(69, 19);
             this.lbl_latency.TabIndex = 0;
@@ -498,7 +499,7 @@
             // lbl_name
             // 
             this.lbl_name.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_name.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_name.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_name.ForeColor = System.Drawing.Color.White;
             this.lbl_name.Location = new System.Drawing.Point(65, 64);
             this.lbl_name.Name = "lbl_name";
@@ -511,11 +512,11 @@
             // 
             this.lbl_previewAddress.BackColor = System.Drawing.Color.Transparent;
             this.lbl_previewAddress.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lbl_previewAddress.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_previewAddress.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_previewAddress.ForeColor = System.Drawing.Color.White;
-            this.lbl_previewAddress.Location = new System.Drawing.Point(23, 149);
+            this.lbl_previewAddress.Location = new System.Drawing.Point(26, 142);
             this.lbl_previewAddress.Name = "lbl_previewAddress";
-            this.lbl_previewAddress.Size = new System.Drawing.Size(128, 19);
+            this.lbl_previewAddress.Size = new System.Drawing.Size(159, 45);
             this.lbl_previewAddress.TabIndex = 0;
             this.lbl_previewAddress.Text = "178.22.122.100 185.51.200.2";
             this.lbl_previewAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -524,11 +525,11 @@
             // lbl_dnsStatus
             // 
             this.lbl_dnsStatus.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_dnsStatus.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_dnsStatus.ForeColor = System.Drawing.Color.White;
-            this.lbl_dnsStatus.Location = new System.Drawing.Point(257, 149);
+            this.lbl_dnsStatus.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_dnsStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(61)))), ((int)(((byte)(61)))));
+            this.lbl_dnsStatus.Location = new System.Drawing.Point(34, 8);
             this.lbl_dnsStatus.Name = "lbl_dnsStatus";
-            this.lbl_dnsStatus.Size = new System.Drawing.Size(131, 19);
+            this.lbl_dnsStatus.Size = new System.Drawing.Size(126, 19);
             this.lbl_dnsStatus.TabIndex = 0;
             this.lbl_dnsStatus.Text = "Disconnectd";
             this.lbl_dnsStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -536,9 +537,9 @@
             // label5
             // 
             this.label5.BackColor = System.Drawing.Color.Transparent;
-            this.label5.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Rubik SemiBold", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(240, 111);
+            this.label5.Location = new System.Drawing.Point(221, 111);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(98, 19);
             this.label5.TabIndex = 0;
@@ -548,7 +549,7 @@
             // label4
             // 
             this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Rubik SemiBold", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(26, 111);
             this.label4.Name = "label4";
@@ -561,8 +562,8 @@
             // 
             this.shapeStatus.BackColor = System.Drawing.Color.Transparent;
             this.shapeStatus.BorderColor = System.Drawing.Color.Transparent;
-            this.shapeStatus.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(114)))), ((int)(((byte)(114)))));
-            this.shapeStatus.Location = new System.Drawing.Point(232, 149);
+            this.shapeStatus.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.shapeStatus.Location = new System.Drawing.Point(10, 7);
             this.shapeStatus.Name = "shapeStatus";
             this.shapeStatus.PolygonSkip = 1;
             this.shapeStatus.Rotate = 0F;
@@ -575,9 +576,9 @@
             // label3
             // 
             this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Rubik SemiBold", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(240, 26);
+            this.label3.Location = new System.Drawing.Point(221, 26);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(94, 19);
             this.label3.TabIndex = 0;
@@ -587,7 +588,7 @@
             // label2
             // 
             this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Rubik SemiBold", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(26, 26);
             this.label2.Name = "label2";
@@ -669,6 +670,17 @@
             this.tsm_exit.Size = new System.Drawing.Size(190, 28);
             this.tsm_exit.Text = "Exit";
             // 
+            // pnl_statusColor
+            // 
+            this.pnl_statusColor.BorderRadius = 6;
+            this.pnl_statusColor.Controls.Add(this.shapeStatus);
+            this.pnl_statusColor.Controls.Add(this.lbl_dnsStatus);
+            this.pnl_statusColor.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(43)))), ((int)(((byte)(41)))));
+            this.pnl_statusColor.Location = new System.Drawing.Point(225, 147);
+            this.pnl_statusColor.Name = "pnl_statusColor";
+            this.pnl_statusColor.Size = new System.Drawing.Size(163, 33);
+            this.pnl_statusColor.TabIndex = 10;
+            // 
             // frm_main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -696,6 +708,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
             this.cms_form.ResumeLayout(false);
+            this.pnl_statusColor.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -740,6 +753,7 @@
         private System.Windows.Forms.ToolStripMenuItem tsm_status;
         private System.Windows.Forms.ToolStripSeparator tsm_seprator2;
         private Guna.UI2.WinForms.Guna2CircleButton btn_flushDNS;
+        private Guna.UI2.WinForms.Guna2Panel pnl_statusColor;
     }
 }
 

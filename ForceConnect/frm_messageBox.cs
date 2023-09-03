@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ForceConnect
 {
     public partial class frm_messageBox : Form
     {
+        private Color successColor = Color.FromArgb(0, 222, 115);
+        private Color errorColor = Color.FromArgb(250, 82, 82);
+        private Color infoColor = Color.FromArgb(51, 154, 240);
+        private Color warningColor = Color.FromArgb(255, 165, 0);
         public enum Icon
         {
             Success,
@@ -32,6 +30,11 @@ namespace ForceConnect
         public frm_messageBox()
         {
             InitializeComponent();
+        }
+        public Color HeaderColor
+        {
+            get { return pnl_color.FillColor; }
+            set { pnl_color.FillColor = value; }
         }
         public string MessageCaption
         {
@@ -85,19 +88,23 @@ namespace ForceConnect
             switch (MessageIcon)
             {
                 case Icon.Success:
-                    pb_header.Image = Properties.Resources.successMessage;
+                    pnl_color.FillColor = successColor;
+                    pb_header.Image = Properties.Resources.successFlat;
                     break;
 
                 case Icon.Error:
-                    pb_header.Image = Properties.Resources.errorMessage;
+                    pnl_color.FillColor = errorColor;
+                    pb_header.Image = Properties.Resources.errorFlat;
                     break;
 
                 case Icon.Info:
-                    pb_header.Image = Properties.Resources.infoMessage;
+                    pnl_color.FillColor = infoColor;
+                    pb_header.Image = Properties.Resources.infoFlat;
                     break;
 
                 case Icon.Warning:
-                    pb_header.Image = Properties.Resources.warningMessage;
+                    pnl_color.FillColor = warningColor;
+                    pb_header.Image = Properties.Resources.warningFlat;
                     break;
             }
             switch (MessageButtons)
@@ -182,11 +189,6 @@ namespace ForceConnect
                     DialogResult = DialogResult.Cancel;
                     break;
             }
-        }
-
-        private void btn_close_Click(object sender, EventArgs e)
-        {
-            DialogResult = DialogResult.No;
         }
     }
 }

@@ -23,6 +23,7 @@ namespace ForceConnect
             await Task.Run(() =>
             {
                 NetworkInterfaceInfo information = NetworkInformation.GetActiveNetworkInterfaceInfo();
+                if (information == null) return;
                 this.Invoke(new MethodInvoker(delegate
                 {
                     lbl_intrfaceName.Text = information.ActiveInterfaceName;
