@@ -72,6 +72,9 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DiscordRPC, Version=1.2.1.24, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DiscordRichPresence.1.2.1.24\lib\net45\DiscordRPC.dll</HintPath>
+    </Reference>
     <Reference Include="Guna.UI2, Version=2.0.4.4, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
       <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.4\lib\net45\Guna.UI2.dll</HintPath>
     </Reference>
@@ -149,6 +152,7 @@
     </Compile>
     <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
+    <Compile Include="Utility\DiscordRPCManager.cs" />
     <Compile Include="Utility\FontManager.cs" />
     <Compile Include="Utility\FormManager.cs" />
     <Compile Include="frm_main.cs">

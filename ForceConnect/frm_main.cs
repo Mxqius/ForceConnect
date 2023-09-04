@@ -352,6 +352,8 @@ namespace ForceConnect
             checkAutoUpdate();
             // Update Notify Text
             notifyForm.Text = $"Version {version.Major}.{version.Minor}.{version.Build}";
+            //  Initialize Discord RPC
+            DiscordRPCManager.GetInstance();
         }
         private void updateLatencyPicture()
         {
@@ -397,6 +399,9 @@ namespace ForceConnect
                         // Sync Latency
                         await syncLatency();
                         updateLatencyPicture();
+
+                        // Update Discord RPC
+                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service:\n{lbl_previewAddress.Text}");
 
                         btn_sync.Enabled = true;
                         cb_selectDns.Enabled = true;
@@ -446,6 +451,10 @@ namespace ForceConnect
                         // Sync Latency           
                         await syncLatency();
                         updateLatencyPicture();
+
+                        //Update Discord RPC
+                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Ideal", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger");
+
                         btn_sync.Enabled = true;
                         pendingRequest = false;
                     }));

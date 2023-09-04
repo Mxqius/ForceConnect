@@ -1,4 +1,5 @@
 ﻿using ForceConnect.Launch;
+using ForceConnect.Utility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,15 +17,17 @@ namespace ForceConnect
 {
     public partial class frm_settings : Form
     {
-        private bool _launchOnWindows, initilizeWait, checkingUpdate;
+        private bool _launchOnWindows, initilizeWait, checkingUpdate, _showDiscordRPC = true;
         private string _isAutoUpdate, _isMinimizeTray;
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
+        private readonly string _discordOptionText;
         public frm_settings()
         {
             InitializeComponent();
             _launchOnWindows = LaunchProgram.IsAppSetToRunAtStartup();
             _isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
             _isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
+            _discordOptionText = lbl_discordDescription.Text;
         }
 
 
@@ -84,6 +87,18 @@ namespace ForceConnect
         private void btn_networkInformation_Click(object sender, EventArgs e)
         {
             new frm_network().ShowDialog();
+        }
+
+        private async void ts_discordRPC_CheckedChanged(object sender, EventArgs e)
+        {
+            _showDiscordRPC = !_showDiscordRPC;
+            if (!_showDiscordRPC)
+                DiscordRPCManager.GetInstance().Dispose();
+            else
+                DiscordRPCManager.GetInstance();
+            lbl_discordDescription.Text = _discordOptionText + ", Wait for changes..";
+            await Task.Delay(5000);
+            lbl_discordDescription.Text = _discordOptionText;
         }
 
         private void cb_minimizeInTray_CheckedChanged(object sender, EventArgs e)

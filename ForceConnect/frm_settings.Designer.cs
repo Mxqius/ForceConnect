@@ -32,14 +32,14 @@
             this.btn_networkInformation = new Guna.UI2.WinForms.Guna2Button();
             this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.cb_autoUpdate = new Guna.UI2.WinForms.Guna2ToggleSwitch();
-            this.ts_theme = new Guna.UI2.WinForms.Guna2ToggleSwitch();
+            this.ts_discordRPC = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.cb_minimizeInTray = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.cb_launchOnWindows = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.lbl_theme = new System.Windows.Forms.Label();
             this.lbl_automaticUpdate = new System.Windows.Forms.Label();
             this.lbl_minimizeInTray = new System.Windows.Forms.Label();
             this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
-            this.lbl_themeDescription = new System.Windows.Forms.Label();
+            this.lbl_discordDescription = new System.Windows.Forms.Label();
             this.lbl_launchOnWindows = new System.Windows.Forms.Label();
             this.lbl_minimizeDescription = new System.Windows.Forms.Label();
             this.lbl_descriptionOption2 = new System.Windows.Forms.Label();
@@ -53,14 +53,14 @@
             this.pnl_container.Controls.Add(this.btn_networkInformation);
             this.pnl_container.Controls.Add(this.guna2Shapes1);
             this.pnl_container.Controls.Add(this.cb_autoUpdate);
-            this.pnl_container.Controls.Add(this.ts_theme);
+            this.pnl_container.Controls.Add(this.ts_discordRPC);
             this.pnl_container.Controls.Add(this.cb_minimizeInTray);
             this.pnl_container.Controls.Add(this.cb_launchOnWindows);
             this.pnl_container.Controls.Add(this.lbl_theme);
             this.pnl_container.Controls.Add(this.lbl_automaticUpdate);
             this.pnl_container.Controls.Add(this.lbl_minimizeInTray);
             this.pnl_container.Controls.Add(this.btn_updateSofware);
-            this.pnl_container.Controls.Add(this.lbl_themeDescription);
+            this.pnl_container.Controls.Add(this.lbl_discordDescription);
             this.pnl_container.Controls.Add(this.lbl_launchOnWindows);
             this.pnl_container.Controls.Add(this.lbl_minimizeDescription);
             this.pnl_container.Controls.Add(this.lbl_descriptionOption2);
@@ -131,30 +131,30 @@
             this.cb_autoUpdate.UncheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_autoUpdate.CheckedChanged += new System.EventHandler(this.cb_autoUpdate_CheckedChanged);
             // 
-            // ts_theme
+            // ts_discordRPC
             // 
-            this.ts_theme.Animated = true;
-            this.ts_theme.AutoRoundedCorners = true;
-            this.ts_theme.BackColor = System.Drawing.Color.Transparent;
-            this.ts_theme.Checked = true;
-            this.ts_theme.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.ts_theme.CheckedState.BorderRadius = 11;
-            this.ts_theme.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.ts_theme.CheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.ts_theme.CheckedState.InnerBorderRadius = 7;
-            this.ts_theme.CheckedState.InnerColor = System.Drawing.Color.White;
-            this.ts_theme.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ts_theme.Enabled = false;
-            this.ts_theme.Location = new System.Drawing.Point(374, 177);
-            this.ts_theme.Name = "ts_theme";
-            this.ts_theme.Size = new System.Drawing.Size(55, 24);
-            this.ts_theme.TabIndex = 23;
-            this.ts_theme.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.ts_theme.UncheckedState.BorderRadius = 11;
-            this.ts_theme.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
-            this.ts_theme.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
-            this.ts_theme.UncheckedState.InnerBorderRadius = 7;
-            this.ts_theme.UncheckedState.InnerColor = System.Drawing.Color.White;
+            this.ts_discordRPC.Animated = true;
+            this.ts_discordRPC.AutoRoundedCorners = true;
+            this.ts_discordRPC.BackColor = System.Drawing.Color.Transparent;
+            this.ts_discordRPC.Checked = true;
+            this.ts_discordRPC.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.ts_discordRPC.CheckedState.BorderRadius = 11;
+            this.ts_discordRPC.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.ts_discordRPC.CheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.ts_discordRPC.CheckedState.InnerBorderRadius = 7;
+            this.ts_discordRPC.CheckedState.InnerColor = System.Drawing.Color.White;
+            this.ts_discordRPC.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ts_discordRPC.Location = new System.Drawing.Point(374, 177);
+            this.ts_discordRPC.Name = "ts_discordRPC";
+            this.ts_discordRPC.Size = new System.Drawing.Size(55, 24);
+            this.ts_discordRPC.TabIndex = 23;
+            this.ts_discordRPC.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.ts_discordRPC.UncheckedState.BorderRadius = 11;
+            this.ts_discordRPC.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.ts_discordRPC.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.ts_discordRPC.UncheckedState.InnerBorderRadius = 7;
+            this.ts_discordRPC.UncheckedState.InnerColor = System.Drawing.Color.White;
+            this.ts_discordRPC.CheckedChanged += new System.EventHandler(this.ts_discordRPC_CheckedChanged);
             // 
             // cb_minimizeInTray
             // 
@@ -215,7 +215,7 @@
             this.lbl_theme.Name = "lbl_theme";
             this.lbl_theme.Size = new System.Drawing.Size(226, 28);
             this.lbl_theme.TabIndex = 21;
-            this.lbl_theme.Text = "Dark Theme";
+            this.lbl_theme.Text = "Discord RPC";
             // 
             // lbl_automaticUpdate
             // 
@@ -269,17 +269,17 @@
             this.btn_updateSofware.Text = "Check Updates";
             this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
             // 
-            // lbl_themeDescription
+            // lbl_discordDescription
             // 
-            this.lbl_themeDescription.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_themeDescription.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.lbl_themeDescription.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_themeDescription.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.lbl_themeDescription.Location = new System.Drawing.Point(382, 212);
-            this.lbl_themeDescription.Name = "lbl_themeDescription";
-            this.lbl_themeDescription.Size = new System.Drawing.Size(279, 34);
-            this.lbl_themeDescription.TabIndex = 21;
-            this.lbl_themeDescription.Text = "Sofware theme choice Dark/Light";
+            this.lbl_discordDescription.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_discordDescription.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lbl_discordDescription.Font = new System.Drawing.Font("Rubik SemiBold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_discordDescription.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.lbl_discordDescription.Location = new System.Drawing.Point(382, 212);
+            this.lbl_discordDescription.Name = "lbl_discordDescription";
+            this.lbl_discordDescription.Size = new System.Drawing.Size(279, 42);
+            this.lbl_discordDescription.TabIndex = 21;
+            this.lbl_discordDescription.Text = "Show your active service in your activity";
             // 
             // lbl_launchOnWindows
             // 
@@ -364,8 +364,8 @@
         private System.Windows.Forms.Label lbl_minimizeInTray;
         private System.Windows.Forms.Label lbl_minimizeDescription;
         private Guna.UI2.WinForms.Guna2Button btn_networkInformation;
-        private Guna.UI2.WinForms.Guna2ToggleSwitch ts_theme;
+        private Guna.UI2.WinForms.Guna2ToggleSwitch ts_discordRPC;
         private System.Windows.Forms.Label lbl_theme;
-        private System.Windows.Forms.Label lbl_themeDescription;
+        private System.Windows.Forms.Label lbl_discordDescription;
     }
 }
