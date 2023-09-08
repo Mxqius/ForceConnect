@@ -21,6 +21,7 @@ namespace ForceConnect
         private string _isAutoUpdate, _isMinimizeTray;
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         private readonly string _discordOptionText;
+        private static frm_settings _instance;
         public frm_settings()
         {
             InitializeComponent();
@@ -29,7 +30,12 @@ namespace ForceConnect
             _isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
             _discordOptionText = lbl_discordDescription.Text;
         }
-
+        public static frm_settings GetInstance()
+        {
+            if (_instance == null)
+                _instance = new frm_settings();
+            return _instance;
+        }
 
         private void cb_launchOnWindows_CheckedChanged(object sender, EventArgs e)
         {

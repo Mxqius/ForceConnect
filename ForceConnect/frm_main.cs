@@ -569,6 +569,7 @@ namespace ForceConnect
             { IsBackground = true };
             serviceThread.Start();
         }
+
         private void selectMenuOption(object sender, bool clickEvent)
         {
             if (((Guna2Button)sender) == currentSelectedMenuOption && !clickEvent) return;
@@ -606,7 +607,7 @@ namespace ForceConnect
         private void hiddenHomeForm(bool visible)
         {
             wp_dnsProgress.Visible = !visible;
-            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = cb_selectDns.Visible = visible;
+            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = cb_selectDns.Visible = visible;
         }
         private void clickControlMenu(object sender, EventArgs e)
         {

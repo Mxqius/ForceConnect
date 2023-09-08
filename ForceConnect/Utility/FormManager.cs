@@ -7,6 +7,7 @@ namespace ForceConnect
         public static Form activeForm = null;
         public static Form openChildFormInPanel(Form childForm, Panel PnlActive)
         {
+            // remember for use form setting GetInstance delete this if !
             if (activeForm != null)
                 activeForm.Close();
             activeForm = childForm;
