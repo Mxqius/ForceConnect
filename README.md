@@ -1,6 +1,5 @@
 
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
-
+![banner](https://github.com/Mxqius/ForceConnect/assets/80541964/51d6c6e8-435b-4210-abf9-6bf85f6ae195)
 
 # ForceConnect
 
