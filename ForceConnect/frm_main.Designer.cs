@@ -66,9 +66,9 @@
             this.notifyForm = new System.Windows.Forms.NotifyIcon(this.components);
             this.cms_form = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsm_forceConnect = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tsm_status = new System.Windows.Forms.ToolStripMenuItem();
             this.tsm_exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.pnl_footer.SuspendLayout();
             this.pnl_control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
@@ -637,7 +637,7 @@
             this.tsm_exit});
             this.cms_form.Name = "contextMenuStrip1";
             this.cms_form.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.cms_form.Size = new System.Drawing.Size(215, 116);
+            this.cms_form.Size = new System.Drawing.Size(173, 88);
             // 
             // tsm_forceConnect
             // 
@@ -645,27 +645,27 @@
             this.tsm_forceConnect.Image = global::ForceConnect.Properties.Resources.headerIcon;
             this.tsm_forceConnect.ImageTransparentColor = System.Drawing.Color.Transparent;
             this.tsm_forceConnect.Name = "tsm_forceConnect";
-            this.tsm_forceConnect.Size = new System.Drawing.Size(214, 26);
+            this.tsm_forceConnect.Size = new System.Drawing.Size(172, 26);
             this.tsm_forceConnect.Text = "ForceConnect";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(169, 6);
             // 
             // tsm_status
             // 
             this.tsm_status.ForeColor = System.Drawing.Color.White;
             this.tsm_status.Name = "tsm_status";
-            this.tsm_status.Size = new System.Drawing.Size(214, 26);
+            this.tsm_status.Size = new System.Drawing.Size(172, 26);
             this.tsm_status.Text = "Disconnected";
             // 
             // tsm_exit
             // 
             this.tsm_exit.ForeColor = System.Drawing.Color.White;
             this.tsm_exit.Name = "tsm_exit";
-            this.tsm_exit.Size = new System.Drawing.Size(214, 26);
+            this.tsm_exit.Size = new System.Drawing.Size(172, 26);
             this.tsm_exit.Text = "Exit";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(211, 6);
             // 
             // frm_main
             // 

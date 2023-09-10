@@ -1,4 +1,5 @@
-﻿using ForceConnect.Launch;
+﻿using ForceConnect.API;
+using ForceConnect.Launch;
 using ForceConnect.Utility;
 using System;
 using System.Collections.Generic;
@@ -121,9 +122,26 @@ namespace ForceConnect
         {
             cb_launchOnWindows.Checked = !cb_launchOnWindows.Checked;
         }
-
+        private async Task<long> getLatencyDNS(string address)
+        {
+            return await Task.Run(() =>
+            {
+                return Latency.MeasureLatency(address);
+            });
+        }
         private async void btn_updateSofware_Click(object sender, EventArgs e)
         {
+            if (await getLatencyDNS("google.com") == -1)
+            {
+                new frm_messageBox()
+                {
+                    MessageText = $"Please ensure that your device is connected to the internet and try again.",
+                    MessageCaption = "Network Error",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Error
+                }.ShowMessage();
+                return;
+            }
             if (checkingUpdate) return;
             checkingUpdate = true;
             btn_updateSofware.Text = "Checking Updates..";
@@ -156,7 +174,7 @@ namespace ForceConnect
             {
                 new frm_messageBox()
                 {
-                    MessageText = $"You are updated to the latest version of the program. Enjoy❤️",
+                    MessageText = $"You are updated to the latest version of the program. Enjoy",
                     MessageCaption = "Update Result",
                     MessageButtons = frm_messageBox.Buttons.OK,
                     MessageIcon = frm_messageBox.Icon.Success

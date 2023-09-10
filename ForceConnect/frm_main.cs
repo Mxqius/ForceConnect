@@ -73,12 +73,28 @@ namespace ForceConnect
         private void changeAppStatus(bool internetConnection)
         {
             _internetConnection = internetConnection;
-            if (_internetConnection && _connected) return;
+            //if (_internetConnection && _connected) return;
 
             this.Invoke(new MethodInvoker(delegate
             {
-                lbl_status.Text = (internetConnection) ? "CLICK TO CONNECT" : "NO CONNECTION";
-                iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
+                if (internetConnection && _connected)
+                {
+                    lbl_status.Text = "CLICK TO DISCONNECT";
+                    iconConnect.Image = Properties.Resources.connectedIcon;
+                    return;
+                }
+                else if (internetConnection && !_connected)
+                {
+                    lbl_status.Text = "CLICK TO CONNECT";
+                    iconConnect.Image = Properties.Resources.connectIcon;
+                    return;
+                }
+                else
+                {
+                    lbl_status.Text = "NO CONNECTION";
+                    iconConnect.Image = Properties.Resources.no_internet;
+                }
+                //iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
             }));
 
         }
@@ -246,14 +262,16 @@ namespace ForceConnect
             if (_connected)
             {
                 btn_sync.Enabled = false;
-                shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
+                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
                 lbl_dnsStatus.Text = "Disconnecting";
                 lbl_status.Text = "RESTORING";
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
                 await delay(3000);
                 DnsManager.clearDNS();
-                shapeStatus.FillColor = Color.FromArgb(248, 114, 114);
+                shapeStatus.FillColor = Color.FromArgb(183, 28, 28);
+                pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
+                lbl_dnsStatus.ForeColor = Color.FromArgb(180, 61, 61);
                 updateVersion();
                 lbl_dnsStatus.Text = "Disconnected";
                 wp_dnsProgress.Visible = false;
