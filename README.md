@@ -1,6 +1,5 @@
 
-![Logo](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png)
-
+![banner](https://github.com/Mxqius/ForceConnect/assets/80541964/51d6c6e8-435b-4210-abf9-6bf85f6ae195)
 
 # ForceConnect
 
@@ -48,13 +47,12 @@ Over time, we try our best to optimize and increase the security and power of th
 
 ## Screenshots
 
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/5e20d315-1077-41dc-8186-e8f4845e8890)
+![slide_02](https://github.com/Mxqius/ForceConnect/assets/80541964/a24921a4-fbce-4c78-9b0d-c9e8b766dd17)
+![slide_03](https://github.com/Mxqius/ForceConnect/assets/80541964/3032b306-9c95-475c-bd50-71066fbf48b7)
+![slide_04](https://github.com/Mxqius/ForceConnect/assets/80541964/437ed2a3-dbfb-406f-88d1-dec1503421a9)
+![slide_05](https://github.com/Mxqius/ForceConnect/assets/80541964/bc5da1ce-a78a-44c1-b2d0-ac4479257724)
+![slide_06](https://github.com/Mxqius/ForceConnect/assets/80541964/e0532490-5a7c-4547-a660-9685347fa564)
 
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/4e3ea6b7-31dd-4e6c-86b2-5328dbcccaa7)
-
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/54e26cc1-9748-4ceb-9551-70350c10e934)
-
-![App Screenshot](https://github.com/Mxqius/ForceConnect/assets/80541964/051bc6b2-ff1f-4e69-9ff1-255634dd640a)
 
 
 ## Support
