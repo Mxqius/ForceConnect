@@ -48,6 +48,11 @@
             this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.shape_connect = new Guna.UI2.WinForms.Guna2Shapes();
             this.cb_selectDns = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.pnl_welcome = new Guna.UI2.WinForms.Guna2Panel();
+            this.lbl_appName_wlc = new System.Windows.Forms.Label();
+            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
+            this.guna2CirclePictureBox1 = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.lbl_version_wlc = new System.Windows.Forms.Label();
             this.pnl_information = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_statusColor = new Guna.UI2.WinForms.Guna2Panel();
             this.shapeStatus = new Guna.UI2.WinForms.Guna2Shapes();
@@ -74,6 +79,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
             this.pnl_container.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).BeginInit();
+            this.pnl_welcome.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.guna2CirclePictureBox1)).BeginInit();
             this.pnl_information.SuspendLayout();
             this.pnl_statusColor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -304,6 +311,7 @@
             this.pnl_container.Controls.Add(this.iconConnect);
             this.pnl_container.Controls.Add(this.shape_connect);
             this.pnl_container.Controls.Add(this.cb_selectDns);
+            this.pnl_container.Controls.Add(this.pnl_welcome);
             this.pnl_container.Controls.Add(this.pnl_information);
             this.pnl_container.Controls.Add(this.lbl_message);
             this.pnl_container.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -314,6 +322,7 @@
             // 
             // btn_flushDNS
             // 
+            this.btn_flushDNS.Animated = true;
             this.btn_flushDNS.BorderColor = System.Drawing.Color.White;
             this.btn_flushDNS.BorderThickness = 1;
             this.btn_flushDNS.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -325,11 +334,11 @@
             this.btn_flushDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_flushDNS.ForeColor = System.Drawing.Color.White;
             this.btn_flushDNS.Image = global::ForceConnect.Properties.Resources.clean;
-            this.btn_flushDNS.ImageSize = new System.Drawing.Size(25, 25);
-            this.btn_flushDNS.Location = new System.Drawing.Point(342, 161);
+            this.btn_flushDNS.ImageSize = new System.Drawing.Size(18, 18);
+            this.btn_flushDNS.Location = new System.Drawing.Point(372, 85);
             this.btn_flushDNS.Name = "btn_flushDNS";
             this.btn_flushDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_flushDNS.Size = new System.Drawing.Size(52, 52);
+            this.btn_flushDNS.Size = new System.Drawing.Size(41, 40);
             this.btn_flushDNS.TabIndex = 24;
             this.btn_flushDNS.Click += new System.EventHandler(this.btn_flushDNS_Click);
             // 
@@ -358,7 +367,7 @@
             // 
             // iconConnect
             // 
-            this.iconConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
+            this.iconConnect.BackColor = System.Drawing.Color.Transparent;
             this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
             this.iconConnect.Image = global::ForceConnect.Properties.Resources.connectIcon;
             this.iconConnect.ImageRotate = 0F;
@@ -370,6 +379,8 @@
             this.iconConnect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.iconConnect.TabIndex = 21;
             this.iconConnect.TabStop = false;
+            this.iconConnect.UseTransparentBackground = true;
+            this.iconConnect.WaitOnLoad = true;
             this.iconConnect.Click += new System.EventHandler(this.connectEvent);
             // 
             // shape_connect
@@ -412,9 +423,72 @@
             this.cb_selectDns.MaxDropDownItems = 5;
             this.cb_selectDns.Name = "cb_selectDns";
             this.cb_selectDns.Size = new System.Drawing.Size(408, 46);
-            this.cb_selectDns.StartIndex = 0;
             this.cb_selectDns.TabIndex = 1;
             this.cb_selectDns.SelectedIndexChanged += new System.EventHandler(this.cb_selectDns_SelectedIndexChanged);
+            // 
+            // pnl_welcome
+            // 
+            this.pnl_welcome.BorderRadius = 15;
+            this.pnl_welcome.Controls.Add(this.lbl_appName_wlc);
+            this.pnl_welcome.Controls.Add(this.guna2Shapes1);
+            this.pnl_welcome.Controls.Add(this.guna2CirclePictureBox1);
+            this.pnl_welcome.Controls.Add(this.lbl_version_wlc);
+            this.pnl_welcome.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_welcome.Location = new System.Drawing.Point(426, 147);
+            this.pnl_welcome.Name = "pnl_welcome";
+            this.pnl_welcome.Size = new System.Drawing.Size(409, 204);
+            this.pnl_welcome.TabIndex = 15;
+            // 
+            // lbl_appName_wlc
+            // 
+            this.lbl_appName_wlc.Font = new System.Drawing.Font("Montserrat", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_appName_wlc.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(253)))), ((int)(((byte)(216)))), ((int)(((byte)(53)))));
+            this.lbl_appName_wlc.Location = new System.Drawing.Point(157, 58);
+            this.lbl_appName_wlc.Name = "lbl_appName_wlc";
+            this.lbl_appName_wlc.Size = new System.Drawing.Size(201, 28);
+            this.lbl_appName_wlc.TabIndex = 27;
+            this.lbl_appName_wlc.Text = "ForceConnect";
+            this.lbl_appName_wlc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // guna2Shapes1
+            // 
+            this.guna2Shapes1.BorderThickness = 0;
+            this.guna2Shapes1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(64)))), ((int)(((byte)(72)))));
+            this.guna2Shapes1.LineEndCap = System.Drawing.Drawing2D.LineCap.Round;
+            this.guna2Shapes1.LineStartCap = System.Drawing.Drawing2D.LineCap.Round;
+            this.guna2Shapes1.LineThickness = 1;
+            this.guna2Shapes1.Location = new System.Drawing.Point(85, 107);
+            this.guna2Shapes1.Name = "guna2Shapes1";
+            this.guna2Shapes1.PolygonSkip = 1;
+            this.guna2Shapes1.Rotate = 0F;
+            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Line;
+            this.guna2Shapes1.Size = new System.Drawing.Size(249, 10);
+            this.guna2Shapes1.TabIndex = 26;
+            this.guna2Shapes1.Zoom = 100;
+            // 
+            // guna2CirclePictureBox1
+            // 
+            this.guna2CirclePictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.guna2CirclePictureBox1.Image = global::ForceConnect.Properties.Resources.headerIcon;
+            this.guna2CirclePictureBox1.ImageRotate = 0F;
+            this.guna2CirclePictureBox1.Location = new System.Drawing.Point(85, 46);
+            this.guna2CirclePictureBox1.Name = "guna2CirclePictureBox1";
+            this.guna2CirclePictureBox1.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.guna2CirclePictureBox1.Size = new System.Drawing.Size(66, 54);
+            this.guna2CirclePictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.guna2CirclePictureBox1.TabIndex = 9;
+            this.guna2CirclePictureBox1.TabStop = false;
+            // 
+            // lbl_version_wlc
+            // 
+            this.lbl_version_wlc.Font = new System.Drawing.Font("JetBrains Mono", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_version_wlc.ForeColor = System.Drawing.Color.White;
+            this.lbl_version_wlc.Location = new System.Drawing.Point(121, 130);
+            this.lbl_version_wlc.Name = "lbl_version_wlc";
+            this.lbl_version_wlc.Size = new System.Drawing.Size(183, 39);
+            this.lbl_version_wlc.TabIndex = 25;
+            this.lbl_version_wlc.Text = "VERSION ???";
+            this.lbl_version_wlc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnl_information
             // 
@@ -435,6 +509,7 @@
             this.pnl_information.Name = "pnl_information";
             this.pnl_information.Size = new System.Drawing.Size(408, 204);
             this.pnl_information.TabIndex = 14;
+            this.pnl_information.Visible = false;
             // 
             // pnl_statusColor
             // 
@@ -617,6 +692,7 @@
             this.lbl_message.TabIndex = 13;
             this.lbl_message.Text = "VERSION ???";
             this.lbl_message.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_message.Visible = false;
             // 
             // notifyForm
             // 
@@ -690,6 +766,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).EndInit();
             this.pnl_container.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).EndInit();
+            this.pnl_welcome.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.guna2CirclePictureBox1)).EndInit();
             this.pnl_information.ResumeLayout(false);
             this.pnl_statusColor.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
@@ -739,6 +817,11 @@
         private System.Windows.Forms.ToolStripMenuItem tsm_status;
         private System.Windows.Forms.ToolStripMenuItem tsm_exit;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private Guna.UI2.WinForms.Guna2Panel pnl_welcome;
+        private System.Windows.Forms.Label lbl_version_wlc;
+        private Guna.UI2.WinForms.Guna2CirclePictureBox guna2CirclePictureBox1;
+        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes1;
+        private System.Windows.Forms.Label lbl_appName_wlc;
     }
 }
 

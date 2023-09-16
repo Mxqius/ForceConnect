@@ -22,7 +22,7 @@ namespace ForceConnect
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
-        private byte currentSelectedIndexComboBox = 0;
+        private sbyte currentSelectedIndexComboBox = -1;
         private long _currentLatency = 0;
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
@@ -41,7 +41,9 @@ namespace ForceConnect
             btn_home.Text = "HOME";
 
             servicesUser = DnsAddressItems.GetServicesUser();
-            currentDNS = servicesUser[0];
+           
+            // currentDNS is null as default
+            //currentDNS = servicesUser[0];
 
         }
         private void updateServices()
@@ -129,9 +131,27 @@ namespace ForceConnect
             ((Guna2Button)sender).ImageSize = new Size(35, 35);
         }
 
+        private async void welcomeAction()
+        {
+            lbl_appName_wlc.Text = string.Empty;
+            string wlcName = "";
+            foreach (char letter in "ForceConnect")
+            {
+                wlcName += letter;
+                lbl_appName_wlc.Text = wlcName + "|";
+                await Task.Delay(200);
+            }
+            lbl_appName_wlc.Text = wlcName;
+        }
+        private void hideWelcomePanel()
+        {
+            pnl_welcome.Visible = false;
+            lbl_message.Visible = pnl_information.Visible = true;
+        }
         private void cb_selectDns_SelectedIndexChanged(object sender, EventArgs e)
         {
-            currentSelectedIndexComboBox = (byte)cb_selectDns.SelectedIndex;
+            hideWelcomePanel();
+            currentSelectedIndexComboBox = (sbyte)cb_selectDns.SelectedIndex;
             if (connectedDNS != null)
             {
                 if (connectedDNS.Name.ToLower() != cb_selectDns.Text.ToLower() && _connected)
@@ -145,9 +165,10 @@ namespace ForceConnect
         private void changeServer()
         {
             if (servicesUser.Exists(x => x.Name == cb_selectDns.Text))
+            {
                 currentDNS = servicesUser.Find(item => item.Name == cb_selectDns.Text);
-
-            showInformation();
+                showInformation();
+            }
         }
         private async void showInformation()
         {
@@ -298,7 +319,7 @@ namespace ForceConnect
 
         private string updateVersion()
         {
-            return lbl_message.Text = "VERSION " + version.Major + "." + version.Minor;
+            return lbl_message.Text = lbl_version_wlc.Text = "VERSION " + version.Major + "." + version.Minor;
         }
         private async Task<string> getLastestVersionApplication()
         {
@@ -358,15 +379,17 @@ namespace ForceConnect
             });
         }
         private void frm_main_Load(object sender, EventArgs e)
-        {
+        {            
+            welcomeAction();
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
             updateDNSBox();
             cb_selectDns.SelectedIndexChanged -= cb_selectDns_SelectedIndexChanged;
-            cb_selectDns.SelectedIndex = 0;
+            cb_selectDns.SelectedIndex = -1;
+            cb_selectDns.Text = "Pick your favorite service";
             cb_selectDns.SelectedIndexChanged += cb_selectDns_SelectedIndexChanged;
             currentFormLoaded = this;
-            changeServer();
+            //changeServer();
             checkAutoUpdate();
             // Update Notify Text
             notifyForm.Text = $"Version {version.Major}.{version.Minor}.{version.Build}";
@@ -396,6 +419,16 @@ namespace ForceConnect
             DnsAddress connectingDNS = currentDNS;
             if (!_connected)
             {
+                if (currentDNS == null)
+                {
+                    new frm_messageBox()
+                    {
+                        MessageText = "Please first pick your favorite service to connect !",
+                        MessageCaption = "ERROR",
+                        MessageButtons = frm_messageBox.Buttons.OK,
+                        MessageIcon = frm_messageBox.Icon.Error
+                    }.ShowMessage(); return;
+                }
                 Action onCompleted = () =>
                 {
                     this.Invoke(new MethodInvoker(async delegate
@@ -625,7 +658,10 @@ namespace ForceConnect
         private void hiddenHomeForm(bool visible)
         {
             wp_dnsProgress.Visible = !visible;
-            pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = cb_selectDns.Visible = visible;
+            if (!pnl_welcome.Visible)
+            {
+                pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = cb_selectDns.Visible = visible;
+            }
         }
         private void clickControlMenu(object sender, EventArgs e)
         {
