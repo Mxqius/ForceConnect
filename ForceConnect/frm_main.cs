@@ -41,7 +41,7 @@ namespace ForceConnect
             btn_home.Text = "HOME";
 
             servicesUser = DnsAddressItems.GetServicesUser();
-           
+
             // currentDNS is null as default
             //currentDNS = servicesUser[0];
 
@@ -145,7 +145,7 @@ namespace ForceConnect
         }
         private void hideWelcomePanel()
         {
-            pnl_welcome.Visible = false;
+            pnl_welcome.Visible = lbl_hintPick.Visible = false;
             lbl_message.Visible = pnl_information.Visible = true;
         }
         private void cb_selectDns_SelectedIndexChanged(object sender, EventArgs e)
@@ -379,7 +379,7 @@ namespace ForceConnect
             });
         }
         private void frm_main_Load(object sender, EventArgs e)
-        {            
+        {
             welcomeAction();
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
