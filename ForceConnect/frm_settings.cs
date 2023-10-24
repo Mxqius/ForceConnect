@@ -108,6 +108,11 @@ namespace ForceConnect
             lbl_discordDescription.Text = _discordOptionText;
         }
 
+        private void lbl_theme_Click(object sender, EventArgs e)
+        {
+            ts_discordRPC.Checked = !ts_discordRPC.Checked;
+        }
+
         private void cb_minimizeInTray_CheckedChanged(object sender, EventArgs e)
         {
             if (initilizeWait) return;

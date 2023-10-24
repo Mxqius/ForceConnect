@@ -50,6 +50,13 @@
             this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
             this.label3 = new System.Windows.Forms.Label();
             this.lbl_macAddress = new System.Windows.Forms.Label();
+            this.lbl_uploadSpeed = new System.Windows.Forms.Label();
+            this.lbl_downloadSpeed = new System.Windows.Forms.Label();
+            this.guna2Shapes4 = new Guna.UI2.WinForms.Guna2Shapes();
+            this.guna2Shapes2 = new Guna.UI2.WinForms.Guna2Shapes();
+            this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
+            this.loadingProgressSpeed = new Guna.UI2.WinForms.Guna2WinProgressIndicator();
+            this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // bf_form
@@ -212,7 +219,7 @@
             this.lbl_activeServices.ForeColor = System.Drawing.Color.White;
             this.lbl_activeServices.Location = new System.Drawing.Point(216, 240);
             this.lbl_activeServices.Name = "lbl_activeServices";
-            this.lbl_activeServices.Size = new System.Drawing.Size(199, 90);
+            this.lbl_activeServices.Size = new System.Drawing.Size(199, 46);
             this.lbl_activeServices.TabIndex = 1;
             this.lbl_activeServices.Text = "???";
             // 
@@ -261,7 +268,7 @@
             this.btn_close.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_close.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_close.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_close.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_close.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_close.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_close.ForeColor = System.Drawing.Color.White;
             this.btn_close.ImageOffset = new System.Drawing.Point(-10, 0);
@@ -284,7 +291,7 @@
             this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_refresh.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
             this.btn_refresh.ImageOffset = new System.Drawing.Point(-10, 0);
@@ -318,13 +325,99 @@
             this.lbl_macAddress.TabIndex = 1;
             this.lbl_macAddress.Text = "???";
             // 
+            // lbl_uploadSpeed
+            // 
+            this.lbl_uploadSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_uploadSpeed.AutoSize = true;
+            this.lbl_uploadSpeed.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_uploadSpeed.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_uploadSpeed.ForeColor = System.Drawing.Color.White;
+            this.lbl_uploadSpeed.Location = new System.Drawing.Point(47, 6);
+            this.lbl_uploadSpeed.Name = "lbl_uploadSpeed";
+            this.lbl_uploadSpeed.Size = new System.Drawing.Size(68, 19);
+            this.lbl_uploadSpeed.TabIndex = 8;
+            this.lbl_uploadSpeed.Text = "?? MBps";
+            this.lbl_uploadSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lbl_downloadSpeed
+            // 
+            this.lbl_downloadSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_downloadSpeed.AutoSize = true;
+            this.lbl_downloadSpeed.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_downloadSpeed.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_downloadSpeed.ForeColor = System.Drawing.Color.White;
+            this.lbl_downloadSpeed.Location = new System.Drawing.Point(142, 6);
+            this.lbl_downloadSpeed.Name = "lbl_downloadSpeed";
+            this.lbl_downloadSpeed.Size = new System.Drawing.Size(68, 19);
+            this.lbl_downloadSpeed.TabIndex = 9;
+            this.lbl_downloadSpeed.Text = "?? MBps";
+            this.lbl_downloadSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // guna2Shapes4
+            // 
+            this.guna2Shapes4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.guna2Shapes4.BackColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes4.BorderColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes4.FillColor = System.Drawing.Color.White;
+            this.guna2Shapes4.Location = new System.Drawing.Point(117, 6);
+            this.guna2Shapes4.Name = "guna2Shapes4";
+            this.guna2Shapes4.PolygonSides = 3;
+            this.guna2Shapes4.PolygonSkip = 1;
+            this.guna2Shapes4.Rotate = 180F;
+            this.guna2Shapes4.Size = new System.Drawing.Size(19, 19);
+            this.guna2Shapes4.TabIndex = 10;
+            this.guna2Shapes4.Zoom = 80;
+            // 
+            // guna2Shapes2
+            // 
+            this.guna2Shapes2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.guna2Shapes2.BackColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes2.BorderColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes2.FillColor = System.Drawing.Color.White;
+            this.guna2Shapes2.Location = new System.Drawing.Point(22, 6);
+            this.guna2Shapes2.Name = "guna2Shapes2";
+            this.guna2Shapes2.PolygonSides = 3;
+            this.guna2Shapes2.PolygonSkip = 1;
+            this.guna2Shapes2.Rotate = 0F;
+            this.guna2Shapes2.Size = new System.Drawing.Size(19, 19);
+            this.guna2Shapes2.TabIndex = 11;
+            this.guna2Shapes2.Zoom = 80;
+            // 
+            // guna2Panel1
+            // 
+            this.guna2Panel1.AutoRoundedCorners = true;
+            this.guna2Panel1.BorderRadius = 14;
+            this.guna2Panel1.Controls.Add(this.guna2Shapes2);
+            this.guna2Panel1.Controls.Add(this.lbl_uploadSpeed);
+            this.guna2Panel1.Controls.Add(this.guna2Shapes4);
+            this.guna2Panel1.Controls.Add(this.lbl_downloadSpeed);
+            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel1.Location = new System.Drawing.Point(56, 299);
+            this.guna2Panel1.Name = "guna2Panel1";
+            this.guna2Panel1.Size = new System.Drawing.Size(235, 31);
+            this.guna2Panel1.TabIndex = 12;
+            // 
+            // loadingProgressSpeed
+            // 
+            this.loadingProgressSpeed.AnimationSpeed = 40;
+            this.loadingProgressSpeed.AutoStart = true;
+            this.loadingProgressSpeed.CircleSize = 1F;
+            this.loadingProgressSpeed.Location = new System.Drawing.Point(300, 298);
+            this.loadingProgressSpeed.Name = "loadingProgressSpeed";
+            this.loadingProgressSpeed.NumberOfCircles = 3;
+            this.loadingProgressSpeed.ProgressColor = System.Drawing.Color.White;
+            this.loadingProgressSpeed.Size = new System.Drawing.Size(29, 33);
+            this.loadingProgressSpeed.TabIndex = 13;
+            // 
             // frm_network
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.ControlBox = false;
+            this.Controls.Add(this.loadingProgressSpeed);
+            this.Controls.Add(this.guna2Panel1);
             this.Controls.Add(this.btn_refresh);
             this.Controls.Add(this.btn_close);
             this.Controls.Add(this.label5);
@@ -352,6 +445,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Network Information";
             this.Load += new System.EventHandler(this.frm_network_Load);
+            this.guna2Panel1.ResumeLayout(false);
+            this.guna2Panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -380,5 +475,11 @@
         private Guna.UI2.WinForms.Guna2Button btn_refresh;
         private System.Windows.Forms.Label lbl_macAddress;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbl_uploadSpeed;
+        private System.Windows.Forms.Label lbl_downloadSpeed;
+        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes4;
+        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes2;
+        private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
+        private Guna.UI2.WinForms.Guna2WinProgressIndicator loadingProgressSpeed;
     }
 }

@@ -75,8 +75,8 @@
     <Reference Include="DiscordRPC, Version=1.2.1.24, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DiscordRichPresence.1.2.1.24\lib\net45\DiscordRPC.dll</HintPath>
     </Reference>
-    <Reference Include="Guna.UI2, Version=2.0.4.4, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
-      <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.4\lib\net45\Guna.UI2.dll</HintPath>
+    <Reference Include="Guna.UI2, Version=2.0.4.5, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
+      <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.5\lib\net45\Guna.UI2.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -152,6 +152,12 @@
     </Compile>
     <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
+    <Compile Include="User Controls\ServiceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="User Controls\ServiceControl.Designer.cs">
+      <DependentUpon>ServiceControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utility\DiscordRPCManager.cs" />
     <Compile Include="Utility\FontManager.cs" />
     <Compile Include="Utility\FormManager.cs" />
@@ -165,6 +171,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DnsAddress.cs" />
     <Compile Include="Services\DnsManager.cs" />
+    <Compile Include="Utility\SpeedTest.cs" />
     <EmbeddedResource Include="frm_about.resx">
       <DependentUpon>frm_about.cs</DependentUpon>
     </EmbeddedResource>
@@ -194,6 +201,9 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\ServiceControl.resx">
+      <DependentUpon>ServiceControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -208,9 +218,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\connect.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\exit.png" />
@@ -232,16 +239,7 @@
     <None Include="Icons\dnsIcons\shecan.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\settingFlat.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\settingsFlat.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\home.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\homeFlat.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\explore.png" />
@@ -304,22 +302,16 @@
     <None Include="Icons\headerIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\connectIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\connected.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\connectedIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\no_internet.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\folder.png" />
+    <None Include="Icons\serviceAdd.png" />
+    <None Include="Icons\coffee.png" />
+    <None Include="Icons\setting.png" />
+    <None Include="Icons\no-wifi.png" />
+    <None Include="Icons\turn-on2.png" />
+    <None Include="Icons\turn-on.png" />
     <None Include="Icons\mxqius.png" />
     <None Include="Resources\mxqius.png" />
-    <None Include="Icons\about-mxqius.png" />
     <None Include="Icons\messageBoxIcons\warningFlat.png" />
     <None Include="Icons\messageBoxIcons\waningFlat.png" />
     <None Include="Icons\messageBoxIcons\successFlat.png" />
@@ -335,11 +327,9 @@
     <None Include="Icons\dns.png" />
     <None Include="Icons\exploreIcons\delete.png" />
     <None Include="Icons\exploreIcons\services.png" />
-    <None Include="Icons\close.png" />
     <None Include="Icons\latencyIcons\signalYellow.png" />
     <None Include="Icons\latencyIcons\signalRed.png" />
     <None Include="Icons\latencyIcons\signalGreen.png" />
-    <None Include="Icons\sginalLatency.png" />
     <None Include="Icons\SocialIcons\github48.png" />
     <None Include="Icons\SocialIcons\instagram48.png" />
     <None Include="Icons\SocialIcons\telegram48.png" />

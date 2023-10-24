@@ -1,14 +1,17 @@
 ﻿using ForceConnect.API;
 using ForceConnect.Launch;
 using ForceConnect.Services;
+using ForceConnect.User_Controls;
 using ForceConnect.Utility;
 using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Control = System.Windows.Forms.Control;
 
 namespace ForceConnect
 {
@@ -22,13 +25,17 @@ namespace ForceConnect
         private Guna2Button currentSelectedMenuOption;
         public Form currentFormLoaded;
 
-        private sbyte currentSelectedIndexComboBox = -1;
         private long _currentLatency = 0;
         private bool _connected, pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
+        private string _statusConnectionService, _previewAddress;
+
+        private List<ServiceControl> serviceControls = new List<ServiceControl>();
 
         private Thread serviceThread;
+
+        private sbyte serviceComboBoxSelectedIndex = -1;
 
         public frm_main()
         {
@@ -36,29 +43,21 @@ namespace ForceConnect
             updateVersion();
             currentSelectedMenuOption = btn_home;
 
-            btn_home.ImageSize = new Size(45, 45);
-            btn_home.FillColor = Color.FromArgb(32, 32, 32);
+            btn_home.ImageSize = new Size(35, 35);
+            btn_home.FillColor = Color.FromArgb(44, 45, 52);
             btn_home.Text = "HOME";
 
             servicesUser = DnsAddressItems.GetServicesUser();
 
-            // currentDNS is null as default
+            // Just for test
             //currentDNS = servicesUser[0];
-
         }
+
         private void updateServices()
         {
             servicesUser.Clear();
             servicesUser = DnsAddressItems.GetServicesUser();
 
-        }
-        private void updateDNSBox()
-        {
-            cb_selectDns.Items.Clear();
-            foreach (DnsAddress dns in servicesUser)
-            {
-                cb_selectDns.Items.Add(dns.Name);
-            }
         }
         private async Task checkInternetConnection()
         {
@@ -68,35 +67,34 @@ namespace ForceConnect
                     changeAppStatus(false);
                 else
                     changeAppStatus(true);
-
-                updateLatencyPicture();
             });
         }
         private void changeAppStatus(bool internetConnection)
         {
             _internetConnection = internetConnection;
-            //if (_internetConnection && _connected) return;
 
             this.Invoke(new MethodInvoker(delegate
             {
                 if (internetConnection && _connected)
                 {
                     lbl_status.Text = "CLICK TO DISCONNECT";
-                    iconConnect.Image = Properties.Resources.connectedIcon;
+                    iconConnect.Image = Properties.Resources.turn_on;
+                    iconConnect.ImageRotate = 180;
                     return;
                 }
                 else if (internetConnection && !_connected)
                 {
                     lbl_status.Text = "CLICK TO CONNECT";
-                    iconConnect.Image = Properties.Resources.connectIcon;
+                    iconConnect.Image = Properties.Resources.turn_on;
+                    iconConnect.ImageRotate = 0;
                     return;
                 }
                 else
                 {
                     lbl_status.Text = "NO CONNECTION";
-                    iconConnect.Image = Properties.Resources.no_internet;
+                    iconConnect.Image = Properties.Resources.no_wifi;
+                    iconConnect.ImageRotate = 0;
                 }
-                //iconConnect.Image = (internetConnection) ? Properties.Resources.connectIcon : Properties.Resources.no_internet;
             }));
 
         }
@@ -145,44 +143,57 @@ namespace ForceConnect
         }
         private void hideWelcomePanel()
         {
-            pnl_welcome.Visible = lbl_hintPick.Visible = false;
-            lbl_message.Visible = pnl_information.Visible = true;
+            //transitionEffect.HideSync(pnl_welcome);
+            pnl_welcome.Visible = lbl_hintSelectDNS.Visible = false;
+            //transitionEffect.ShowSync(pnl_information);
+            lbl_version.Visible = pnl_latencySection.Visible = pnl_cardDns.Visible = pnl_addressSection.Visible = true;
         }
-        private void cb_selectDns_SelectedIndexChanged(object sender, EventArgs e)
+        private void cb_selectDNS_SelectedIndexChanged(object sender, EventArgs e)
         {
             hideWelcomePanel();
-            currentSelectedIndexComboBox = (sbyte)cb_selectDns.SelectedIndex;
             if (connectedDNS != null)
             {
-                if (connectedDNS.Name.ToLower() != cb_selectDns.Text.ToLower() && _connected)
-                    lbl_message.Text = $"YOU ARE STILL CONNECT TO PERVIOSLY DNS ({connectedDNS.Name})";
-                if (connectedDNS.Name.ToLower() == cb_selectDns.Text.ToLower())
+                if (connectedDNS.Name.ToLower() != cb_selectDNS.Text.ToLower() && _connected)
+                    new frm_messageBox()
+                    {
+                        MessageCaption = "Warning",
+                        MessageText = $"You Are still connect to perviosly dns ({connectedDNS.Name})",
+                        MessageIcon = frm_messageBox.Icon.Warning,
+                        MessageButtons = frm_messageBox.Buttons.OK
+                    }.ShowMessage();
+                if (connectedDNS.Name.ToLower() == cb_selectDNS.Text.ToLower())
                     updateVersion();
             }
             changeServer();
+            serviceComboBoxSelectedIndex = (sbyte)cb_selectDNS.SelectedIndex;
         }
 
         private void changeServer()
         {
-            if (servicesUser.Exists(x => x.Name == cb_selectDns.Text))
+            if (servicesUser.Exists(x => x.Name == cb_selectDNS.Text))
             {
-                currentDNS = servicesUser.Find(item => item.Name == cb_selectDns.Text);
+                currentDNS = servicesUser.Find(item => item.Name == cb_selectDNS.Text);
                 showInformation();
             }
         }
         private async void showInformation()
         {
-            pb_dnsPicture.Image = currentDNS.Picture;
-            lbl_name.Text = currentDNS.Name;
+            lbl_previewAddress.Text = currentDNS.Name;
             if (currentDNS.dnsAddress.Length > 1)
-                lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
+            {
+                _previewAddress = currentDNS.dnsAddress[0] + " - " + currentDNS.dnsAddress[1];
+                lbl_previewAddress.Text = _previewAddress;
+            }
             else
-                lbl_previewAddress.Text = currentDNS.dnsAddress[0];
-
+            {
+                _previewAddress = currentDNS.dnsAddress[0];
+                lbl_previewAddress.Text = _previewAddress;
+            }
+            pb_dnsPicture.Image = currentDNS.Picture;
             if (_internetConnection)
                 await syncLatencyDNS();
             else
-                lbl_latency.Text = "-1 ms";
+                lbl_latency.Text = "Latnecy: " + "-1 ms";
             await checkInternetConnection();
         }
 
@@ -207,12 +218,12 @@ namespace ForceConnect
             dragging = false;
         }
 
-        private async void lbl_previewAddress_Click(object sender, EventArgs e)
+        private async void lbl_serviceAddress_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(lbl_previewAddress.Text);
             lbl_previewAddress.Text = "Address copied";
             await delay(1000);
-            lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " " + currentDNS.dnsAddress[1];
+            lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " - " + currentDNS.dnsAddress[1];
         }
         private async Task<long> getLatencyDNS(string address)
         {
@@ -229,8 +240,9 @@ namespace ForceConnect
                 _currentLatency = await getLatencyDNS("google.com");
                 this.Invoke(new MethodInvoker(delegate
                 {
-                    lbl_latency.Text = _currentLatency.ToString() + " ms";
+                    lbl_latency.Text = "Latnecy: " + _currentLatency.ToString() + " ms";
                 }));
+                updateLatencyStatusColor();
             });
 
         }
@@ -241,7 +253,7 @@ namespace ForceConnect
                 _currentLatency = await getLatencyDNS(currentDNS.dnsAddress[0]);
                 this.Invoke(new MethodInvoker(delegate
                 {
-                    lbl_latency.Text = _currentLatency.ToString() + " ms";
+                    lbl_latency.Text = "Latnecy: " + _currentLatency.ToString() + " ms";
                 }));
             });
         }
@@ -282,30 +294,25 @@ namespace ForceConnect
                 Show();
             if (_connected)
             {
-                btn_sync.Enabled = false;
-                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                lbl_dnsStatus.Text = "Disconnecting";
+                //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
+                _statusConnectionService = "Disconnecting";
                 lbl_status.Text = "RESTORING";
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
                 await delay(3000);
                 DnsManager.clearDNS();
-                shapeStatus.FillColor = Color.FromArgb(183, 28, 28);
-                pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
-                lbl_dnsStatus.ForeColor = Color.FromArgb(180, 61, 61);
+                //statusProgressColor.FillColor = Color.FromArgb(216, 0, 50);
                 updateVersion();
-                lbl_dnsStatus.Text = "Disconnected";
+                _statusConnectionService = "Disconnected";
                 wp_dnsProgress.Visible = false;
                 wp_dnsProgress.Stop();
-                iconConnect.Image = Properties.Resources.connectIcon;
+                iconConnect.Image = Properties.Resources.turn_on;
             }
             wp_dnsProgress.Visible = true;
             wp_dnsProgress.Start();
             lbl_status.Text = "CLOSING THE PROGRAM";
             await delay(2000);
             this.Close();
-
-
         }
 
         private async void btn_sync_Click(object sender, EventArgs e)
@@ -319,7 +326,7 @@ namespace ForceConnect
 
         private string updateVersion()
         {
-            return lbl_message.Text = lbl_version_wlc.Text = "VERSION " + version.Major + "." + version.Minor;
+            return lbl_version.Text = "VERSION " + version.Major + "." + version.Minor;
         }
         private async Task<string> getLastestVersionApplication()
         {
@@ -378,16 +385,13 @@ namespace ForceConnect
                 return LaunchUpdate.GetLastestVersionDownloadUrl(_repositoryOwner, _repositoryName);
             });
         }
-        private void frm_main_Load(object sender, EventArgs e)
+        private async void frm_main_Load(object sender, EventArgs e)
         {
+            loadServices();
+            await syncLatency();
             welcomeAction();
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
-            updateDNSBox();
-            cb_selectDns.SelectedIndexChanged -= cb_selectDns_SelectedIndexChanged;
-            cb_selectDns.SelectedIndex = -1;
-            cb_selectDns.Text = "Pick your favorite service";
-            cb_selectDns.SelectedIndexChanged += cb_selectDns_SelectedIndexChanged;
             currentFormLoaded = this;
             //changeServer();
             checkAutoUpdate();
@@ -396,25 +400,58 @@ namespace ForceConnect
             //  Initialize Discord RPC
             DiscordRPCManager.GetInstance();
         }
-        private void updateLatencyPicture()
+        private void updateLatencyStatusColor()
         {
 
             this.Invoke(new MethodInvoker(delegate
             {
                 if (_currentLatency > 1 && _currentLatency <= 120)
-                    pb_latencyPicture.Image = Properties.Resources.signalGreen;
+                    //shapeStatus.FillColor = Color.FromArgb(60, 207, 78);
+                    pictureLatency.Image = Properties.Resources.signalGreen;
                 else if (_currentLatency > 120 && _currentLatency <= 180)
-                    pb_latencyPicture.Image = Properties.Resources.signalYellow;
+                    //shapeStatus.FillColor = Color.FromArgb(255, 176, 0);
+                    pictureLatency.Image = Properties.Resources.signalYellow;
                 else
-                    pb_latencyPicture.Image = Properties.Resources.signalRed;
+                    //shapeStatus.FillColor = Color.FromArgb(216, 0, 50);
+                    pictureLatency.Image = Properties.Resources.signalRed;
             }));
+        }
+        private async void loadServices()
+        {
+            await Task.Run(() =>
+            {
+                foreach (DnsAddress dns in servicesUser)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        cb_selectDNS.Items.Add(dns.Name);
+                    }));
+                }
+            });
+        }
+        private void PerformTaskConnection(byte step, Color progressColor)
+        {
+            if (step >= 4)
+            {
+                step = 4;
+                progressBarConnection.Animated = false;
+            }
+            else progressBarConnection.Animated = true;
+
+            if (step == 0)
+                // Rest the progress bar
+                progressBarConnection.Value = 0;
+
+            // Update the progress bar.            
+            progressBarConnection.Value = step * 25;
+            progressBarConnection.ProgressColor = progressColor;
+            progressBarConnection.ProgressColor2 = progressColor;
         }
         private async void connectEvent(object sender, EventArgs e)
         {
             if (pendingRequest) return;
             await checkInternetConnection();
             await syncLatency();
-            updateLatencyPicture();
             if (!_internetConnection) return;
             DnsAddress connectingDNS = currentDNS;
             if (!_connected)
@@ -435,42 +472,45 @@ namespace ForceConnect
                     {
                         connectedDNS = connectingDNS;
 
-                        shapeStatus.FillColor = Color.FromArgb(27, 94, 32);
-                        pnl_statusColor.FillColor = Color.FromArgb(42, 61, 43);
-                        lbl_dnsStatus.ForeColor = Color.FromArgb(63, 160, 79);
-                        lbl_dnsStatus.Text = "Connected";
-                        tsm_status.Text = "Connected";
-                        lbl_status.Text = "CLICK TO DISCONNECT";
+                        //statusProgressColor.FillColor = Color.FromArgb(60, 207, 78);
+
                         wp_dnsProgress.Visible = false;
                         wp_dnsProgress.Stop();
 
+                        _statusConnectionService = "Connected";
+                        tsm_status.Text = "Connected";
+                        lbl_status.Text = "CLICK TO DISCONNECT";
+
                         new NotificationForm().showAlert($"{connectedDNS.Name} Connected", NotificationForm.enmType.Success);
 
-                        iconConnect.Image = Properties.Resources.connectedIcon;
+                        iconConnect.ImageRotate = 180;
+
+                        PerformTaskConnection(4, Color.FromArgb(60, 207, 78));
+
                         // Sync Latency
                         await syncLatency();
-                        updateLatencyPicture();
 
                         // Update Discord RPC
-                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service:\n{lbl_previewAddress.Text}");
-
-                        btn_sync.Enabled = true;
-                        cb_selectDns.Enabled = true;
+                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service:\n {_previewAddress}");
                         pendingRequest = false;
+                        cb_selectDNS.Enabled = true;
                     }));
                 };
                 // Start Connecting 
                 pendingRequest = true;
-                cb_selectDns.Enabled = false;
-                btn_sync.Enabled = false;
-                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                //pnl_statusColor.FillColor = Color.FromArgb(234, 144, 108);
-                //lbl_dnsStatus.ForeColor = Color.FromArgb(244, 209, 96);
+                cb_selectDNS.Enabled = false;
+
+
+                //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
+
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
-                lbl_dnsStatus.Text = "Connecting";
+                _statusConnectionService = "Connecting";
                 lbl_status.Text = "APPLIYNG DNS";
-                await delay(2000);
+
+                PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
+
+                //await delay(3000);
                 // Connect Thread 
                 serviceThread = new Thread(() =>
                 {
@@ -488,39 +528,44 @@ namespace ForceConnect
                 {
                     this.Invoke(new MethodInvoker(async delegate
                     {
-                        shapeStatus.FillColor = Color.FromArgb(183, 28, 28);
-                        pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
-                        lbl_dnsStatus.ForeColor = Color.FromArgb(180, 61, 61);
+                        //statusProgressColor.FillColor = Color.FromArgb(216, 0, 50);
+
                         updateVersion();
-                        lbl_dnsStatus.Text = "Disconnected";
-                        tsm_status.Text = "Disconnected";
-                        lbl_status.Text = "CLICK TO CONNECT";
+
                         wp_dnsProgress.Visible = false;
                         wp_dnsProgress.Stop();
+
+                        _statusConnectionService = "Disconnected";
+                        tsm_status.Text = "Disconnected";
+                        lbl_status.Text = "CLICK TO CONNECT";
+
                         new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
-                        iconConnect.Image = Properties.Resources.connectIcon;
+
+                        iconConnect.ImageRotate = 0;
                         // Sync Latency           
                         await syncLatency();
-                        updateLatencyPicture();
 
                         //Update Discord RPC
                         DiscordRPCManager.GetInstance().UpdatePresence(details: $"Ideal", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger");
 
-                        btn_sync.Enabled = true;
                         pendingRequest = false;
+
+                        PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
                     }));
                 };
                 // Start Disconnecting
                 pendingRequest = true;
-                btn_sync.Enabled = false;
-                //shapeStatus.FillColor = Color.FromArgb(255, 221, 131);
-                //pnl_statusColor.FillColor = Color.FromArgb(234, 144, 108);
-                //lbl_dnsStatus.ForeColor = Color.FromArgb(244, 209, 96);
+
+                //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
+
                 wp_dnsProgress.Visible = true;
                 wp_dnsProgress.Start();
-                lbl_dnsStatus.Text = "Disconnecting";
+                _statusConnectionService = "Disconnecting";
                 lbl_status.Text = "RESTORING";
-                await delay(2000);
+
+                PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
+
+                //await delay(3000);
                 // Disconnect Thread
                 serviceThread = new Thread(() =>
                 {
@@ -560,12 +605,59 @@ namespace ForceConnect
             notifyForm.Visible = false;
         }
 
+        //private void btn_nextServices_Click(object sender, EventArgs e)
+        //{
+        //    if (serviceControls.Count > 3)
+        //    {
+        //        List<ServiceControl> itemsToMove = serviceControls.GetRange(0, 3); // Get the three items starting from index 2.
+
+        //        // Remove the three items from their current positions.
+        //        serviceControls.RemoveRange(0, 3);
+
+        //        // Add the three items to the end of the list.
+        //        serviceControls.AddRange(itemsToMove);
+
+        //        pnl_information.Controls.Clear();
+        //        pnl_information.Controls.AddRange(new[] { serviceControls[0], serviceControls[1], serviceControls[2] });
+        //    }
+        //}
+
+        private async void timerLatency_Tick(object sender, EventArgs e)
+        {
+            await syncLatency();
+            await checkInternetConnection();
+        }
+
+        private void ToolFooterEnter(object sender, EventArgs e)
+        {
+            Guna2Button button = ((Guna2Button)sender);
+            switch (button.Name)
+            {
+                case "btn_flushDNS":
+                    button.Text = "Flush DNS";
+
+                    break;
+            }
+            button.Size = new Size(160, 36);
+        }
+
+        private void ToolFooterLeave(object sender, EventArgs e)
+        {
+            Guna2Button button = ((Guna2Button)sender);
+            button.Size = new Size(69, 36);
+            button.Text = string.Empty;
+        }
+
+        private void tsm_donateUs_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://www.coffeebede.com/mxqius");
+        }
+
         private async void btn_flushDNS_Click(object sender, EventArgs e)
         {
             if (pendingRequest) return;
             await checkInternetConnection();
             await syncLatency();
-            updateLatencyPicture();
             if (!_internetConnection) return;
             if (_connected)
             {
@@ -589,14 +681,12 @@ namespace ForceConnect
             {
                 this.Invoke(new MethodInvoker(async delegate
                 {
-                    btn_sync.Enabled = false;
                     wp_dnsProgress.Visible = true;
                     wp_dnsProgress.Start();
                     lbl_status.Text = "FLUSHING DNS SYSTEM";
                     await delay(2000);
                     // Sync Latency
                     await syncLatency();
-                    updateLatencyPicture();
                     wp_dnsProgress.Visible = false;
                     wp_dnsProgress.Stop();
                     lbl_status.Text = "SUCCESSFULLY FLUSHED";
@@ -605,12 +695,11 @@ namespace ForceConnect
                         lbl_status.Text = "CLICK TO DISCONNECT";
                     else
                         lbl_status.Text = "CLICK TO CONNECT";
-                    cb_selectDns.Enabled = true;
+
                     pendingRequest = false;
                 }));
             };
             pendingRequest = true;
-            cb_selectDns.Enabled = false;
             // Flush DNS Thread
             serviceThread = new Thread(() =>
             {
@@ -624,8 +713,8 @@ namespace ForceConnect
         private void selectMenuOption(object sender, bool clickEvent)
         {
             if (((Guna2Button)sender) == currentSelectedMenuOption && !clickEvent) return;
-            ((Guna2Button)sender).ImageSize = new Size(45, 45);
-            ((Guna2Button)sender).FillColor = Color.FromArgb(32, 32, 32);
+            ((Guna2Button)sender).ImageSize = new Size(35, 35);
+            ((Guna2Button)sender).FillColor = Color.FromArgb(44, 45, 52);
             switch (((Guna2Button)sender).Name)
             {
                 case "btn_settings":
@@ -650,7 +739,7 @@ namespace ForceConnect
         private void leaveControlMenu(object sender, EventArgs e)
         {
             if (((Guna2Button)sender) == currentSelectedMenuOption) return;
-            ((Guna2Button)sender).ImageSize = new Size(40, 40);
+            ((Guna2Button)sender).ImageSize = new Size(30, 30);
             ((Guna2Button)sender).FillColor = Color.Transparent;
             ((Guna2Button)sender).Text = string.Empty;
         }
@@ -660,17 +749,22 @@ namespace ForceConnect
             wp_dnsProgress.Visible = !visible;
             if (!pnl_welcome.Visible)
             {
-                pnl_information.Visible = lbl_message.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = cb_selectDns.Visible = visible;
+                pnl_latencySection.Visible = pnl_cardDns.Visible = pnl_addressSection.Visible = lbl_hintSelectDNS.Visible = lbl_version.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = visible;
             }
         }
         private void clickControlMenu(object sender, EventArgs e)
         {
             if (currentSelectedMenuOption == ((Guna2Button)sender)) return;
-            currentSelectedMenuOption.ImageSize = new Size(40, 40);
+            currentSelectedMenuOption.ImageSize = new Size(35, 35);
             currentSelectedMenuOption.FillColor = Color.Transparent;
             currentSelectedMenuOption.Text = string.Empty;
             currentSelectedMenuOption = ((Guna2Button)sender);
             selectMenuOption(sender, true);
+            if (!_connected)
+            {
+                pnl_welcome.Visible = lbl_hintSelectDNS.Visible = true;
+                currentDNS = null;
+            }
             switch (currentSelectedMenuOption.Name)
             {
                 case "btn_settings":
@@ -681,9 +775,9 @@ namespace ForceConnect
                     break;
                 case "btn_home":
                     updateServices();
-                    updateDNSBox();
-                    cb_selectDns.SelectedIndex = currentSelectedIndexComboBox;
                     hiddenHomeForm(true);
+                    cb_selectDNS.Items.Clear();
+                    loadServices();
                     pnl_container.Controls.Remove(currentFormLoaded);
                     break;
                 case "btn_explore":

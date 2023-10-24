@@ -29,6 +29,7 @@ namespace ForceConnect
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 new frm_messageBox()
                 {
                     MessageText = "An error occurred during program execution",

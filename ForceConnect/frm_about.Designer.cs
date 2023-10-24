@@ -52,7 +52,7 @@
             this.pnl_descriptionAbout.Controls.Add(this.guna2Shapes1);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_description);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_titleDescription);
-            this.pnl_descriptionAbout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_descriptionAbout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.pnl_descriptionAbout.Location = new System.Drawing.Point(430, 35);
             this.pnl_descriptionAbout.Name = "pnl_descriptionAbout";
             this.pnl_descriptionAbout.Size = new System.Drawing.Size(404, 325);
@@ -215,7 +215,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
             this.Controls.Add(this.pnl_developreCard);
             this.Controls.Add(this.pnl_descriptionAbout);

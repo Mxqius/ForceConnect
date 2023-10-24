@@ -29,26 +29,29 @@
         private void InitializeComponent()
         {
             this.pnl_cardDns = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.lbl_name = new System.Windows.Forms.Label();
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.lbl_latency = new System.Windows.Forms.Label();
             this.lbl_previewAddress = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.lbl_counter = new System.Windows.Forms.Label();
             this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
+            this.pnl_counterServices = new Guna.UI2.WinForms.Guna2Panel();
             this.btn_openServices = new Guna.UI2.WinForms.Guna2Button();
             this.btn_previous = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.btn_next = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btn_removeDNS = new Guna.UI2.WinForms.Guna2CircleButton();
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
-            this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.pnl_counterServices = new Guna.UI2.WinForms.Guna2Panel();
+            this.guna2CustomGradientPanel1 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            this.guna2CustomGradientPanel2 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pnl_cardDns.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
+            this.pnl_counterServices.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
-            this.pnl_counterServices.SuspendLayout();
+            this.guna2CustomGradientPanel1.SuspendLayout();
+            this.guna2CustomGradientPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnl_cardDns
@@ -56,42 +59,60 @@
             this.pnl_cardDns.BackColor = System.Drawing.Color.Transparent;
             this.pnl_cardDns.BorderColor = System.Drawing.Color.WhiteSmoke;
             this.pnl_cardDns.BorderRadius = 20;
-            this.pnl_cardDns.BorderThickness = 2;
-            this.pnl_cardDns.Controls.Add(this.btn_removeDNS);
-            this.pnl_cardDns.Controls.Add(this.pb_latencyPicture);
             this.pnl_cardDns.Controls.Add(this.pb_dnsPicture);
             this.pnl_cardDns.Controls.Add(this.lbl_name);
-            this.pnl_cardDns.Controls.Add(this.lbl_latency);
-            this.pnl_cardDns.Controls.Add(this.lbl_previewAddress);
-            this.pnl_cardDns.Controls.Add(this.label1);
-            this.pnl_cardDns.Controls.Add(this.label4);
-            this.pnl_cardDns.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.pnl_cardDns.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.pnl_cardDns.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.pnl_cardDns.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.pnl_cardDns.Location = new System.Drawing.Point(133, 80);
+            this.pnl_cardDns.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_cardDns.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_cardDns.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_cardDns.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_cardDns.Location = new System.Drawing.Point(184, 89);
             this.pnl_cardDns.Name = "pnl_cardDns";
-            this.pnl_cardDns.Size = new System.Drawing.Size(611, 231);
+            this.pnl_cardDns.Size = new System.Drawing.Size(299, 68);
             this.pnl_cardDns.TabIndex = 1;
+            // 
+            // pb_dnsPicture
+            // 
+            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
+            this.pb_dnsPicture.ImageRotate = 0F;
+            this.pb_dnsPicture.Location = new System.Drawing.Point(18, 11);
+            this.pb_dnsPicture.Name = "pb_dnsPicture";
+            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.pb_dnsPicture.Size = new System.Drawing.Size(48, 48);
+            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_dnsPicture.TabIndex = 13;
+            this.pb_dnsPicture.TabStop = false;
             // 
             // lbl_name
             // 
             this.lbl_name.BackColor = System.Drawing.Color.Transparent;
             this.lbl_name.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_name.ForeColor = System.Drawing.Color.White;
-            this.lbl_name.Location = new System.Drawing.Point(89, 36);
+            this.lbl_name.Location = new System.Drawing.Point(81, 17);
             this.lbl_name.Name = "lbl_name";
-            this.lbl_name.Size = new System.Drawing.Size(175, 38);
+            this.lbl_name.Size = new System.Drawing.Size(192, 38);
             this.lbl_name.TabIndex = 9;
             this.lbl_name.Text = "Shecan";
             this.lbl_name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(42, 67);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(28, 26);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 15;
+            this.pb_latencyPicture.TabStop = false;
             // 
             // lbl_latency
             // 
             this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
             this.lbl_latency.Font = new System.Drawing.Font("Rubik SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_latency.ForeColor = System.Drawing.Color.White;
-            this.lbl_latency.Location = new System.Drawing.Point(337, 155);
+            this.lbl_latency.Location = new System.Drawing.Point(76, 71);
             this.lbl_latency.Name = "lbl_latency";
             this.lbl_latency.Size = new System.Drawing.Size(71, 22);
             this.lbl_latency.TabIndex = 9;
@@ -104,9 +125,9 @@
             this.lbl_previewAddress.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbl_previewAddress.Font = new System.Drawing.Font("Rubik SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_previewAddress.ForeColor = System.Drawing.Color.White;
-            this.lbl_previewAddress.Location = new System.Drawing.Point(51, 141);
+            this.lbl_previewAddress.Location = new System.Drawing.Point(28, 54);
             this.lbl_previewAddress.Name = "lbl_previewAddress";
-            this.lbl_previewAddress.Size = new System.Drawing.Size(185, 46);
+            this.lbl_previewAddress.Size = new System.Drawing.Size(245, 46);
             this.lbl_previewAddress.TabIndex = 10;
             this.lbl_previewAddress.Text = "178.22.122.100 185.51.200.2";
             this.lbl_previewAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -117,9 +138,9 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(263, 106);
+            this.label1.Location = new System.Drawing.Point(39, 26);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(175, 28);
+            this.label1.Size = new System.Drawing.Size(91, 28);
             this.label1.TabIndex = 11;
             this.label1.Text = " Latency";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -129,12 +150,12 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(50, 106);
+            this.label4.Location = new System.Drawing.Point(58, 28);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(179, 26);
+            this.label4.Size = new System.Drawing.Size(88, 26);
             this.label4.TabIndex = 11;
             this.label4.Text = "Address";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbl_counter
             // 
@@ -153,46 +174,54 @@
             this.btn_refresh.Animated = true;
             this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
             this.btn_refresh.BorderColor = System.Drawing.Color.White;
-            this.btn_refresh.BorderRadius = 5;
-            this.btn_refresh.BorderThickness = 1;
+            this.btn_refresh.BorderRadius = 20;
             this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_refresh.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_refresh.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
-            this.btn_refresh.ImageOffset = new System.Drawing.Point(-10, 0);
-            this.btn_refresh.Location = new System.Drawing.Point(579, 12);
+            this.btn_refresh.Image = global::ForceConnect.Properties.Resources.sync;
+            this.btn_refresh.ImageSize = new System.Drawing.Size(25, 25);
+            this.btn_refresh.Location = new System.Drawing.Point(500, 89);
             this.btn_refresh.Name = "btn_refresh";
-            this.btn_refresh.Size = new System.Drawing.Size(144, 37);
+            this.btn_refresh.Size = new System.Drawing.Size(92, 68);
             this.btn_refresh.TabIndex = 0;
-            this.btn_refresh.Text = "Refresh";
             this.btn_refresh.Click += new System.EventHandler(this.btn_refresh_Click);
+            // 
+            // pnl_counterServices
+            // 
+            this.pnl_counterServices.AutoRoundedCorners = true;
+            this.pnl_counterServices.BorderRadius = 18;
+            this.pnl_counterServices.Controls.Add(this.lbl_counter);
+            this.pnl_counterServices.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_counterServices.Location = new System.Drawing.Point(373, 345);
+            this.pnl_counterServices.Name = "pnl_counterServices";
+            this.pnl_counterServices.Size = new System.Drawing.Size(129, 39);
+            this.pnl_counterServices.TabIndex = 10;
             // 
             // btn_openServices
             // 
             this.btn_openServices.Animated = true;
             this.btn_openServices.BackColor = System.Drawing.Color.Transparent;
             this.btn_openServices.BorderColor = System.Drawing.Color.White;
-            this.btn_openServices.BorderRadius = 5;
-            this.btn_openServices.BorderThickness = 1;
+            this.btn_openServices.BorderRadius = 20;
             this.btn_openServices.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_openServices.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_openServices.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_openServices.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_openServices.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_openServices.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+            this.btn_openServices.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_openServices.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_openServices.ForeColor = System.Drawing.Color.White;
-            this.btn_openServices.Image = global::ForceConnect.Properties.Resources.services;
-            this.btn_openServices.ImageOffset = new System.Drawing.Point(-10, 0);
-            this.btn_openServices.Location = new System.Drawing.Point(729, 12);
+            this.btn_openServices.Image = global::ForceConnect.Properties.Resources.folder;
+            this.btn_openServices.ImageSize = new System.Drawing.Size(25, 25);
+            this.btn_openServices.Location = new System.Drawing.Point(597, 89);
             this.btn_openServices.Name = "btn_openServices";
-            this.btn_openServices.Size = new System.Drawing.Size(144, 37);
+            this.btn_openServices.Size = new System.Drawing.Size(92, 68);
             this.btn_openServices.TabIndex = 0;
-            this.btn_openServices.Text = "Services";
             this.btn_openServices.Click += new System.EventHandler(this.btn_openServices_Click);
             // 
             // btn_previous
@@ -227,73 +256,52 @@
             this.btn_next.TabStop = false;
             this.btn_next.Click += new System.EventHandler(this.btn_next_Click);
             // 
-            // btn_removeDNS
+            // guna2CustomGradientPanel1
             // 
-            this.btn_removeDNS.Animated = true;
-            this.btn_removeDNS.BackColor = System.Drawing.Color.Transparent;
-            this.btn_removeDNS.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_removeDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_removeDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_removeDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_removeDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_removeDNS.FillColor = System.Drawing.Color.Transparent;
-            this.btn_removeDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_removeDNS.ForeColor = System.Drawing.Color.White;
-            this.btn_removeDNS.Image = global::ForceConnect.Properties.Resources.delete;
-            this.btn_removeDNS.ImageSize = new System.Drawing.Size(30, 30);
-            this.btn_removeDNS.Location = new System.Drawing.Point(560, 21);
-            this.btn_removeDNS.Name = "btn_removeDNS";
-            this.btn_removeDNS.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.btn_removeDNS.Size = new System.Drawing.Size(33, 30);
-            this.btn_removeDNS.TabIndex = 17;
-            this.btn_removeDNS.Visible = false;
+            this.guna2CustomGradientPanel1.BackColor = System.Drawing.Color.Transparent;
+            this.guna2CustomGradientPanel1.BorderColor = System.Drawing.Color.WhiteSmoke;
+            this.guna2CustomGradientPanel1.BorderRadius = 20;
+            this.guna2CustomGradientPanel1.Controls.Add(this.label4);
+            this.guna2CustomGradientPanel1.Controls.Add(this.lbl_previewAddress);
+            this.guna2CustomGradientPanel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel1.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel1.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel1.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel1.Location = new System.Drawing.Point(184, 175);
+            this.guna2CustomGradientPanel1.Name = "guna2CustomGradientPanel1";
+            this.guna2CustomGradientPanel1.Size = new System.Drawing.Size(299, 122);
+            this.guna2CustomGradientPanel1.TabIndex = 1;
             // 
-            // pb_latencyPicture
+            // guna2CustomGradientPanel2
             // 
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(303, 151);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(28, 26);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 15;
-            this.pb_latencyPicture.TabStop = false;
-            // 
-            // pb_dnsPicture
-            // 
-            this.pb_dnsPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_dnsPicture.Image = global::ForceConnect.Properties.Resources.shecan;
-            this.pb_dnsPicture.ImageRotate = 0F;
-            this.pb_dnsPicture.Location = new System.Drawing.Point(26, 30);
-            this.pb_dnsPicture.Name = "pb_dnsPicture";
-            this.pb_dnsPicture.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.pb_dnsPicture.Size = new System.Drawing.Size(48, 48);
-            this.pb_dnsPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_dnsPicture.TabIndex = 13;
-            this.pb_dnsPicture.TabStop = false;
-            // 
-            // pnl_counterServices
-            // 
-            this.pnl_counterServices.BorderRadius = 12;
-            this.pnl_counterServices.Controls.Add(this.lbl_counter);
-            this.pnl_counterServices.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.pnl_counterServices.Location = new System.Drawing.Point(373, 345);
-            this.pnl_counterServices.Name = "pnl_counterServices";
-            this.pnl_counterServices.Size = new System.Drawing.Size(129, 39);
-            this.pnl_counterServices.TabIndex = 10;
+            this.guna2CustomGradientPanel2.BackColor = System.Drawing.Color.Transparent;
+            this.guna2CustomGradientPanel2.BorderColor = System.Drawing.Color.WhiteSmoke;
+            this.guna2CustomGradientPanel2.BorderRadius = 20;
+            this.guna2CustomGradientPanel2.Controls.Add(this.label1);
+            this.guna2CustomGradientPanel2.Controls.Add(this.pb_latencyPicture);
+            this.guna2CustomGradientPanel2.Controls.Add(this.lbl_latency);
+            this.guna2CustomGradientPanel2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel2.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel2.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel2.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2CustomGradientPanel2.Location = new System.Drawing.Point(500, 175);
+            this.guna2CustomGradientPanel2.Name = "guna2CustomGradientPanel2";
+            this.guna2CustomGradientPanel2.Size = new System.Drawing.Size(189, 122);
+            this.guna2CustomGradientPanel2.TabIndex = 1;
             // 
             // frm_explore
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
             this.Controls.Add(this.pnl_counterServices);
             this.Controls.Add(this.btn_refresh);
             this.Controls.Add(this.btn_openServices);
             this.Controls.Add(this.btn_previous);
             this.Controls.Add(this.btn_next);
+            this.Controls.Add(this.guna2CustomGradientPanel2);
+            this.Controls.Add(this.guna2CustomGradientPanel1);
             this.Controls.Add(this.pnl_cardDns);
             this.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -304,11 +312,13 @@
             this.Text = "Explore";
             this.Load += new System.EventHandler(this.frm_explore_Load);
             this.pnl_cardDns.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
+            this.pnl_counterServices.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
-            this.pnl_counterServices.ResumeLayout(false);
+            this.guna2CustomGradientPanel1.ResumeLayout(false);
+            this.guna2CustomGradientPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -325,9 +335,10 @@
         private Guna.UI2.WinForms.Guna2CirclePictureBox btn_next;
         private Guna.UI2.WinForms.Guna2CirclePictureBox btn_previous;
         private Guna.UI2.WinForms.Guna2PictureBox pb_latencyPicture;
-        private Guna.UI2.WinForms.Guna2CircleButton btn_removeDNS;
         private Guna.UI2.WinForms.Guna2Button btn_openServices;
         private Guna.UI2.WinForms.Guna2Button btn_refresh;
         private Guna.UI2.WinForms.Guna2Panel pnl_counterServices;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel1;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel2;
     }
 }
