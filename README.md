@@ -36,11 +36,11 @@ Over time, we try our best to optimize and increase the security and power of th
 
 ## Roadmap
 
-- Dark/Light Mode 🟡
+- Dark/Light Mode 🔴
 
-- Remove Services 🟡
+- Remove Services 🟢
 
-- More Optimize and Faster 🟡
+- More Optimize and Faster 🟢
 
 - Fix Antivirus Problem 🔴
 
