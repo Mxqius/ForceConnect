@@ -48,7 +48,7 @@
             // pnl_descriptionAbout
             // 
             this.pnl_descriptionAbout.BackColor = System.Drawing.Color.Transparent;
-            this.pnl_descriptionAbout.BorderRadius = 15;
+            this.pnl_descriptionAbout.BorderRadius = 10;
             this.pnl_descriptionAbout.Controls.Add(this.guna2Shapes1);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_description);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_titleDescription);
@@ -97,7 +97,7 @@
             // pnl_developreCard
             // 
             this.pnl_developreCard.BackColor = System.Drawing.Color.Transparent;
-            this.pnl_developreCard.BorderRadius = 15;
+            this.pnl_developreCard.BorderRadius = 10;
             this.pnl_developreCard.Controls.Add(this.btn_github);
             this.pnl_developreCard.Controls.Add(this.btn_instagram);
             this.pnl_developreCard.Controls.Add(this.btn_telegram);

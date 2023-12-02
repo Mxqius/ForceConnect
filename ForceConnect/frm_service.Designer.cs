@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.pnl_services = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_latencySection = new Guna.UI2.WinForms.Guna2Panel();
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btn_ping = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_ping = new System.Windows.Forms.Label();
             this.txt_address2 = new Guna.UI2.WinForms.Guna2TextBox();
@@ -42,6 +41,7 @@
             this.btn_cancel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_addService = new Guna.UI2.WinForms.Guna2Button();
             this.bf_form = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnl_services.SuspendLayout();
             this.pnl_latencySection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -77,19 +77,6 @@
             this.pnl_latencySection.Name = "pnl_latencySection";
             this.pnl_latencySection.Size = new System.Drawing.Size(319, 62);
             this.pnl_latencySection.TabIndex = 28;
-            // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 27;
-            this.pb_latencyPicture.TabStop = false;
             // 
             // btn_ping
             // 
@@ -277,6 +264,19 @@
             this.bf_form.ResizeForm = false;
             this.bf_form.ShadowColor = System.Drawing.Color.WhiteSmoke;
             this.bf_form.TransparentWhileDrag = true;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 27;
+            this.pb_latencyPicture.TabStop = false;
             // 
             // frm_service
             // 

@@ -24,6 +24,7 @@ namespace ForceConnect
             this.Invoke(new Action(async () =>
             {
                 lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("http://cachefly.cachefly.net/10mb.test")} MBps";
+                loadingProgressSpeed.Stop();
                 loadingProgressSpeed.Visible = false;
             }));
             // lbl_uploadSpeed.Text = $"{await SpeedTest.MeasureUploadSpeedAsync("http://cachefly.cachefly.net/10mb.test")} MBps";
@@ -32,13 +33,14 @@ namespace ForceConnect
         private async Task loadInformation()
         {
             await Task.Run(() =>
-            {
-                loadingProgressSpeed.Visible = true;
+            {            
                 NetworkInterfaceInfo information = NetworkInformation.GetActiveNetworkInterfaceInfo();
                 if (information == null) return;
                 this.Invoke(new MethodInvoker(delegate
                 {
-                    lbl_intrfaceName.Text = information.ActiveInterfaceName;
+                    loadingProgressSpeed.Visible = true;
+                    loadingProgressSpeed.Start();
+                    lbl_intrfaceName.Text = information.InterfaceName;
                     lbl_intrfaceDesc.Text = information.Description;
                     lbl_intrfaceStatus.Text = information.Status.ToString();
                     lbl_ipAddress.Text = information.IPAddress.ToString();

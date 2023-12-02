@@ -113,6 +113,11 @@ namespace ForceConnect
             ts_discordRPC.Checked = !ts_discordRPC.Checked;
         }
 
+        private void btn_languagePanel_Click(object sender, EventArgs e)
+        {
+            new frm_language().ShowDialog();
+        }
+
         private void cb_minimizeInTray_CheckedChanged(object sender, EventArgs e)
         {
             if (initilizeWait) return;

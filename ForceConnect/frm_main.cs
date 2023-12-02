@@ -1,4 +1,5 @@
 ﻿using ForceConnect.API;
+using ForceConnect.Interfaces;
 using ForceConnect.Launch;
 using ForceConnect.Services;
 using ForceConnect.User_Controls;
@@ -26,7 +27,8 @@ namespace ForceConnect
         public Form currentFormLoaded;
 
         private long _currentLatency = 0;
-        private bool _connected, pendingRequest, _internetConnection = true;
+        public bool _connected;
+        private bool pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         private string _statusConnectionService, _previewAddress;
@@ -146,21 +148,37 @@ namespace ForceConnect
             //transitionEffect.HideSync(pnl_welcome);
             pnl_welcome.Visible = lbl_hintSelectDNS.Visible = false;
             //transitionEffect.ShowSync(pnl_information);
-            lbl_version.Visible = pnl_latencySection.Visible = pnl_cardDns.Visible = pnl_addressSection.Visible = true;
+            lbl_version.Visible = pnl_cardDns.Visible = pnl_addressStatusSection.Visible = true;
         }
         private void cb_selectDNS_SelectedIndexChanged(object sender, EventArgs e)
         {
             hideWelcomePanel();
             if (connectedDNS != null)
             {
-                if (connectedDNS.Name.ToLower() != cb_selectDNS.Text.ToLower() && _connected)
-                    new frm_messageBox()
+                if (_connected)
+                    if (connectedDNS.Name.ToLower() != cb_selectDNS.Text.ToLower())
                     {
-                        MessageCaption = "Warning",
-                        MessageText = $"You Are still connect to perviosly dns ({connectedDNS.Name})",
-                        MessageIcon = frm_messageBox.Icon.Warning,
-                        MessageButtons = frm_messageBox.Buttons.OK
-                    }.ShowMessage();
+                        pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
+                        lbl_statusText.ForeColor = Color.FromArgb(178, 61, 61);
+                        shapeConnectionStatus.FillColor = Color.FromArgb(183, 28, 28);
+
+                        lbl_statusText.Text = "Disconnected";
+                    }
+                    else
+                    {
+                        pnl_statusColor.FillColor = Color.FromArgb(45, 65, 46);
+                        lbl_statusText.ForeColor = Color.FromArgb(63, 167, 82);
+                        shapeConnectionStatus.FillColor = Color.FromArgb(27, 94, 32);
+
+                        lbl_statusText.Text = "Connected";
+                    }
+                //new frm_messageBox()
+                //{
+                //    MessageCaption = "Warning",
+                //    MessageText = $"You Are still connect to perviosly dns ({connectedDNS.Name})",
+                //    MessageIcon = frm_messageBox.Icon.Warning,
+                //    MessageButtons = frm_messageBox.Buttons.OK
+                //}.ShowMessage();
                 if (connectedDNS.Name.ToLower() == cb_selectDNS.Text.ToLower())
                     updateVersion();
             }
@@ -178,7 +196,7 @@ namespace ForceConnect
         }
         private async void showInformation()
         {
-            lbl_previewAddress.Text = currentDNS.Name;
+            lbl_name.Text = currentDNS.Name;
             if (currentDNS.dnsAddress.Length > 1)
             {
                 _previewAddress = currentDNS.dnsAddress[0] + " - " + currentDNS.dnsAddress[1];
@@ -292,24 +310,30 @@ namespace ForceConnect
 
             if (!Visible)
                 Show();
+
+            iconConnect.Visible = false;
+            wp_dnsProgress.Visible = true;
+            wp_dnsProgress.Start();
+            PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
             if (_connected)
             {
                 //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
                 _statusConnectionService = "Disconnecting";
                 lbl_status.Text = "RESTORING";
-                wp_dnsProgress.Visible = true;
-                wp_dnsProgress.Start();
                 await delay(3000);
                 DnsManager.clearDNS();
+
+                pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
+                lbl_statusText.ForeColor = Color.FromArgb(178, 61, 61);
+                shapeConnectionStatus.FillColor = Color.FromArgb(183, 28, 28);
+
+                lbl_statusText.Text = "Disconnected";
+
                 //statusProgressColor.FillColor = Color.FromArgb(216, 0, 50);
                 updateVersion();
                 _statusConnectionService = "Disconnected";
-                wp_dnsProgress.Visible = false;
-                wp_dnsProgress.Stop();
                 iconConnect.Image = Properties.Resources.turn_on;
             }
-            wp_dnsProgress.Visible = true;
-            wp_dnsProgress.Start();
             lbl_status.Text = "CLOSING THE PROGRAM";
             await delay(2000);
             this.Close();
@@ -474,10 +498,15 @@ namespace ForceConnect
 
                         //statusProgressColor.FillColor = Color.FromArgb(60, 207, 78);
 
+                        pnl_statusColor.FillColor = Color.FromArgb(45, 65, 46);
+                        lbl_statusText.ForeColor = Color.FromArgb(63, 167, 82);
+                        shapeConnectionStatus.FillColor = Color.FromArgb(27, 94, 32);
+
                         wp_dnsProgress.Visible = false;
                         wp_dnsProgress.Stop();
 
                         _statusConnectionService = "Connected";
+                        lbl_statusText.Text = "Connected";
                         tsm_status.Text = "Connected";
                         lbl_status.Text = "CLICK TO DISCONNECT";
 
@@ -491,14 +520,14 @@ namespace ForceConnect
                         await syncLatency();
 
                         // Update Discord RPC
-                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service:\n {_previewAddress}");
+                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: $"Powerful DnsChanger Version: {lbl_version.Text}", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service");
                         pendingRequest = false;
-                        cb_selectDNS.Enabled = true;
+                        iconConnect.Visible = cb_selectDNS.Enabled = true;
                     }));
                 };
                 // Start Connecting 
                 pendingRequest = true;
-                cb_selectDNS.Enabled = false;
+                iconConnect.Visible = cb_selectDNS.Enabled = false;
 
 
                 //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
@@ -530,12 +559,17 @@ namespace ForceConnect
                     {
                         //statusProgressColor.FillColor = Color.FromArgb(216, 0, 50);
 
+                        pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
+                        lbl_statusText.ForeColor = Color.FromArgb(178, 61, 61);
+                        shapeConnectionStatus.FillColor = Color.FromArgb(183, 28, 28);
+
                         updateVersion();
 
                         wp_dnsProgress.Visible = false;
                         wp_dnsProgress.Stop();
 
                         _statusConnectionService = "Disconnected";
+                        lbl_statusText.Text = "Disconnected";
                         tsm_status.Text = "Disconnected";
                         lbl_status.Text = "CLICK TO CONNECT";
 
@@ -546,15 +580,19 @@ namespace ForceConnect
                         await syncLatency();
 
                         //Update Discord RPC
-                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Ideal", state: "", largeImage: "force", largeImageText: "Powerful DnsChanger");
+                        DiscordRPCManager.GetInstance().UpdatePresence(details: $"Ideal", state: "", largeImage: "force", largeImageText: $"Powerful DnsChanger Version: {lbl_version.Text}");
 
                         pendingRequest = false;
 
                         PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
+
+                        iconConnect.Visible = true;
                     }));
                 };
                 // Start Disconnecting
                 pendingRequest = true;
+
+                iconConnect.Visible = false;
 
                 //statusProgressColor.FillColor = Color.FromArgb(255, 176, 0);
 
@@ -627,30 +665,26 @@ namespace ForceConnect
             await syncLatency();
             await checkInternetConnection();
         }
-
-        private void ToolFooterEnter(object sender, EventArgs e)
-        {
-            Guna2Button button = ((Guna2Button)sender);
-            switch (button.Name)
-            {
-                case "btn_flushDNS":
-                    button.Text = "Flush DNS";
-
-                    break;
-            }
-            button.Size = new Size(160, 36);
-        }
-
-        private void ToolFooterLeave(object sender, EventArgs e)
-        {
-            Guna2Button button = ((Guna2Button)sender);
-            button.Size = new Size(69, 36);
-            button.Text = string.Empty;
-        }
-
         private void tsm_donateUs_Click(object sender, EventArgs e)
         {
             Process.Start("https://www.coffeebede.com/mxqius");
+        }
+
+        private async void btn_refresh_Click(object sender, EventArgs e)
+        {
+            await syncLatency();
+            await checkInternetConnection();
+        }
+
+        private void btn_networkPanel_Click(object sender, EventArgs e)
+        {
+            new frm_messageBox()
+            {
+                MessageText = "This feature is not available right now, Please try it in next update",
+                MessageCaption = "Oops",
+                MessageButtons = frm_messageBox.Buttons.OK,
+                MessageIcon = frm_messageBox.Icon.Info
+            }.ShowMessage();
         }
 
         private async void btn_flushDNS_Click(object sender, EventArgs e)
@@ -681,8 +715,10 @@ namespace ForceConnect
             {
                 this.Invoke(new MethodInvoker(async delegate
                 {
+                    iconConnect.Visible = false;
                     wp_dnsProgress.Visible = true;
                     wp_dnsProgress.Start();
+                    PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
                     lbl_status.Text = "FLUSHING DNS SYSTEM";
                     await delay(2000);
                     // Sync Latency
@@ -697,6 +733,10 @@ namespace ForceConnect
                         lbl_status.Text = "CLICK TO CONNECT";
 
                     pendingRequest = false;
+
+                    PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
+
+                    iconConnect.Visible = true;
                 }));
             };
             pendingRequest = true;
@@ -749,7 +789,7 @@ namespace ForceConnect
             wp_dnsProgress.Visible = !visible;
             if (!pnl_welcome.Visible)
             {
-                pnl_latencySection.Visible = pnl_cardDns.Visible = pnl_addressSection.Visible = lbl_hintSelectDNS.Visible = lbl_version.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = visible;
+                pnl_cardDns.Visible = pnl_addressStatusSection.Visible = lbl_hintSelectDNS.Visible = lbl_version.Visible = iconConnect.Visible = lbl_status.Visible = shape_connect.Visible = btn_flushDNS.Visible = visible;
             }
         }
         private void clickControlMenu(object sender, EventArgs e)
@@ -778,6 +818,11 @@ namespace ForceConnect
                     hiddenHomeForm(true);
                     cb_selectDNS.Items.Clear();
                     loadServices();
+                    if (_connected)
+                    {
+                        lbl_hintSelectDNS.Visible = false;
+                        cb_selectDNS.SelectedIndex = cb_selectDNS.FindStringExact(connectedDNS.Name);
+                    }
                     pnl_container.Controls.Remove(currentFormLoaded);
                     break;
                 case "btn_explore":

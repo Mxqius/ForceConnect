@@ -50,12 +50,12 @@
             this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
             this.label3 = new System.Windows.Forms.Label();
             this.lbl_macAddress = new System.Windows.Forms.Label();
-            this.lbl_uploadSpeed = new System.Windows.Forms.Label();
             this.lbl_downloadSpeed = new System.Windows.Forms.Label();
             this.guna2Shapes4 = new Guna.UI2.WinForms.Guna2Shapes();
-            this.guna2Shapes2 = new Guna.UI2.WinForms.Guna2Shapes();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.loadingProgressSpeed = new Guna.UI2.WinForms.Guna2WinProgressIndicator();
+            this.lbl_uploadSpeed = new System.Windows.Forms.Label();
+            this.guna2Shapes2 = new Guna.UI2.WinForms.Guna2Shapes();
             this.guna2Panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -219,7 +219,7 @@
             this.lbl_activeServices.ForeColor = System.Drawing.Color.White;
             this.lbl_activeServices.Location = new System.Drawing.Point(216, 240);
             this.lbl_activeServices.Name = "lbl_activeServices";
-            this.lbl_activeServices.Size = new System.Drawing.Size(199, 46);
+            this.lbl_activeServices.Size = new System.Drawing.Size(422, 33);
             this.lbl_activeServices.TabIndex = 1;
             this.lbl_activeServices.Text = "???";
             // 
@@ -325,20 +325,6 @@
             this.lbl_macAddress.TabIndex = 1;
             this.lbl_macAddress.Text = "???";
             // 
-            // lbl_uploadSpeed
-            // 
-            this.lbl_uploadSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbl_uploadSpeed.AutoSize = true;
-            this.lbl_uploadSpeed.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_uploadSpeed.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_uploadSpeed.ForeColor = System.Drawing.Color.White;
-            this.lbl_uploadSpeed.Location = new System.Drawing.Point(47, 6);
-            this.lbl_uploadSpeed.Name = "lbl_uploadSpeed";
-            this.lbl_uploadSpeed.Size = new System.Drawing.Size(68, 19);
-            this.lbl_uploadSpeed.TabIndex = 8;
-            this.lbl_uploadSpeed.Text = "?? MBps";
-            this.lbl_uploadSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // lbl_downloadSpeed
             // 
             this.lbl_downloadSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -368,21 +354,6 @@
             this.guna2Shapes4.TabIndex = 10;
             this.guna2Shapes4.Zoom = 80;
             // 
-            // guna2Shapes2
-            // 
-            this.guna2Shapes2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.guna2Shapes2.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Shapes2.BorderColor = System.Drawing.Color.Transparent;
-            this.guna2Shapes2.FillColor = System.Drawing.Color.White;
-            this.guna2Shapes2.Location = new System.Drawing.Point(22, 6);
-            this.guna2Shapes2.Name = "guna2Shapes2";
-            this.guna2Shapes2.PolygonSides = 3;
-            this.guna2Shapes2.PolygonSkip = 1;
-            this.guna2Shapes2.Rotate = 0F;
-            this.guna2Shapes2.Size = new System.Drawing.Size(19, 19);
-            this.guna2Shapes2.TabIndex = 11;
-            this.guna2Shapes2.Zoom = 80;
-            // 
             // guna2Panel1
             // 
             this.guna2Panel1.AutoRoundedCorners = true;
@@ -400,14 +371,42 @@
             // loadingProgressSpeed
             // 
             this.loadingProgressSpeed.AnimationSpeed = 40;
-            this.loadingProgressSpeed.AutoStart = true;
             this.loadingProgressSpeed.CircleSize = 1F;
-            this.loadingProgressSpeed.Location = new System.Drawing.Point(300, 298);
+            this.loadingProgressSpeed.Location = new System.Drawing.Point(306, 297);
             this.loadingProgressSpeed.Name = "loadingProgressSpeed";
             this.loadingProgressSpeed.NumberOfCircles = 3;
             this.loadingProgressSpeed.ProgressColor = System.Drawing.Color.White;
             this.loadingProgressSpeed.Size = new System.Drawing.Size(29, 33);
-            this.loadingProgressSpeed.TabIndex = 13;
+            this.loadingProgressSpeed.TabIndex = 14;
+            // 
+            // lbl_uploadSpeed
+            // 
+            this.lbl_uploadSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_uploadSpeed.AutoSize = true;
+            this.lbl_uploadSpeed.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_uploadSpeed.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_uploadSpeed.ForeColor = System.Drawing.Color.White;
+            this.lbl_uploadSpeed.Location = new System.Drawing.Point(47, 6);
+            this.lbl_uploadSpeed.Name = "lbl_uploadSpeed";
+            this.lbl_uploadSpeed.Size = new System.Drawing.Size(68, 19);
+            this.lbl_uploadSpeed.TabIndex = 8;
+            this.lbl_uploadSpeed.Text = "?? MBps";
+            this.lbl_uploadSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // guna2Shapes2
+            // 
+            this.guna2Shapes2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.guna2Shapes2.BackColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes2.BorderColor = System.Drawing.Color.Transparent;
+            this.guna2Shapes2.FillColor = System.Drawing.Color.White;
+            this.guna2Shapes2.Location = new System.Drawing.Point(22, 6);
+            this.guna2Shapes2.Name = "guna2Shapes2";
+            this.guna2Shapes2.PolygonSides = 3;
+            this.guna2Shapes2.PolygonSkip = 1;
+            this.guna2Shapes2.Rotate = 0F;
+            this.guna2Shapes2.Size = new System.Drawing.Size(19, 19);
+            this.guna2Shapes2.TabIndex = 11;
+            this.guna2Shapes2.Zoom = 80;
             // 
             // frm_network
             // 
@@ -475,11 +474,11 @@
         private Guna.UI2.WinForms.Guna2Button btn_refresh;
         private System.Windows.Forms.Label lbl_macAddress;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label lbl_uploadSpeed;
         private System.Windows.Forms.Label lbl_downloadSpeed;
         private Guna.UI2.WinForms.Guna2Shapes guna2Shapes4;
-        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes2;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2WinProgressIndicator loadingProgressSpeed;
+        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes2;
+        private System.Windows.Forms.Label lbl_uploadSpeed;
     }
 }

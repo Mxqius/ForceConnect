@@ -44,7 +44,7 @@
             // lbl_caption
             // 
             this.lbl_caption.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_caption.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_caption.Font = new System.Drawing.Font("Rubik", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_caption.ForeColor = System.Drawing.Color.White;
             this.lbl_caption.Location = new System.Drawing.Point(111, 45);
             this.lbl_caption.Name = "lbl_caption";
@@ -55,7 +55,7 @@
             // 
             // lbl_text
             // 
-            this.lbl_text.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_text.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_text.ForeColor = System.Drawing.Color.White;
             this.lbl_text.Location = new System.Drawing.Point(112, 91);
             this.lbl_text.Name = "lbl_text";
@@ -73,7 +73,7 @@
             this.btn_primary.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_primary.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btn_primary.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(228)))));
-            this.btn_primary.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_primary.Font = new System.Drawing.Font("Rubik", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_primary.ForeColor = System.Drawing.Color.White;
             this.btn_primary.Location = new System.Drawing.Point(421, 178);
             this.btn_primary.Name = "btn_primary";
@@ -94,7 +94,7 @@
             this.btn_secoundry.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_secoundry.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btn_secoundry.FillColor = System.Drawing.Color.Transparent;
-            this.btn_secoundry.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_secoundry.Font = new System.Drawing.Font("Rubik", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_secoundry.ForeColor = System.Drawing.Color.White;
             this.btn_secoundry.Location = new System.Drawing.Point(259, 178);
             this.btn_secoundry.Name = "btn_secoundry";
@@ -124,7 +124,7 @@
             this.btn_three.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_three.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btn_three.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(110)))), ((int)(((byte)(228)))));
-            this.btn_three.Font = new System.Drawing.Font("JetBrains Mono", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_three.Font = new System.Drawing.Font("Rubik", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_three.ForeColor = System.Drawing.Color.White;
             this.btn_three.Location = new System.Drawing.Point(97, 178);
             this.btn_three.Name = "btn_three";

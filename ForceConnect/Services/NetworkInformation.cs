@@ -12,6 +12,36 @@ namespace ForceConnect.Services
 {
     internal class NetworkInformation
     {
+        public static List<NetworkInterfaceInfo> GetAllNetworkInterfacesInfo()
+        {
+            List<NetworkInterfaceInfo> interfacesInfo = new List<NetworkInterfaceInfo>();
+
+            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface networkInterface in networkInterfaces)
+            {
+                IPInterfaceProperties ipProperties = networkInterface.GetIPProperties();
+                IPAddress ipAddress = ipProperties.UnicastAddresses.FirstOrDefault(a => a.Address.AddressFamily == AddressFamily.InterNetwork)?.Address;
+                IPAddress subnetMask = ipProperties.UnicastAddresses.FirstOrDefault(a => a.Address.AddressFamily == AddressFamily.InterNetwork)?.IPv4Mask;
+                string hostName = Dns.GetHostName();
+                IPAddress[] dnsIPAddresses = ipProperties.DnsAddresses.Where(a => a.AddressFamily == AddressFamily.InterNetwork).ToArray();
+
+                interfacesInfo.Add(new NetworkInterfaceInfo
+                {
+                    InterfaceName = networkInterface.Name,
+                    Description = networkInterface.Description,
+                    Status = networkInterface.OperationalStatus,
+                    MACAddress = networkInterface.GetPhysicalAddress().ToString(),
+                    Speed = networkInterface.Speed,
+                    IPAddress = ipAddress,
+                    SubnetMask = subnetMask,
+                    HostName = hostName,
+                    DNSIPAddress = dnsIPAddresses
+                });
+            }
+
+            return interfacesInfo;
+        }
         public static NetworkInterfaceInfo GetActiveNetworkInterfaceInfo()
         {
             NetworkInterface activeInterface = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
@@ -29,7 +59,7 @@ namespace ForceConnect.Services
 
                 return new NetworkInterfaceInfo
                 {
-                    ActiveInterfaceName = activeInterface.Name,
+                    InterfaceName = activeInterface.Name,
                     Description = activeInterface.Description,
                     Status = activeInterface.OperationalStatus,
                     MACAddress = activeInterface.GetPhysicalAddress().ToString(),

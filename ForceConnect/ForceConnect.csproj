@@ -98,6 +98,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Latency.cs" />
+    <Compile Include="frm_language.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_language.Designer.cs">
+      <DependentUpon>frm_language.cs</DependentUpon>
+    </Compile>
     <Compile Include="frm_messageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +115,12 @@
     </Compile>
     <Compile Include="frm_network.Designer.cs">
       <DependentUpon>frm_network.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frm_networkAdapter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_networkAdapter.Designer.cs">
+      <DependentUpon>frm_networkAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\NetworkInterfaceInfo.cs" />
     <Compile Include="Launch\RegistryApplication.cs" />
@@ -178,8 +190,14 @@
     <EmbeddedResource Include="frm_explore.resx">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frm_language.resx">
+      <DependentUpon>frm_language.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frm_network.resx">
       <DependentUpon>frm_network.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_networkAdapter.resx">
+      <DependentUpon>frm_networkAdapter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frm_service.resx">
       <DependentUpon>frm_service.cs</DependentUpon>
@@ -226,7 +244,6 @@
     <None Include="Icons\minimize.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Fonts\" />
     <Folder Include="Icons\letancyIcons\" />
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +320,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\delete.png" />
+    <None Include="Icons\languagesIcon\germany.png" />
+    <None Include="Icons\languagesIcon\spain.png" />
+    <None Include="Icons\languagesIcon\iran.png" />
+    <None Include="Icons\languagesIcon\united-kingdom.png" />
     <None Include="Icons\folder.png" />
     <None Include="Icons\serviceAdd.png" />
     <None Include="Icons\coffee.png" />

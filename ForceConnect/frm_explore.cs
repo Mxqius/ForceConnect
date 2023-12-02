@@ -71,7 +71,7 @@ namespace ForceConnect
             lbl_latency.Text = latency.ToString() + " ms";
             updateLatencyPicture();
         }
-        private  void frm_explore_Load(object sender, EventArgs e)
+        private void frm_explore_Load(object sender, EventArgs e)
         {
             changeInformationCardDNS(listOfDNS[currentIndex]);
             updateCounter();
@@ -81,7 +81,7 @@ namespace ForceConnect
             lbl_counter.Text = $"{currentIndex + 1} / {listOfDNS.Count}";
         }
 
-        private  void btn_next_Click(object sender, EventArgs e)
+        private void btn_next_Click(object sender, EventArgs e)
         {
             if (currentIndex < listOfDNS.Count - 1) currentIndex++;
             else currentIndex = 0;
@@ -89,7 +89,7 @@ namespace ForceConnect
             updateCounter();
         }
 
-        private  void btn_previous_Click(object sender, EventArgs e)
+        private void btn_previous_Click(object sender, EventArgs e)
         {
             if (currentIndex > 0) currentIndex--;
             else currentIndex = (byte)((byte)listOfDNS.Count - 1);
@@ -110,6 +110,37 @@ namespace ForceConnect
         private async void btn_refresh_Click(object sender, EventArgs e)
         {
             await updateList();
+        }
+
+        private async void btn_deleteService_Click(object sender, EventArgs e)
+        {
+            if (!_mainForm._connected)
+            {
+                DialogResult result = new frm_messageBox()
+                {
+                    MessageText = "Are you sure to delete this service?",
+                    MessageCaption = "Warning",
+                    MessageButtons = frm_messageBox.Buttons.YesNo,
+                    MessageIcon = frm_messageBox.Icon.Warning
+                }.ShowMessage();
+                if (result == DialogResult.Yes)
+                {
+                    Service.DeleteService(listOfDNS[currentIndex].UniqueID);
+                    await updateList();
+                    changeInformationCardDNS(listOfDNS[0]);
+                    updateCounter();
+                }
+            }
+            else
+            {
+                DialogResult result = new frm_messageBox()
+                {
+                    MessageText = "Please first disconnect from active service",
+                    MessageCaption = "Error",
+                    MessageButtons = frm_messageBox.Buttons.OK,
+                    MessageIcon = frm_messageBox.Icon.Error
+                }.ShowMessage();
+            }
         }
     }
 }

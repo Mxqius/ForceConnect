@@ -18,6 +18,7 @@ namespace ForceConnect.Services
             _servicesUser.Clear();
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "178.22.122.100", "185.51.200.2" },
                 Latency = 170,
                 Name = "Shecan",
@@ -25,6 +26,7 @@ namespace ForceConnect.Services
             });
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "78.157.42.101", "78.157.42.100" },
                 Latency = 100,
                 Name = "Electro",
@@ -32,6 +34,7 @@ namespace ForceConnect.Services
             });
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "10.202.10.10", "10.202.10.11" },
                 Latency = 70,
                 Name = "RadarGame",
@@ -39,6 +42,7 @@ namespace ForceConnect.Services
             });
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "10.202.10.202", "10.202.10.102" },
                 Latency = 80,
                 Name = "403.Online",
@@ -46,6 +50,7 @@ namespace ForceConnect.Services
             });
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "8.8.8.8", "8.8.4.4" },
                 Latency = 24,
                 Name = "Google",
@@ -53,6 +58,7 @@ namespace ForceConnect.Services
             });
             _servicesUser.Add(new DnsAddress()
             {
+                UniqueID = Service.GenerateUniqueID(6),
                 dnsAddress = new string[] { "1.1.1.1", "1.0.0.1" },
                 Latency = 50,
                 Name = "Cloudflare",
@@ -64,11 +70,13 @@ namespace ForceConnect.Services
             foreach (string service in services)
             {
                 string[] servicePart = service.Split(' ');
-                string name = servicePart[0];
-                string address1 = servicePart[1];
-                string address2 = servicePart[2];
+                string uniqueID = servicePart[0];
+                string name = servicePart[1];
+                string address1 = servicePart[2];
+                string address2 = servicePart[3];
                 DnsAddress newAddress = new DnsAddress()
                 {
+                    UniqueID = uniqueID,
                     Latency = 1,
                     Name = name,
                     Picture = Properties.Resources.dns
