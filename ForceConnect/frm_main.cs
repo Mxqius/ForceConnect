@@ -297,16 +297,33 @@ namespace ForceConnect
                 }.ShowMessage(); return;
             }
             pendingRequest = true;
-            frm_messageBox message = new frm_messageBox()
+            frm_messageBox message;
+            if (_connected)
             {
-                MessageText = "If you leave the program, your DNS will be disabled. Are you sure?",
-                MessageCaption = "Exit Program",
-                MessageButtons = frm_messageBox.Buttons.YesNo,
-                MessageIcon = frm_messageBox.Icon.Warning
-            };
+                message = new frm_messageBox()
+                {
+                    MessageText = "If you close the program, your DNS will be disabled. Are you sure?",
+                    MessageCaption = "Exit Program",
+                    MessageButtons = frm_messageBox.Buttons.YesNo,
+                    MessageIcon = frm_messageBox.Icon.Warning
+                };
+            }
+            else
+            {
+                message = new frm_messageBox()
+                {
+                    MessageText = "Are you sure you want to close the program?",
+                    MessageCaption = "Exit Program",
+                    MessageButtons = frm_messageBox.Buttons.YesNo,
+                    MessageIcon = frm_messageBox.Icon.Warning
+                };
+            }
 
             if (message.ShowMessage() == DialogResult.No)
             { pendingRequest = false; return; }
+
+            // Remove event listener from timer object for closing application
+            timerLatency.Tick -= timerLatency_Tick;
 
             if (!Visible)
                 Show();
@@ -676,17 +693,6 @@ namespace ForceConnect
             await checkInternetConnection();
         }
 
-        private void btn_networkPanel_Click(object sender, EventArgs e)
-        {
-            new frm_messageBox()
-            {
-                MessageText = "This feature is not available right now, Please try it in next update",
-                MessageCaption = "Oops",
-                MessageButtons = frm_messageBox.Buttons.OK,
-                MessageIcon = frm_messageBox.Icon.Info
-            }.ShowMessage();
-        }
-
         private async void btn_flushDNS_Click(object sender, EventArgs e)
         {
             if (pendingRequest) return;
@@ -817,12 +823,7 @@ namespace ForceConnect
                     updateServices();
                     hiddenHomeForm(true);
                     cb_selectDNS.Items.Clear();
-                    loadServices();
-                    if (_connected)
-                    {
-                        lbl_hintSelectDNS.Visible = false;
-                        cb_selectDNS.SelectedIndex = cb_selectDNS.FindStringExact(connectedDNS.Name);
-                    }
+                    loadServices();            
                     pnl_container.Controls.Remove(currentFormLoaded);
                     break;
                 case "btn_explore":

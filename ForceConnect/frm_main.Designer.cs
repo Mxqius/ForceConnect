@@ -49,18 +49,18 @@
             this.lbl_wlc = new System.Windows.Forms.Label();
             this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.wp_dnsProgress = new Guna.UI2.WinForms.Guna2WinProgressIndicator();
-            this.btn_networkPanel = new Guna.UI2.WinForms.Guna2Button();
             this.shape_connect = new Guna.UI2.WinForms.Guna2Shapes();
             this.progressBarConnection = new Guna.UI2.WinForms.Guna2CircleProgressBar();
             this.pictureLatency = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
             this.pnl_addressStatusSection = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            this.pnl_serviceAddress = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
+            this.lbl_previewAddress = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pnl_statusColor = new Guna.UI2.WinForms.Guna2Panel();
             this.shapeConnectionStatus = new Guna.UI2.WinForms.Guna2Shapes();
             this.lbl_statusText = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.lbl_previewAddress = new System.Windows.Forms.Label();
             this.pnl_cardDns = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.lbl_name = new System.Windows.Forms.Label();
@@ -89,6 +89,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureLatency)).BeginInit();
             this.pnl_addressStatusSection.SuspendLayout();
+            this.pnl_serviceAddress.SuspendLayout();
             this.pnl_statusColor.SuspendLayout();
             this.pnl_cardDns.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).BeginInit();
@@ -316,7 +317,6 @@
             this.pnl_container.Controls.Add(this.pnl_welcome);
             this.pnl_container.Controls.Add(this.iconConnect);
             this.pnl_container.Controls.Add(this.wp_dnsProgress);
-            this.pnl_container.Controls.Add(this.btn_networkPanel);
             this.pnl_container.Controls.Add(this.shape_connect);
             this.pnl_container.Controls.Add(this.progressBarConnection);
             this.pnl_container.Controls.Add(this.pictureLatency);
@@ -427,27 +427,6 @@
             this.wp_dnsProgress.TabIndex = 23;
             this.wp_dnsProgress.Visible = false;
             // 
-            // btn_networkPanel
-            // 
-            this.btn_networkPanel.Animated = true;
-            this.btn_networkPanel.BorderColor = System.Drawing.Color.White;
-            this.btn_networkPanel.BorderRadius = 10;
-            this.btn_networkPanel.BorderThickness = 1;
-            this.btn_networkPanel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_networkPanel.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_networkPanel.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_networkPanel.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_networkPanel.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_networkPanel.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
-            this.btn_networkPanel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_networkPanel.ForeColor = System.Drawing.Color.White;
-            this.btn_networkPanel.Image = global::ForceConnect.Properties.Resources.network;
-            this.btn_networkPanel.Location = new System.Drawing.Point(337, 45);
-            this.btn_networkPanel.Name = "btn_networkPanel";
-            this.btn_networkPanel.Size = new System.Drawing.Size(100, 46);
-            this.btn_networkPanel.TabIndex = 41;
-            this.btn_networkPanel.Click += new System.EventHandler(this.btn_networkPanel_Click);
-            // 
             // shape_connect
             // 
             this.shape_connect.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(70)))), ((int)(((byte)(194)))));
@@ -521,10 +500,10 @@
             this.pnl_addressStatusSection.BackColor = System.Drawing.Color.Transparent;
             this.pnl_addressStatusSection.BorderColor = System.Drawing.Color.WhiteSmoke;
             this.pnl_addressStatusSection.BorderRadius = 10;
+            this.pnl_addressStatusSection.Controls.Add(this.pnl_serviceAddress);
             this.pnl_addressStatusSection.Controls.Add(this.label2);
             this.pnl_addressStatusSection.Controls.Add(this.pnl_statusColor);
             this.pnl_addressStatusSection.Controls.Add(this.label5);
-            this.pnl_addressStatusSection.Controls.Add(this.lbl_previewAddress);
             this.pnl_addressStatusSection.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.pnl_addressStatusSection.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.pnl_addressStatusSection.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
@@ -534,12 +513,41 @@
             this.pnl_addressStatusSection.Size = new System.Drawing.Size(512, 122);
             this.pnl_addressStatusSection.TabIndex = 33;
             // 
+            // pnl_serviceAddress
+            // 
+            this.pnl_serviceAddress.BackColor = System.Drawing.Color.Transparent;
+            this.pnl_serviceAddress.BorderColor = System.Drawing.Color.WhiteSmoke;
+            this.pnl_serviceAddress.BorderRadius = 6;
+            this.pnl_serviceAddress.Controls.Add(this.lbl_previewAddress);
+            this.pnl_serviceAddress.FillColor = System.Drawing.Color.Transparent;
+            this.pnl_serviceAddress.FillColor2 = System.Drawing.Color.Transparent;
+            this.pnl_serviceAddress.FillColor3 = System.Drawing.Color.Transparent;
+            this.pnl_serviceAddress.FillColor4 = System.Drawing.Color.Transparent;
+            this.pnl_serviceAddress.Location = new System.Drawing.Point(42, 66);
+            this.pnl_serviceAddress.Name = "pnl_serviceAddress";
+            this.pnl_serviceAddress.Size = new System.Drawing.Size(231, 31);
+            this.pnl_serviceAddress.TabIndex = 45;
+            // 
+            // lbl_previewAddress
+            // 
+            this.lbl_previewAddress.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_previewAddress.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lbl_previewAddress.Font = new System.Drawing.Font("Rubik SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_previewAddress.ForeColor = System.Drawing.Color.White;
+            this.lbl_previewAddress.Location = new System.Drawing.Point(-6, -7);
+            this.lbl_previewAddress.Name = "lbl_previewAddress";
+            this.lbl_previewAddress.Size = new System.Drawing.Size(245, 46);
+            this.lbl_previewAddress.TabIndex = 10;
+            this.lbl_previewAddress.Text = "178.22.122.100 185.51.200.2";
+            this.lbl_previewAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_previewAddress.Click += new System.EventHandler(this.lbl_serviceAddress_Click);
+            // 
             // label2
             // 
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(298, 25);
+            this.label2.Location = new System.Drawing.Point(301, 25);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(91, 26);
             this.label2.TabIndex = 11;
@@ -589,26 +597,12 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(71, 25);
+            this.label5.Location = new System.Drawing.Point(38, 25);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(88, 26);
             this.label5.TabIndex = 11;
             this.label5.Text = "Address";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lbl_previewAddress
-            // 
-            this.lbl_previewAddress.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_previewAddress.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lbl_previewAddress.Font = new System.Drawing.Font("Rubik SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_previewAddress.ForeColor = System.Drawing.Color.White;
-            this.lbl_previewAddress.Location = new System.Drawing.Point(41, 51);
-            this.lbl_previewAddress.Name = "lbl_previewAddress";
-            this.lbl_previewAddress.Size = new System.Drawing.Size(245, 46);
-            this.lbl_previewAddress.TabIndex = 10;
-            this.lbl_previewAddress.Text = "178.22.122.100 185.51.200.2";
-            this.lbl_previewAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lbl_previewAddress.Click += new System.EventHandler(this.lbl_serviceAddress_Click);
             // 
             // pnl_cardDns
             // 
@@ -690,11 +684,11 @@
             this.lbl_hintSelectDNS.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.lbl_hintSelectDNS.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_hintSelectDNS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
-            this.lbl_hintSelectDNS.Location = new System.Drawing.Point(467, 59);
+            this.lbl_hintSelectDNS.Location = new System.Drawing.Point(347, 60);
             this.lbl_hintSelectDNS.Name = "lbl_hintSelectDNS";
             this.lbl_hintSelectDNS.Size = new System.Drawing.Size(209, 19);
             this.lbl_hintSelectDNS.TabIndex = 0;
-            this.lbl_hintSelectDNS.Text = "Pick your favorite server";
+            this.lbl_hintSelectDNS.Text = "Pick your favorite service";
             this.lbl_hintSelectDNS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_hintSelectDNS.UseCompatibleTextRendering = true;
             // 
@@ -713,9 +707,9 @@
             this.cb_selectDNS.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cb_selectDNS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.cb_selectDNS.ItemHeight = 40;
-            this.cb_selectDNS.Location = new System.Drawing.Point(449, 45);
+            this.cb_selectDNS.Location = new System.Drawing.Point(337, 45);
             this.cb_selectDNS.Name = "cb_selectDNS";
-            this.cb_selectDNS.Size = new System.Drawing.Size(397, 46);
+            this.cb_selectDNS.Size = new System.Drawing.Size(513, 46);
             this.cb_selectDNS.TabIndex = 27;
             this.cb_selectDNS.TextOffset = new System.Drawing.Point(20, 0);
             this.cb_selectDNS.SelectedIndexChanged += new System.EventHandler(this.cb_selectDNS_SelectedIndexChanged);
@@ -738,7 +732,7 @@
             this.guna2Panel1.BorderRadius = 10;
             this.guna2Panel1.Controls.Add(this.lbl_version);
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2Panel1.Location = new System.Drawing.Point(694, 314);
+            this.guna2Panel1.Location = new System.Drawing.Point(698, 315);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(152, 46);
             this.guna2Panel1.TabIndex = 15;
@@ -850,6 +844,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureLatency)).EndInit();
             this.pnl_addressStatusSection.ResumeLayout(false);
+            this.pnl_serviceAddress.ResumeLayout(false);
             this.pnl_statusColor.ResumeLayout(false);
             this.pnl_cardDns.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_dnsPicture)).EndInit();
@@ -904,12 +899,12 @@
         private Guna.UI2.WinForms.Guna2CirclePictureBox iconConnect;
         private Guna.UI2.WinForms.Guna2Shapes shape_connect;
         private Guna.UI2.WinForms.Guna2CircleProgressBar progressBarConnection;
-        private Guna.UI2.WinForms.Guna2Button btn_networkPanel;
         private Guna.UI2.WinForms.Guna2Panel pnl_welcome;
         private Guna.UI2.WinForms.Guna2Shapes guna2Shapes3;
         private System.Windows.Forms.Label lbl_appName_wlc;
         private Guna.UI2.WinForms.Guna2CirclePictureBox guna2CirclePictureBox1;
         private System.Windows.Forms.Label lbl_wlc;
+        private Guna.UI2.WinForms.Guna2CustomGradientPanel pnl_serviceAddress;
     }
 }
 
