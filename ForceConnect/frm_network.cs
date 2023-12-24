@@ -2,6 +2,7 @@
 using ForceConnect.Services;
 using ForceConnect.Utility;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,6 +10,7 @@ namespace ForceConnect
 {
     public partial class frm_network : Form
     {
+        private List<NetworkInterfaceInfo> _networks;
         public frm_network()
         {
             InitializeComponent();
@@ -23,17 +25,16 @@ namespace ForceConnect
         {
             this.Invoke(new Action(async () =>
             {
-                lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("http://cachefly.cachefly.net/10mb.test")} MBps";
+               // lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("")} MBps";
                 loadingProgressSpeed.Stop();
                 loadingProgressSpeed.Visible = false;
-            }));
-            // lbl_uploadSpeed.Text = $"{await SpeedTest.MeasureUploadSpeedAsync("http://cachefly.cachefly.net/10mb.test")} MBps";
+            }));            
         }
 
         private async Task loadInformation()
         {
             await Task.Run(() =>
-            {            
+            {
                 NetworkInterfaceInfo information = NetworkInformation.GetActiveNetworkInterfaceInfo();
                 if (information == null) return;
                 this.Invoke(new MethodInvoker(delegate
@@ -59,11 +60,38 @@ namespace ForceConnect
         private async void frm_network_Load(object sender, EventArgs e)
         {
             await loadInformation();
+            GetAllNetworkInterfacesInfo();
         }
 
         private async void btn_refresh_Click(object sender, EventArgs e)
         {
             await loadInformation();
         }
+        private async void GetAllNetworkInterfacesInfo()
+        {
+            await Task.Run(() =>
+            {
+                NetworkInterfaceInfo activeNetwork = NetworkInformation.GetActiveNetworkInterfaceInfo();
+                _networks = NetworkInformation.GetAllNetworkInterfacesInfo();
+                foreach (NetworkInterfaceInfo network in _networks)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        cb_selectNetworkAdapter.Items.Add(network.InterfaceName);
+                        cb_selectNetworkAdapter.SelectedIndex = cb_selectNetworkAdapter.FindStringExact(activeNetwork.InterfaceName);
+                    }));
+                }
+            });
+
+        }
+        private void cb_selectNetworkAdapter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lbl_hintNetworkAdapter.Visible = false;
+            NetworkInterfaceInfo networkSelected = _networks.Find(x => x.InterfaceName == cb_selectNetworkAdapter.Text);
+            lbl_intrfaceName.Text = networkSelected.InterfaceName;
+            lbl_intrfaceDesc.Text = networkSelected.Description;
+            lbl_intrfaceStatus.Text = networkSelected.Status.ToString();
+        }
+
     }
 }
