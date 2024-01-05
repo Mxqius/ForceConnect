@@ -124,6 +124,7 @@
     </Compile>
     <Compile Include="Interfaces\NetworkInterfaceInfo.cs" />
     <Compile Include="Launch\RegistryApplication.cs" />
+    <Compile Include="NetworkTrafficMonitor\NetworkMonitor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -320,6 +321,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\network_panel.png" />
+    <None Include="Icons\sweeping.png" />
+    <None Include="Icons\exploreIcons\trash-can.png" />
+    <None Include="Icons\exploreIcons\add.png" />
+    <None Include="Icons\cloud.png" />
+    <None Include="Icons\languagesIcon\translation %281%29.png" />
     <None Include="Icons\delete.png" />
     <None Include="Icons\languagesIcon\germany.png" />
     <None Include="Icons\languagesIcon\spain.png" />

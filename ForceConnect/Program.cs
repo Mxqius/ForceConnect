@@ -20,16 +20,19 @@ namespace ForceConnect
         {
             // Set the DPI awareness for the application
             SetProcessDPIAware();
-            FontManager.InstallFonts();
+
+            // Run InstallFonts in a separate thread
+            Task.Run(() => FontManager.InstallFonts());
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             try
             {
                 Application.Run(new frm_main());
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.Message);
                 new frm_messageBox()
                 {
                     MessageText = "An error occurred during program execution",
@@ -39,5 +42,6 @@ namespace ForceConnect
                 }.ShowMessage();
             }
         }
+
     }
 }

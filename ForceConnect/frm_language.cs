@@ -19,7 +19,26 @@ namespace ForceConnect
 
         private void btn_confirm_Click(object sender, EventArgs e)
         {
-            DialogResult= DialogResult.OK;
+            DialogResult = DialogResult.OK;
+        }
+
+        private void cb_selectLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (cb_selectLanguage.Text)
+            {
+                case "English":
+                    pb_language.Image = Properties.Resources.english;
+                    break;
+                case "Persian":
+                    pb_language.Image = Properties.Resources.persian;
+                    break;
+                case "Spain":
+                    pb_language.Image = Properties.Resources.spain;
+                    break;
+                case "Germany":
+                    pb_language.Image = Properties.Resources.germany;
+                    break;
+            }
         }
     }
 }

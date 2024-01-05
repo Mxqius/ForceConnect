@@ -18,23 +18,25 @@ namespace ForceConnect
 {
     public partial class frm_settings : Form
     {
-        private bool _launchOnWindows, initilizeWait, checkingUpdate, _showDiscordRPC = true;
+        private bool _launchOnWindows, initilizeWait, checkingUpdate;
         private string _isAutoUpdate, _isMinimizeTray;
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         private readonly string _discordOptionText;
         private static frm_settings _instance;
-        public frm_settings()
+        private frm_main frm_mainObject;
+        public frm_settings(frm_main formMain)
         {
             InitializeComponent();
             _launchOnWindows = LaunchProgram.IsAppSetToRunAtStartup();
             _isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
             _isMinimizeTray = RegistryApplication.RetrieveData("MinimizeTray");
             _discordOptionText = lbl_discordDescription.Text;
+            frm_mainObject = formMain;
         }
         public static frm_settings GetInstance()
         {
             if (_instance == null)
-                _instance = new frm_settings();
+                _instance = new frm_settings(null);
             return _instance;
         }
 
@@ -98,8 +100,8 @@ namespace ForceConnect
 
         private async void ts_discordRPC_CheckedChanged(object sender, EventArgs e)
         {
-            _showDiscordRPC = !_showDiscordRPC;
-            if (!_showDiscordRPC)
+            frm_mainObject.discordRPCStatus = !frm_mainObject.discordRPCStatus;
+            if (!frm_mainObject.discordRPCStatus)
                 DiscordRPCManager.GetInstance().Dispose();
             else
                 DiscordRPCManager.GetInstance();

@@ -1,6 +1,7 @@
 ﻿using ForceConnect.API;
 using ForceConnect.Interfaces;
 using ForceConnect.Launch;
+using ForceConnect.NetworkTrafficMonitor;
 using ForceConnect.Services;
 using ForceConnect.User_Controls;
 using ForceConnect.Utility;
@@ -12,7 +13,6 @@ using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Control = System.Windows.Forms.Control;
 
 namespace ForceConnect
 {
@@ -28,6 +28,7 @@ namespace ForceConnect
 
         private long _currentLatency = 0;
         public bool _connected;
+        public bool discordRPCStatus = true;
         private bool pendingRequest, _internetConnection = true;
         private readonly Version version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
@@ -35,7 +36,7 @@ namespace ForceConnect
 
         private List<ServiceControl> serviceControls = new List<ServiceControl>();
 
-        private Thread serviceThread;
+        private Thread serviceThread, monitoringThread;
 
         private sbyte serviceComboBoxSelectedIndex = -1;
 
@@ -488,6 +489,22 @@ namespace ForceConnect
             progressBarConnection.ProgressColor = progressColor;
             progressBarConnection.ProgressColor2 = progressColor;
         }
+        private void StartMonitoring()
+        {
+            string interfaceName = NetworkInformation.GetActiveNetworkInterfaceInfo().InterfaceName;
+            NetworkMonitor netowrkObject = new NetworkMonitor(interfaceName);
+            monitoringThread = new Thread(() => netowrkObject.StartMonitoring(lbl_downloadTraffic, lbl_uploadTraffic));
+            monitoringThread.Start();
+
+        }
+        private void StopMonitoring()
+        {
+            if (monitoringThread != null && monitoringThread.IsAlive)
+            {
+                monitoringThread.Abort();
+                monitoringThread.Join();
+            }
+        }
         private async void connectEvent(object sender, EventArgs e)
         {
             if (pendingRequest) return;
@@ -540,6 +557,8 @@ namespace ForceConnect
                         DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: $"Powerful DnsChanger Version: {lbl_version.Text}", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service");
                         pendingRequest = false;
                         iconConnect.Visible = cb_selectDNS.Enabled = true;
+
+                        //StartMonitoring();
                     }));
                 };
                 // Start Connecting 
@@ -732,6 +751,7 @@ namespace ForceConnect
                     wp_dnsProgress.Visible = false;
                     wp_dnsProgress.Stop();
                     lbl_status.Text = "SUCCESSFULLY FLUSHED";
+                    iconConnect.Visible = true;
                     await delay(1500);
                     if (_connected)
                         lbl_status.Text = "CLICK TO DISCONNECT";
@@ -740,9 +760,7 @@ namespace ForceConnect
 
                     pendingRequest = false;
 
-                    PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
-
-                    iconConnect.Visible = true;
+                    PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));                   
                 }));
             };
             pendingRequest = true;
@@ -817,13 +835,13 @@ namespace ForceConnect
                     hiddenHomeForm(false);
                     if (pnl_container.Controls.ContainsKey("frm_explore") || pnl_container.Controls.ContainsKey("frm_about"))
                         pnl_container.Controls.Remove(currentFormLoaded);
-                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_settings(), pnl_container);
+                    currentFormLoaded = FormManager.openChildFormInPanel(new frm_settings(this), pnl_container);
                     break;
                 case "btn_home":
                     updateServices();
                     hiddenHomeForm(true);
                     cb_selectDNS.Items.Clear();
-                    loadServices();            
+                    loadServices();
                     pnl_container.Controls.Remove(currentFormLoaded);
                     break;
                 case "btn_explore":

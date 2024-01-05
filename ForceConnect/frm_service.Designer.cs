@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.pnl_services = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_latencySection = new Guna.UI2.WinForms.Guna2Panel();
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btn_ping = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_ping = new System.Windows.Forms.Label();
             this.txt_address2 = new Guna.UI2.WinForms.Guna2TextBox();
@@ -41,7 +42,6 @@
             this.btn_cancel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_addService = new Guna.UI2.WinForms.Guna2Button();
             this.bf_form = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnl_services.SuspendLayout();
             this.pnl_latencySection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -62,7 +62,7 @@
             this.pnl_services.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.pnl_services.Location = new System.Drawing.Point(0, 0);
             this.pnl_services.Name = "pnl_services";
-            this.pnl_services.Size = new System.Drawing.Size(422, 406);
+            this.pnl_services.Size = new System.Drawing.Size(422, 441);
             this.pnl_services.TabIndex = 11;
             // 
             // pnl_latencySection
@@ -73,16 +73,30 @@
             this.pnl_latencySection.Controls.Add(this.pb_latencyPicture);
             this.pnl_latencySection.Controls.Add(this.btn_ping);
             this.pnl_latencySection.Controls.Add(this.lbl_ping);
-            this.pnl_latencySection.Location = new System.Drawing.Point(55, 250);
+            this.pnl_latencySection.Location = new System.Drawing.Point(55, 264);
             this.pnl_latencySection.Name = "pnl_latencySection";
             this.pnl_latencySection.Size = new System.Drawing.Size(319, 62);
             this.pnl_latencySection.TabIndex = 28;
             // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 27;
+            this.pb_latencyPicture.TabStop = false;
+            // 
             // btn_ping
             // 
             this.btn_ping.Animated = true;
+            this.btn_ping.AutoRoundedCorners = true;
             this.btn_ping.BackColor = System.Drawing.Color.Transparent;
-            this.btn_ping.BorderRadius = 15;
+            this.btn_ping.BorderRadius = 14;
             this.btn_ping.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ping.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_ping.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -130,7 +144,7 @@
             this.txt_address2.Name = "txt_address2";
             this.txt_address2.PasswordChar = '\0';
             this.txt_address2.PlaceholderForeColor = System.Drawing.Color.Gray;
-            this.txt_address2.PlaceholderText = "Address 2";
+            this.txt_address2.PlaceholderText = "Address 2 (Optional)";
             this.txt_address2.SelectedText = "";
             this.txt_address2.Size = new System.Drawing.Size(319, 38);
             this.txt_address2.TabIndex = 2;
@@ -191,7 +205,7 @@
             // label3
             // 
             this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(59, 117);
             this.label3.Name = "label3";
@@ -203,7 +217,7 @@
             // label1
             // 
             this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Font = new System.Drawing.Font("JetBrains Mono", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(59, 27);
             this.label1.Name = "label1";
@@ -223,9 +237,9 @@
             this.btn_cancel.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_cancel.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btn_cancel.FillColor = System.Drawing.Color.WhiteSmoke;
-            this.btn_cancel.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
+            this.btn_cancel.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_cancel.ForeColor = System.Drawing.Color.Black;
-            this.btn_cancel.Location = new System.Drawing.Point(55, 327);
+            this.btn_cancel.Location = new System.Drawing.Point(55, 360);
             this.btn_cancel.Name = "btn_cancel";
             this.btn_cancel.Size = new System.Drawing.Size(155, 39);
             this.btn_cancel.TabIndex = 5;
@@ -245,9 +259,9 @@
             this.btn_addService.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_addService.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btn_addService.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.btn_addService.Font = new System.Drawing.Font("Arial", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(178)));
+            this.btn_addService.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_addService.ForeColor = System.Drawing.Color.White;
-            this.btn_addService.Location = new System.Drawing.Point(214, 327);
+            this.btn_addService.Location = new System.Drawing.Point(214, 360);
             this.btn_addService.Name = "btn_addService";
             this.btn_addService.Size = new System.Drawing.Size(160, 39);
             this.btn_addService.TabIndex = 4;
@@ -261,28 +275,15 @@
             this.bf_form.ContainerControl = this;
             this.bf_form.DockIndicatorTransparencyValue = 0.6D;
             this.bf_form.DragForm = false;
+            this.bf_form.HasFormShadow = false;
             this.bf_form.ResizeForm = false;
-            this.bf_form.ShadowColor = System.Drawing.Color.WhiteSmoke;
             this.bf_form.TransparentWhileDrag = true;
-            // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 27;
-            this.pb_latencyPicture.TabStop = false;
             // 
             // frm_service
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(422, 406);
+            this.ClientSize = new System.Drawing.Size(422, 441);
             this.Controls.Add(this.pnl_services);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frm_service";
