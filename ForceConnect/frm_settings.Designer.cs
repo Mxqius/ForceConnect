@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.btn_networkInformation = new Guna.UI2.WinForms.Guna2Button();
-            this.guna2Shapes1 = new Guna.UI2.WinForms.Guna2Shapes();
             this.cb_autoUpdate = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.ts_discordRPC = new Guna.UI2.WinForms.Guna2ToggleSwitch();
             this.cb_minimizeInTray = new Guna.UI2.WinForms.Guna2ToggleSwitch();
@@ -59,38 +58,23 @@
             this.btn_networkInformation.Animated = true;
             this.btn_networkInformation.BackColor = System.Drawing.Color.Transparent;
             this.btn_networkInformation.BorderColor = System.Drawing.Color.White;
-            this.btn_networkInformation.BorderRadius = 5;
-            this.btn_networkInformation.BorderThickness = 1;
+            this.btn_networkInformation.BorderRadius = 10;
             this.btn_networkInformation.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_networkInformation.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_networkInformation.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_networkInformation.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_networkInformation.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_networkInformation.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
+            this.btn_networkInformation.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_networkInformation.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_networkInformation.ForeColor = System.Drawing.Color.White;
             this.btn_networkInformation.Image = global::ForceConnect.Properties.Resources.network_panel;
             this.btn_networkInformation.ImageOffset = new System.Drawing.Point(-2, 0);
-            this.btn_networkInformation.Location = new System.Drawing.Point(639, 335);
+            this.btn_networkInformation.Location = new System.Drawing.Point(448, 323);
             this.btn_networkInformation.Name = "btn_networkInformation";
-            this.btn_networkInformation.Size = new System.Drawing.Size(207, 36);
+            this.btn_networkInformation.Size = new System.Drawing.Size(399, 41);
             this.btn_networkInformation.TabIndex = 26;
             this.btn_networkInformation.Text = "Network Information";
             this.btn_networkInformation.Click += new System.EventHandler(this.btn_networkInformation_Click);
-            // 
-            // guna2Shapes1
-            // 
-            this.guna2Shapes1.BorderThickness = 0;
-            this.guna2Shapes1.FillColor = System.Drawing.Color.Silver;
-            this.guna2Shapes1.LineThickness = 1;
-            this.guna2Shapes1.Location = new System.Drawing.Point(36, 314);
-            this.guna2Shapes1.Name = "guna2Shapes1";
-            this.guna2Shapes1.PolygonSkip = 1;
-            this.guna2Shapes1.Rotate = 0F;
-            this.guna2Shapes1.Shape = Guna.UI2.WinForms.Enums.ShapeType.Line;
-            this.guna2Shapes1.Size = new System.Drawing.Size(810, 10);
-            this.guna2Shapes1.TabIndex = 24;
-            this.guna2Shapes1.Zoom = 100;
             // 
             // cb_autoUpdate
             // 
@@ -243,15 +227,15 @@
             this.btn_languagePanel.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_languagePanel.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_languagePanel.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_languagePanel.FillColor = System.Drawing.Color.Transparent;
+            this.btn_languagePanel.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_languagePanel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_languagePanel.ForeColor = System.Drawing.Color.White;
             this.btn_languagePanel.Image = global::ForceConnect.Properties.Resources.translation__1_;
             this.btn_languagePanel.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.btn_languagePanel.ImageSize = new System.Drawing.Size(25, 25);
-            this.btn_languagePanel.Location = new System.Drawing.Point(224, 335);
+            this.btn_languagePanel.Location = new System.Drawing.Point(389, 323);
             this.btn_languagePanel.Name = "btn_languagePanel";
-            this.btn_languagePanel.Size = new System.Drawing.Size(47, 36);
+            this.btn_languagePanel.Size = new System.Drawing.Size(47, 41);
             this.btn_languagePanel.TabIndex = 22;
             this.btn_languagePanel.Click += new System.EventHandler(this.btn_languagePanel_Click);
             // 
@@ -261,20 +245,19 @@
             this.btn_updateSofware.AnimatedGIF = true;
             this.btn_updateSofware.BackColor = System.Drawing.Color.Transparent;
             this.btn_updateSofware.BorderColor = System.Drawing.Color.White;
-            this.btn_updateSofware.BorderRadius = 5;
-            this.btn_updateSofware.BorderThickness = 1;
+            this.btn_updateSofware.BorderRadius = 10;
             this.btn_updateSofware.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_updateSofware.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_updateSofware.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_updateSofware.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_updateSofware.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
+            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
             this.btn_updateSofware.Image = global::ForceConnect.Properties.Resources.update;
-            this.btn_updateSofware.Location = new System.Drawing.Point(36, 335);
+            this.btn_updateSofware.Location = new System.Drawing.Point(37, 323);
             this.btn_updateSofware.Name = "btn_updateSofware";
-            this.btn_updateSofware.Size = new System.Drawing.Size(173, 36);
+            this.btn_updateSofware.Size = new System.Drawing.Size(340, 41);
             this.btn_updateSofware.TabIndex = 22;
             this.btn_updateSofware.Text = "Check Updates";
             this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
@@ -348,7 +331,7 @@
             this.guna2Panel1.Controls.Add(this.lbl_descriptionOption1);
             this.guna2Panel1.Controls.Add(this.lbl_launchOnWindows);
             this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2Panel1.Location = new System.Drawing.Point(36, 39);
+            this.guna2Panel1.Location = new System.Drawing.Point(37, 44);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(399, 128);
             this.guna2Panel1.TabIndex = 0;
@@ -360,7 +343,7 @@
             this.guna2Panel2.Controls.Add(this.lbl_descriptionOption2);
             this.guna2Panel2.Controls.Add(this.lbl_automaticUpdate);
             this.guna2Panel2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2Panel2.Location = new System.Drawing.Point(36, 177);
+            this.guna2Panel2.Location = new System.Drawing.Point(37, 182);
             this.guna2Panel2.Name = "guna2Panel2";
             this.guna2Panel2.Size = new System.Drawing.Size(399, 128);
             this.guna2Panel2.TabIndex = 0;
@@ -372,7 +355,7 @@
             this.guna2Panel3.Controls.Add(this.lbl_minimizeInTray);
             this.guna2Panel3.Controls.Add(this.lbl_minimizeDescription);
             this.guna2Panel3.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2Panel3.Location = new System.Drawing.Point(447, 39);
+            this.guna2Panel3.Location = new System.Drawing.Point(448, 44);
             this.guna2Panel3.Name = "guna2Panel3";
             this.guna2Panel3.Size = new System.Drawing.Size(399, 128);
             this.guna2Panel3.TabIndex = 0;
@@ -384,7 +367,7 @@
             this.guna2Panel4.Controls.Add(this.lbl_theme);
             this.guna2Panel4.Controls.Add(this.lbl_discordDescription);
             this.guna2Panel4.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2Panel4.Location = new System.Drawing.Point(447, 177);
+            this.guna2Panel4.Location = new System.Drawing.Point(448, 182);
             this.guna2Panel4.Name = "guna2Panel4";
             this.guna2Panel4.Size = new System.Drawing.Size(399, 128);
             this.guna2Panel4.TabIndex = 0;
@@ -395,7 +378,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
-            this.Controls.Add(this.guna2Shapes1);
             this.Controls.Add(this.btn_networkInformation);
             this.Controls.Add(this.guna2Panel2);
             this.Controls.Add(this.guna2Panel4);
@@ -431,7 +413,6 @@
         private System.Windows.Forms.Label lbl_theme;
         private System.Windows.Forms.Label lbl_discordDescription;
         private Guna.UI2.WinForms.Guna2Button btn_networkInformation;
-        private Guna.UI2.WinForms.Guna2Shapes guna2Shapes1;
         private Guna.UI2.WinForms.Guna2Button btn_updateSofware;
         private Guna.UI2.WinForms.Guna2Button btn_languagePanel;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;

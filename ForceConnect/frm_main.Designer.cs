@@ -64,6 +64,8 @@
             this.pnl_cardDns = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pb_dnsPicture = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.lbl_name = new System.Windows.Forms.Label();
+            this.lbl_uploadTraffic = new System.Windows.Forms.Label();
+            this.lbl_downloadTraffic = new System.Windows.Forms.Label();
             this.lbl_latency = new System.Windows.Forms.Label();
             this.btn_flushDNS = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_hintSelectDNS = new System.Windows.Forms.Label();
@@ -80,8 +82,6 @@
             this.tsm_status = new System.Windows.Forms.ToolStripMenuItem();
             this.tsm_exit = new System.Windows.Forms.ToolStripMenuItem();
             this.timerLatency = new System.Windows.Forms.Timer(this.components);
-            this.lbl_downloadTraffic = new System.Windows.Forms.Label();
-            this.lbl_uploadTraffic = new System.Windows.Forms.Label();
             this.pnl_footer.SuspendLayout();
             this.pnl_control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_header)).BeginInit();
@@ -649,6 +649,32 @@
             this.lbl_name.Text = "Shecan";
             this.lbl_name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // lbl_uploadTraffic
+            // 
+            this.lbl_uploadTraffic.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_uploadTraffic.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_uploadTraffic.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.lbl_uploadTraffic.Location = new System.Drawing.Point(478, 373);
+            this.lbl_uploadTraffic.Name = "lbl_uploadTraffic";
+            this.lbl_uploadTraffic.Size = new System.Drawing.Size(139, 19);
+            this.lbl_uploadTraffic.TabIndex = 0;
+            this.lbl_uploadTraffic.Text = "Uplaod";
+            this.lbl_uploadTraffic.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_uploadTraffic.Visible = false;
+            // 
+            // lbl_downloadTraffic
+            // 
+            this.lbl_downloadTraffic.BackColor = System.Drawing.Color.Transparent;
+            this.lbl_downloadTraffic.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_downloadTraffic.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.lbl_downloadTraffic.Location = new System.Drawing.Point(333, 373);
+            this.lbl_downloadTraffic.Name = "lbl_downloadTraffic";
+            this.lbl_downloadTraffic.Size = new System.Drawing.Size(139, 19);
+            this.lbl_downloadTraffic.TabIndex = 0;
+            this.lbl_downloadTraffic.Text = "Download";
+            this.lbl_downloadTraffic.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_downloadTraffic.Visible = false;
+            // 
             // lbl_latency
             // 
             this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
@@ -688,7 +714,7 @@
             this.lbl_hintSelectDNS.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.lbl_hintSelectDNS.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_hintSelectDNS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
-            this.lbl_hintSelectDNS.Location = new System.Drawing.Point(347, 60);
+            this.lbl_hintSelectDNS.Location = new System.Drawing.Point(349, 59);
             this.lbl_hintSelectDNS.Name = "lbl_hintSelectDNS";
             this.lbl_hintSelectDNS.Size = new System.Drawing.Size(209, 19);
             this.lbl_hintSelectDNS.TabIndex = 0;
@@ -820,32 +846,6 @@
             this.timerLatency.Enabled = true;
             this.timerLatency.Interval = 5000;
             this.timerLatency.Tick += new System.EventHandler(this.timerLatency_Tick);
-            // 
-            // lbl_downloadTraffic
-            // 
-            this.lbl_downloadTraffic.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_downloadTraffic.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_downloadTraffic.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
-            this.lbl_downloadTraffic.Location = new System.Drawing.Point(333, 373);
-            this.lbl_downloadTraffic.Name = "lbl_downloadTraffic";
-            this.lbl_downloadTraffic.Size = new System.Drawing.Size(139, 19);
-            this.lbl_downloadTraffic.TabIndex = 0;
-            this.lbl_downloadTraffic.Text = "Download";
-            this.lbl_downloadTraffic.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lbl_downloadTraffic.Visible = false;
-            // 
-            // lbl_uploadTraffic
-            // 
-            this.lbl_uploadTraffic.BackColor = System.Drawing.Color.Transparent;
-            this.lbl_uploadTraffic.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_uploadTraffic.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
-            this.lbl_uploadTraffic.Location = new System.Drawing.Point(478, 373);
-            this.lbl_uploadTraffic.Name = "lbl_uploadTraffic";
-            this.lbl_uploadTraffic.Size = new System.Drawing.Size(139, 19);
-            this.lbl_uploadTraffic.TabIndex = 0;
-            this.lbl_uploadTraffic.Text = "Uplaod";
-            this.lbl_uploadTraffic.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lbl_uploadTraffic.Visible = false;
             // 
             // frm_main
             // 
