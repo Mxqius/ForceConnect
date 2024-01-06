@@ -41,6 +41,10 @@ Over time, we try our best to optimize and increase the security and power of th
 
 - More Optimize and Faster 🟢
 
+- Multi Language Support 🔴
+
+- Monitoring Network Taffic 🟡
+
 - Fix Antivirus Problem 🔴
 
 
