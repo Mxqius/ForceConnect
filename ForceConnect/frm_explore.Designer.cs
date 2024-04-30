@@ -40,7 +40,6 @@
             this.guna2CustomGradientPanel1 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pnl_serviceAddress = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.lbl_previewAddress = new System.Windows.Forms.Label();
-            this.guna2CustomGradientPanel2 = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btn_deleteService = new Guna.UI2.WinForms.Guna2Button();
             this.btn_openServices = new Guna.UI2.WinForms.Guna2Button();
@@ -51,7 +50,6 @@
             this.pnl_counterServices.SuspendLayout();
             this.guna2CustomGradientPanel1.SuspendLayout();
             this.pnl_serviceAddress.SuspendLayout();
-            this.guna2CustomGradientPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).BeginInit();
@@ -114,9 +112,9 @@
             this.lbl_name.BackColor = System.Drawing.Color.Transparent;
             this.lbl_name.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_name.ForeColor = System.Drawing.Color.White;
-            this.lbl_name.Location = new System.Drawing.Point(81, 17);
+            this.lbl_name.Location = new System.Drawing.Point(81, 25);
             this.lbl_name.Name = "lbl_name";
-            this.lbl_name.Size = new System.Drawing.Size(148, 38);
+            this.lbl_name.Size = new System.Drawing.Size(148, 23);
             this.lbl_name.TabIndex = 9;
             this.lbl_name.Text = "Shecan";
             this.lbl_name.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -126,7 +124,7 @@
             this.lbl_latency.BackColor = System.Drawing.Color.Transparent;
             this.lbl_latency.Font = new System.Drawing.Font("Rubik SemiBold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_latency.ForeColor = System.Drawing.Color.White;
-            this.lbl_latency.Location = new System.Drawing.Point(76, 71);
+            this.lbl_latency.Location = new System.Drawing.Point(349, 65);
             this.lbl_latency.Name = "lbl_latency";
             this.lbl_latency.Size = new System.Drawing.Size(71, 22);
             this.lbl_latency.TabIndex = 9;
@@ -138,7 +136,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(38, 26);
+            this.label1.Location = new System.Drawing.Point(311, 20);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(91, 28);
             this.label1.TabIndex = 11;
@@ -185,7 +183,10 @@
             this.guna2CustomGradientPanel1.BackColor = System.Drawing.Color.Transparent;
             this.guna2CustomGradientPanel1.BorderColor = System.Drawing.Color.WhiteSmoke;
             this.guna2CustomGradientPanel1.BorderRadius = 10;
+            this.guna2CustomGradientPanel1.Controls.Add(this.label1);
+            this.guna2CustomGradientPanel1.Controls.Add(this.pb_latencyPicture);
             this.guna2CustomGradientPanel1.Controls.Add(this.label4);
+            this.guna2CustomGradientPanel1.Controls.Add(this.lbl_latency);
             this.guna2CustomGradientPanel1.Controls.Add(this.pnl_serviceAddress);
             this.guna2CustomGradientPanel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.guna2CustomGradientPanel1.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
@@ -193,7 +194,7 @@
             this.guna2CustomGradientPanel1.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.guna2CustomGradientPanel1.Location = new System.Drawing.Point(184, 175);
             this.guna2CustomGradientPanel1.Name = "guna2CustomGradientPanel1";
-            this.guna2CustomGradientPanel1.Size = new System.Drawing.Size(299, 122);
+            this.guna2CustomGradientPanel1.Size = new System.Drawing.Size(500, 122);
             this.guna2CustomGradientPanel1.TabIndex = 1;
             // 
             // pnl_serviceAddress
@@ -225,29 +226,12 @@
             this.lbl_previewAddress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbl_previewAddress.Click += new System.EventHandler(this.lbl_previewAddress_Click);
             // 
-            // guna2CustomGradientPanel2
-            // 
-            this.guna2CustomGradientPanel2.BackColor = System.Drawing.Color.Transparent;
-            this.guna2CustomGradientPanel2.BorderColor = System.Drawing.Color.WhiteSmoke;
-            this.guna2CustomGradientPanel2.BorderRadius = 10;
-            this.guna2CustomGradientPanel2.Controls.Add(this.label1);
-            this.guna2CustomGradientPanel2.Controls.Add(this.pb_latencyPicture);
-            this.guna2CustomGradientPanel2.Controls.Add(this.lbl_latency);
-            this.guna2CustomGradientPanel2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2CustomGradientPanel2.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2CustomGradientPanel2.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2CustomGradientPanel2.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.guna2CustomGradientPanel2.Location = new System.Drawing.Point(495, 175);
-            this.guna2CustomGradientPanel2.Name = "guna2CustomGradientPanel2";
-            this.guna2CustomGradientPanel2.Size = new System.Drawing.Size(189, 122);
-            this.guna2CustomGradientPanel2.TabIndex = 1;
-            // 
             // pb_latencyPicture
             // 
             this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
             this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
             this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(42, 67);
+            this.pb_latencyPicture.Location = new System.Drawing.Point(315, 61);
             this.pb_latencyPicture.Name = "pb_latencyPicture";
             this.pb_latencyPicture.Size = new System.Drawing.Size(28, 26);
             this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -341,7 +325,6 @@
             this.Controls.Add(this.btn_openServices);
             this.Controls.Add(this.btn_previous);
             this.Controls.Add(this.btn_next);
-            this.Controls.Add(this.guna2CustomGradientPanel2);
             this.Controls.Add(this.guna2CustomGradientPanel1);
             this.Controls.Add(this.pnl_cardDns);
             this.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -357,7 +340,6 @@
             this.pnl_counterServices.ResumeLayout(false);
             this.guna2CustomGradientPanel1.ResumeLayout(false);
             this.pnl_serviceAddress.ResumeLayout(false);
-            this.guna2CustomGradientPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_previous)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btn_next)).EndInit();
@@ -380,7 +362,6 @@
         private Guna.UI2.WinForms.Guna2Button btn_refresh;
         private Guna.UI2.WinForms.Guna2Panel pnl_counterServices;
         private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel1;
-        private Guna.UI2.WinForms.Guna2CustomGradientPanel guna2CustomGradientPanel2;
         private Guna.UI2.WinForms.Guna2Button btn_deleteService;
         private Guna.UI2.WinForms.Guna2CustomGradientPanel pnl_serviceAddress;
         private System.Windows.Forms.Label lbl_previewAddress;

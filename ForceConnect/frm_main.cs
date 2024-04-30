@@ -548,6 +548,8 @@ namespace ForceConnect
 
                         iconConnect.ImageRotate = 180;
 
+                        iconConnect.Visible = cb_selectDNS.Enabled = true;
+
                         PerformTaskConnection(4, Color.FromArgb(60, 207, 78));
 
                         // Sync Latency
@@ -555,8 +557,7 @@ namespace ForceConnect
 
                         // Update Discord RPC
                         DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: $"Powerful DnsChanger Version: {lbl_version.Text}", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service");
-                        pendingRequest = false;
-                        iconConnect.Visible = cb_selectDNS.Enabled = true;
+                        pendingRequest = false;                        
 
                         //StartMonitoring();
                     }));
@@ -612,6 +613,9 @@ namespace ForceConnect
                         new NotificationForm().showAlert($"{connectedDNS.Name} Disconnected", NotificationForm.enmType.Error);
 
                         iconConnect.ImageRotate = 0;
+
+                        iconConnect.Visible = true;
+
                         // Sync Latency           
                         await syncLatency();
 
@@ -621,8 +625,7 @@ namespace ForceConnect
                         pendingRequest = false;
 
                         PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
-
-                        iconConnect.Visible = true;
+                
                     }));
                 };
                 // Start Disconnecting

@@ -105,7 +105,7 @@
             // 
             // bf_messageBox
             // 
-            this.bf_messageBox.BorderRadius = 5;
+            this.bf_messageBox.BorderRadius = 20;
             this.bf_messageBox.ContainerControl = this;
             this.bf_messageBox.DockForm = false;
             this.bf_messageBox.DockIndicatorTransparencyValue = 0.6D;

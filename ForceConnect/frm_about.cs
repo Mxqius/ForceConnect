@@ -41,7 +41,7 @@ namespace ForceConnect
 
         private void btn_github_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/mxqius");
+            Process.Start("https://github.com/mxqius/forceconnect");
         }
 
         private void pb_aboutPicture_Click(object sender, EventArgs e)

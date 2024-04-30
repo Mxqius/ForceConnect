@@ -46,9 +46,9 @@ namespace ForceConnect
                 if (txt_address2.Text != string.Empty)
                     Service.AddService(txt_name.Text.Trim().Replace(" ", ""), txt_address1.Text.Trim(), txt_address2.Text.Trim());
                 else
-                    Service.AddService(txt_name.Text.Trim().Replace(" ",""), txt_address1.Text.Trim(), "empty");
+                    Service.AddService(txt_name.Text.Trim().Replace(" ",""), txt_address1.Text.Trim(), "empty");               
+                new NotificationForm().showAlert($"{txt_name.Text.Trim()} Added", NotificationForm.enmType.Success);
                 txt_name.Text = txt_address2.Text = txt_address1.Text = string.Empty;
-                new NotificationForm().showAlert("Service Added", NotificationForm.enmType.Success);
                 DialogResult = DialogResult.OK;
             }
             else

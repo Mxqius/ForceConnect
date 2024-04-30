@@ -1,0 +1,11 @@
+{
+  "fa": {
+    "titleProgram": "فورس کانکت",
+    "version": "نسخه",
+    "welcomeText": "به دی ان اس چنجر خوش آمدید",
+    "selectServiceHint": "یک سرویس انتخاب کنید",
+    "connected": "وصل هستید",
+    "disconnected": "وصل نیستید",
+
+  }
+}

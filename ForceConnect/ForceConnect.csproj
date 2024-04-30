@@ -224,6 +224,7 @@
       <DependentUpon>ServiceControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="Languages\languages.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -321,6 +322,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="headerIcon.ico" />
+    <None Include="Icons\controlBar\minimzie.png" />
+    <None Include="Icons\controlBar\close.png" />
     <None Include="Icons\network_panel.png" />
     <None Include="Icons\sweeping.png" />
     <None Include="Icons\exploreIcons\trash-can.png" />

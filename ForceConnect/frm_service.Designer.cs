@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.pnl_services = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_latencySection = new Guna.UI2.WinForms.Guna2Panel();
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btn_ping = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_ping = new System.Windows.Forms.Label();
             this.txt_address2 = new Guna.UI2.WinForms.Guna2TextBox();
@@ -42,6 +41,7 @@
             this.btn_cancel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_addService = new Guna.UI2.WinForms.Guna2Button();
             this.bf_form = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnl_services.SuspendLayout();
             this.pnl_latencySection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -78,25 +78,11 @@
             this.pnl_latencySection.Size = new System.Drawing.Size(319, 62);
             this.pnl_latencySection.TabIndex = 28;
             // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 27;
-            this.pb_latencyPicture.TabStop = false;
-            // 
             // btn_ping
             // 
             this.btn_ping.Animated = true;
-            this.btn_ping.AutoRoundedCorners = true;
             this.btn_ping.BackColor = System.Drawing.Color.Transparent;
-            this.btn_ping.BorderRadius = 14;
+            this.btn_ping.BorderRadius = 5;
             this.btn_ping.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_ping.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_ping.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
@@ -241,7 +227,7 @@
             this.btn_cancel.ForeColor = System.Drawing.Color.Black;
             this.btn_cancel.Location = new System.Drawing.Point(55, 360);
             this.btn_cancel.Name = "btn_cancel";
-            this.btn_cancel.Size = new System.Drawing.Size(155, 39);
+            this.btn_cancel.Size = new System.Drawing.Size(111, 39);
             this.btn_cancel.TabIndex = 5;
             this.btn_cancel.Text = "Cancel";
             this.btn_cancel.Click += new System.EventHandler(this.btn_cancel_Click);
@@ -261,9 +247,9 @@
             this.btn_addService.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_addService.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_addService.ForeColor = System.Drawing.Color.White;
-            this.btn_addService.Location = new System.Drawing.Point(214, 360);
+            this.btn_addService.Location = new System.Drawing.Point(172, 360);
             this.btn_addService.Name = "btn_addService";
-            this.btn_addService.Size = new System.Drawing.Size(160, 39);
+            this.btn_addService.Size = new System.Drawing.Size(202, 39);
             this.btn_addService.TabIndex = 4;
             this.btn_addService.Text = "Add Server";
             this.btn_addService.Click += new System.EventHandler(this.btn_addService_Click);
@@ -278,6 +264,19 @@
             this.bf_form.HasFormShadow = false;
             this.bf_form.ResizeForm = false;
             this.bf_form.TransparentWhileDrag = true;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 27;
+            this.pb_latencyPicture.TabStop = false;
             // 
             // frm_service
             // 

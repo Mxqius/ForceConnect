@@ -14,6 +14,7 @@ namespace ForceConnect
         public frm_network()
         {
             InitializeComponent();
+            btn_close.Enabled = false;
         }
 
         private void btn_close_Click(object sender, EventArgs e)
@@ -25,49 +26,57 @@ namespace ForceConnect
         {
             this.Invoke(new Action(async () =>
             {
-               // lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("")} MBps";
+                // lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("")} MBps";
                 loadingProgressSpeed.Stop();
                 loadingProgressSpeed.Visible = false;
-            }));            
+            }));
         }
 
         private async Task loadInformation()
         {
             await Task.Run(() =>
             {
-                NetworkInterfaceInfo information = NetworkInformation.GetActiveNetworkInterfaceInfo();
-                if (information == null) return;
-                this.Invoke(new MethodInvoker(delegate
+                try
                 {
-                    loadingProgressSpeed.Visible = true;
-                    loadingProgressSpeed.Start();
-                    lbl_intrfaceName.Text = information.InterfaceName;
-                    lbl_intrfaceDesc.Text = information.Description;
-                    lbl_intrfaceStatus.Text = information.Status.ToString();
-                    lbl_ipAddress.Text = information.IPAddress.ToString();
-                    lbl_hostName.Text = information.HostName.ToString();
-                    lbl_speed.Text = NetworkInformation.ConvertBytesToMbps(information.Speed).ToString() + " Mbp/s";
-                    if (information.DNSIPAddress.Length > 1)
-                        lbl_activeServices.Text = information.DNSIPAddress[0].ToString() + " " + information.DNSIPAddress[1].ToString();
-                    else
-                        lbl_activeServices.Text = information.DNSIPAddress[0].ToString();
-                    lbl_macAddress.Text = information.MACAddress.ToString();
+                    NetworkInterfaceInfo information = NetworkInformation.GetActiveNetworkInterfaceInfo();
+                    if (information == null) return;
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        loadingProgressSpeed.Visible = true;
+                        loadingProgressSpeed.Start();
+                        lbl_intrfaceName.Text = information.InterfaceName;
+                        lbl_intrfaceDesc.Text = information.Description;
+                        lbl_intrfaceStatus.Text = information.Status.ToString();
+                        lbl_ipAddress.Text = information.IPAddress.ToString();
+                        lbl_hostName.Text = information.HostName.ToString();
+                        lbl_speed.Text = NetworkInformation.ConvertBytesToMbps(information.Speed).ToString() + " Mbp/s";
+                        if (information.DNSIPAddress.Length > 1)
+                            lbl_activeServices.Text = information.DNSIPAddress[0].ToString() + " " + information.DNSIPAddress[1].ToString();
+                        else
+                            lbl_activeServices.Text = information.DNSIPAddress[0].ToString();
+                        lbl_macAddress.Text = information.MACAddress.ToString();
 
-                }));
-                GetNetworkSpeed();
+                    }));
+                    GetNetworkSpeed();
+                }
+                catch
+                {
+                    return;
+                }
             });
         }
         private async void frm_network_Load(object sender, EventArgs e)
         {
             await loadInformation();
-            GetAllNetworkInterfacesInfo();
+            await GetAllNetworkInterfacesInfo();
+            btn_close.Enabled = true;
         }
 
         private async void btn_refresh_Click(object sender, EventArgs e)
         {
             await loadInformation();
         }
-        private async void GetAllNetworkInterfacesInfo()
+        private async Task GetAllNetworkInterfacesInfo()
         {
             await Task.Run(() =>
             {

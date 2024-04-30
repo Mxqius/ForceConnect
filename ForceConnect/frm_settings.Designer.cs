@@ -36,7 +36,6 @@
             this.lbl_theme = new System.Windows.Forms.Label();
             this.lbl_automaticUpdate = new System.Windows.Forms.Label();
             this.lbl_minimizeInTray = new System.Windows.Forms.Label();
-            this.btn_languagePanel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_updateSofware = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_discordDescription = new System.Windows.Forms.Label();
             this.lbl_launchOnWindows = new System.Windows.Forms.Label();
@@ -88,7 +87,7 @@
             this.cb_autoUpdate.CheckedState.InnerBorderRadius = 7;
             this.cb_autoUpdate.CheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_autoUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_autoUpdate.Location = new System.Drawing.Point(32, 25);
+            this.cb_autoUpdate.Location = new System.Drawing.Point(315, 30);
             this.cb_autoUpdate.Name = "cb_autoUpdate";
             this.cb_autoUpdate.Size = new System.Drawing.Size(55, 24);
             this.cb_autoUpdate.TabIndex = 23;
@@ -113,7 +112,7 @@
             this.ts_discordRPC.CheckedState.InnerBorderRadius = 7;
             this.ts_discordRPC.CheckedState.InnerColor = System.Drawing.Color.White;
             this.ts_discordRPC.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ts_discordRPC.Location = new System.Drawing.Point(39, 24);
+            this.ts_discordRPC.Location = new System.Drawing.Point(316, 30);
             this.ts_discordRPC.Name = "ts_discordRPC";
             this.ts_discordRPC.Size = new System.Drawing.Size(55, 24);
             this.ts_discordRPC.TabIndex = 23;
@@ -137,7 +136,7 @@
             this.cb_minimizeInTray.CheckedState.InnerBorderRadius = 7;
             this.cb_minimizeInTray.CheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_minimizeInTray.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_minimizeInTray.Location = new System.Drawing.Point(39, 27);
+            this.cb_minimizeInTray.Location = new System.Drawing.Point(316, 29);
             this.cb_minimizeInTray.Name = "cb_minimizeInTray";
             this.cb_minimizeInTray.Size = new System.Drawing.Size(55, 24);
             this.cb_minimizeInTray.TabIndex = 23;
@@ -161,7 +160,7 @@
             this.cb_launchOnWindows.CheckedState.InnerBorderRadius = 7;
             this.cb_launchOnWindows.CheckedState.InnerColor = System.Drawing.Color.White;
             this.cb_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_launchOnWindows.Location = new System.Drawing.Point(32, 26);
+            this.cb_launchOnWindows.Location = new System.Drawing.Point(315, 29);
             this.cb_launchOnWindows.Name = "cb_launchOnWindows";
             this.cb_launchOnWindows.Size = new System.Drawing.Size(55, 24);
             this.cb_launchOnWindows.TabIndex = 23;
@@ -175,69 +174,48 @@
             // 
             // lbl_theme
             // 
+            this.lbl_theme.AutoSize = true;
             this.lbl_theme.BackColor = System.Drawing.Color.Transparent;
             this.lbl_theme.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbl_theme.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_theme.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_theme.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_theme.Location = new System.Drawing.Point(100, 25);
+            this.lbl_theme.Location = new System.Drawing.Point(39, 31);
             this.lbl_theme.Name = "lbl_theme";
-            this.lbl_theme.Size = new System.Drawing.Size(218, 28);
+            this.lbl_theme.Size = new System.Drawing.Size(118, 23);
             this.lbl_theme.TabIndex = 21;
             this.lbl_theme.Text = "Discord RPC";
             this.lbl_theme.Click += new System.EventHandler(this.lbl_theme_Click);
             // 
             // lbl_automaticUpdate
             // 
+            this.lbl_automaticUpdate.AutoSize = true;
             this.lbl_automaticUpdate.BackColor = System.Drawing.Color.Transparent;
             this.lbl_automaticUpdate.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbl_automaticUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_automaticUpdate.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_automaticUpdate.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_automaticUpdate.Location = new System.Drawing.Point(93, 25);
+            this.lbl_automaticUpdate.Location = new System.Drawing.Point(28, 31);
             this.lbl_automaticUpdate.Name = "lbl_automaticUpdate";
-            this.lbl_automaticUpdate.Size = new System.Drawing.Size(239, 28);
+            this.lbl_automaticUpdate.Size = new System.Drawing.Size(170, 23);
             this.lbl_automaticUpdate.TabIndex = 21;
             this.lbl_automaticUpdate.Text = "Automatic Update";
             this.lbl_automaticUpdate.Click += new System.EventHandler(this.lbl_automaticUpdate_Click);
             // 
             // lbl_minimizeInTray
             // 
+            this.lbl_minimizeInTray.AutoSize = true;
             this.lbl_minimizeInTray.BackColor = System.Drawing.Color.Transparent;
             this.lbl_minimizeInTray.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbl_minimizeInTray.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_minimizeInTray.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_minimizeInTray.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_minimizeInTray.Location = new System.Drawing.Point(100, 27);
+            this.lbl_minimizeInTray.Location = new System.Drawing.Point(35, 30);
             this.lbl_minimizeInTray.Name = "lbl_minimizeInTray";
-            this.lbl_minimizeInTray.Size = new System.Drawing.Size(218, 28);
+            this.lbl_minimizeInTray.Size = new System.Drawing.Size(149, 23);
             this.lbl_minimizeInTray.TabIndex = 21;
             this.lbl_minimizeInTray.Text = "Minimize in tray";
             this.lbl_minimizeInTray.Click += new System.EventHandler(this.lbl_minimizeInTray_Click);
-            // 
-            // btn_languagePanel
-            // 
-            this.btn_languagePanel.Animated = true;
-            this.btn_languagePanel.AnimatedGIF = true;
-            this.btn_languagePanel.BackColor = System.Drawing.Color.Transparent;
-            this.btn_languagePanel.BorderColor = System.Drawing.Color.White;
-            this.btn_languagePanel.BorderRadius = 5;
-            this.btn_languagePanel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btn_languagePanel.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btn_languagePanel.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btn_languagePanel.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btn_languagePanel.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_languagePanel.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.btn_languagePanel.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btn_languagePanel.ForeColor = System.Drawing.Color.White;
-            this.btn_languagePanel.Image = global::ForceConnect.Properties.Resources.translation__1_;
-            this.btn_languagePanel.ImageAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.btn_languagePanel.ImageSize = new System.Drawing.Size(25, 25);
-            this.btn_languagePanel.Location = new System.Drawing.Point(389, 323);
-            this.btn_languagePanel.Name = "btn_languagePanel";
-            this.btn_languagePanel.Size = new System.Drawing.Size(47, 41);
-            this.btn_languagePanel.TabIndex = 22;
-            this.btn_languagePanel.Click += new System.EventHandler(this.btn_languagePanel_Click);
             // 
             // btn_updateSofware
             // 
@@ -257,7 +235,7 @@
             this.btn_updateSofware.Image = global::ForceConnect.Properties.Resources.update;
             this.btn_updateSofware.Location = new System.Drawing.Point(37, 323);
             this.btn_updateSofware.Name = "btn_updateSofware";
-            this.btn_updateSofware.Size = new System.Drawing.Size(340, 41);
+            this.btn_updateSofware.Size = new System.Drawing.Size(399, 41);
             this.btn_updateSofware.TabIndex = 22;
             this.btn_updateSofware.Text = "Check Updates";
             this.btn_updateSofware.Click += new System.EventHandler(this.btn_updateSofware_Click);
@@ -276,14 +254,15 @@
             // 
             // lbl_launchOnWindows
             // 
+            this.lbl_launchOnWindows.AutoSize = true;
             this.lbl_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
             this.lbl_launchOnWindows.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbl_launchOnWindows.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lbl_launchOnWindows.Font = new System.Drawing.Font("Rubik SemiBold", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_launchOnWindows.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lbl_launchOnWindows.Location = new System.Drawing.Point(93, 26);
+            this.lbl_launchOnWindows.Location = new System.Drawing.Point(28, 30);
             this.lbl_launchOnWindows.Name = "lbl_launchOnWindows";
-            this.lbl_launchOnWindows.Size = new System.Drawing.Size(239, 28);
+            this.lbl_launchOnWindows.Size = new System.Drawing.Size(185, 23);
             this.lbl_launchOnWindows.TabIndex = 21;
             this.lbl_launchOnWindows.Text = "Launch On Windows";
             this.lbl_launchOnWindows.Click += new System.EventHandler(this.lbl_launchOnWindows_Click);
@@ -384,7 +363,6 @@
             this.Controls.Add(this.guna2Panel3);
             this.Controls.Add(this.guna2Panel1);
             this.Controls.Add(this.btn_updateSofware);
-            this.Controls.Add(this.btn_languagePanel);
             this.Font = new System.Drawing.Font("Museo Sans Cyrl 900", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frm_settings";
@@ -392,9 +370,13 @@
             this.Text = "Settings";
             this.Load += new System.EventHandler(this.frm_setttings_Load);
             this.guna2Panel1.ResumeLayout(false);
+            this.guna2Panel1.PerformLayout();
             this.guna2Panel2.ResumeLayout(false);
+            this.guna2Panel2.PerformLayout();
             this.guna2Panel3.ResumeLayout(false);
+            this.guna2Panel3.PerformLayout();
             this.guna2Panel4.ResumeLayout(false);
+            this.guna2Panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -414,7 +396,6 @@
         private System.Windows.Forms.Label lbl_discordDescription;
         private Guna.UI2.WinForms.Guna2Button btn_networkInformation;
         private Guna.UI2.WinForms.Guna2Button btn_updateSofware;
-        private Guna.UI2.WinForms.Guna2Button btn_languagePanel;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel2;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel3;
