@@ -1,6 +1,8 @@
 
 ![Banner](https://github.com/Mxqius/ForceConnect/assets/80541964/d0eb5efe-b287-4eea-9cde-1f2bb469e736)
 
+[ENG VERSION](https://github.com/Mxqius/ForceConnect/blob/master/README_EN.md)
+
 # تغییر دهنده DNS ForceConnect
 
 تجربه مرور وب خود را با تغییر دهنده DNS ForceConnect برای ویندوز بهبود دهید. با به دست آوردن کنترل راحت بر تنظیمات DNS خود، پتانسیل واقعی اتصال اینترنت خود را آزاد کنید. خداحافظی با محدودیت‌های خارجی و سرعت بیشتر، تجربه آنلاین امن‌تر و بدون محدودیت را تجربه کنید. در همین لحظه میتوانید آخرین نسخه فورس کانکت را دانلود کرده و استفاده کنید.
