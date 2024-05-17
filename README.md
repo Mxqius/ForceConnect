@@ -1,5 +1,6 @@
 
-![Banner Frame](https://github.com/Mxqius/ForceConnect/assets/80541964/60daf9ad-68a0-4d28-aac0-4d4573351309)
+![Banner](https://github.com/Mxqius/ForceConnect/assets/80541964/d0eb5efe-b287-4eea-9cde-1f2bb469e736)
+
 
 # ForceConnect
 
