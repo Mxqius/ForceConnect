@@ -1,58 +1,47 @@
 
-![Banner Frame](https://github.com/Mxqius/ForceConnect/assets/80541964/60daf9ad-68a0-4d28-aac0-4d4573351309)
+![Banner](https://github.com/Mxqius/ForceConnect/assets/80541964/d0eb5efe-b287-4eea-9cde-1f2bb469e736)
 
-# ForceConnect
+[ENG VERSION](https://github.com/Mxqius/ForceConnect/blob/master/README_EN.md)
 
-Enhance your browsing experience with ForceConnect DNS Changer for Windows. Take control of your DNS settings effortlessly and unlock the true potential of your internet connection. Say goodbye to restrictions and embrace a faster, more secure, and unrestricted online experience. Download ForceConnect now and unleash the power of seamless DNS management.
+# تغییر دهنده DNS ForceConnect
 
-## Features
+تجربه مرور وب خود را با تغییر دهنده DNS ForceConnect برای ویندوز بهبود دهید. با به دست آوردن کنترل راحت بر تنظیمات DNS خود، پتانسیل واقعی اتصال اینترنت خود را آزاد کنید. خداحافظی با محدودیت‌های خارجی و سرعت بیشتر، تجربه آنلاین امن‌تر و بدون محدودیت را تجربه کنید. در همین لحظه میتوانید آخرین نسخه فورس کانکت را دانلود کرده و استفاده کنید.
 
-- Compact Size
-- Regular Updates
-- Fast and Efficient
-- Simple and Intuitive Interface
-- Show Network Information
+## ویژگی‌ها
 
+- اندازه کوچک
+- بروزرسانی منظم
+- سریع و کارآمد
+- رابط کاربری ساده و بصری
+- نمایش اطلاعات شبکه
 
-## FAQ
+## سوالات متداول
 
-#### Why is the program known as a virus in antiviruses?
+#### چرا برنامه در آنتی‌ویروس‌ها به عنوان ویروس شناخته می‌شود؟
 
-Because of the access that the program takes from you when it is opened, antiviruses think that this program is a virus, but we promise you that there is no malware or malicious program in this software, and the entire project is available as open source.
+به دلیل دسترسی‌هایی که برنامه هنگام باز شدن از شما می‌گیرد، آنتی‌ویروس‌ها فکر می‌کنند که این برنامه ویروس است، اما به شما قول می‌دهیم که در این نرم‌افزار هیچ نرم‌افزار مخرب یا بدافزاری وجود ندارد، و کل پروژه به صورت متن باز در دسترس است.
 
-#### Can we add and use the services we want?
+#### آیا می‌توانیم خدمات مورد نیاز خود را اضافه و استفاده کنیم؟
 
-You can definitely add and use as many personal services as you need.
+شما می‌توانید به هر تعدادی که نیاز دارید سرویس های دی ان اس دلخواه خود را اضافه کرده و استفاده کنید.
 
-#### Which version of the software should I download?
+#### کدام نسخه از نرم‌افزار باید دانلود کنم؟
 
-It is recommended to use the latest version of the program to avoid possible problems and use the program with the best performance.
+توصیه می‌شود آخرین نسخه برنامه را استفاده کنید تا از مشکلات ممکن جلوگیری کنید و از بهترین عملکرد برنامه بهره ببرید.
 
+## بهینه‌سازی‌ها
 
-## Optimizations
+در طول زمان، ما تلاش می‌کنیم که بهینه‌سازی و افزایش امنیت و قدرت برنامه را بهتر کنیم و همیشه به کمک شما در توسعه و حل مشکلات نرم‌افزار خوش‌آمد می‌گوییم.
 
-Over time, we try our best to optimize and increase the security and power of the program, and we always welcome your help in developing and solving software problems.
+## برنامه‌ریزی
 
-## Roadmap
+- بهینه‌سازی بیشتر و سریعتر 🟢
+- پشتیبانی از چند زبان 🔴
+- نظارت بر ترافیک شبکه 🟡
+- رفع مشکل آنتی‌ویروس 🔴
 
-- Theme Customizetion 🔴
+## تصاویر نرم افزار
 
-- Remove Services Feature 🟢
+## پشتیبانی
 
-- More Optimize and Faster 🟢
-
-- Multi Language Support 🔴
-
-- Monitoring Network Taffic 🟡
-
-- Fix Antivirus Problem 🔴
-
-
-## Screenshots
-
-
-
-## Support
-
-For support, email mxqius@gmail.com or join our Discord channel.
-
+برای پشتیبانی، ایمیل بزنید به mxqius@gmail.com یا به کانال دیسکورد ما بپیوندید.
