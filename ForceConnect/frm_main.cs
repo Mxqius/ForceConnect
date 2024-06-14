@@ -557,7 +557,7 @@ namespace ForceConnect
 
                         // Update Discord RPC
                         DiscordRPCManager.GetInstance().UpdatePresence(details: $"Connected to {connectedDNS.Name}", state: "", largeImage: "force", largeImageText: $"Powerful DnsChanger Version: {lbl_version.Text}", smallImage: $"{connectedDNS.Name.ToLower()}", smallImageText: $"{connectedDNS.Name} Service");
-                        pendingRequest = false;                        
+                        pendingRequest = false;
 
                         //StartMonitoring();
                     }));
@@ -625,7 +625,7 @@ namespace ForceConnect
                         pendingRequest = false;
 
                         PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
-                
+
                     }));
                 };
                 // Start Disconnecting
@@ -715,6 +715,7 @@ namespace ForceConnect
             await checkInternetConnection();
         }
 
+
         private async void btn_flushDNS_Click(object sender, EventArgs e)
         {
             if (pendingRequest) return;
@@ -763,7 +764,7 @@ namespace ForceConnect
 
                     pendingRequest = false;
 
-                    PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));                   
+                    PerformTaskConnection(0, Color.FromArgb(200, 213, 218, 223));
                 }));
             };
             pendingRequest = true;

@@ -48,10 +48,10 @@
             this.lbl_appName_wlc = new System.Windows.Forms.Label();
             this.guna2CirclePictureBox1 = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.lbl_wlc = new System.Windows.Forms.Label();
+            this.progressBarConnection = new Guna.UI2.WinForms.Guna2CircleProgressBar();
             this.iconConnect = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.wp_dnsProgress = new Guna.UI2.WinForms.Guna2WinProgressIndicator();
             this.shape_connect = new Guna.UI2.WinForms.Guna2Shapes();
-            this.progressBarConnection = new Guna.UI2.WinForms.Guna2CircleProgressBar();
             this.btn_refresh = new Guna.UI2.WinForms.Guna2Button();
             this.pnl_addressStatusSection = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
             this.pnl_serviceAddress = new Guna.UI2.WinForms.Guna2CustomGradientPanel();
@@ -89,6 +89,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureLatency)).BeginInit();
             this.pnl_welcome.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.guna2CirclePictureBox1)).BeginInit();
+            this.progressBarConnection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).BeginInit();
             this.pnl_addressStatusSection.SuspendLayout();
             this.pnl_serviceAddress.SuspendLayout();
@@ -117,7 +118,7 @@
             this.pnl_footer.Controls.Add(this.btn_explore);
             this.pnl_footer.Controls.Add(this.btn_settings);
             this.pnl_footer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnl_footer.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_footer.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(41)))));
             this.pnl_footer.Location = new System.Drawing.Point(0, 455);
             this.pnl_footer.Name = "pnl_footer";
             this.pnl_footer.Size = new System.Drawing.Size(884, 70);
@@ -234,7 +235,7 @@
             this.pnl_control.Controls.Add(this.btn_minimize);
             this.pnl_control.Controls.Add(this.btn_exit);
             this.pnl_control.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnl_control.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_control.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(40)))), ((int)(((byte)(41)))));
             this.pnl_control.Location = new System.Drawing.Point(0, 0);
             this.pnl_control.Name = "pnl_control";
             this.pnl_control.Size = new System.Drawing.Size(884, 49);
@@ -312,12 +313,9 @@
             // 
             // pnl_container
             // 
-            this.pnl_container.BackColor = System.Drawing.Color.Transparent;
+            this.pnl_container.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.pnl_container.Controls.Add(this.pictureLatency);
             this.pnl_container.Controls.Add(this.pnl_welcome);
-            this.pnl_container.Controls.Add(this.iconConnect);
-            this.pnl_container.Controls.Add(this.wp_dnsProgress);
-            this.pnl_container.Controls.Add(this.shape_connect);
             this.pnl_container.Controls.Add(this.progressBarConnection);
             this.pnl_container.Controls.Add(this.btn_refresh);
             this.pnl_container.Controls.Add(this.pnl_addressStatusSection);
@@ -351,17 +349,18 @@
             // pnl_welcome
             // 
             this.pnl_welcome.BackColor = System.Drawing.Color.Transparent;
-            this.pnl_welcome.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(233)))), ((int)(((byte)(72)))), ((int)(((byte)(34)))));
+            this.pnl_welcome.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_welcome.BorderRadius = 10;
+            this.pnl_welcome.BorderThickness = 2;
             this.pnl_welcome.Controls.Add(this.guna2Shapes3);
             this.pnl_welcome.Controls.Add(this.lbl_appName_wlc);
             this.pnl_welcome.Controls.Add(this.guna2CirclePictureBox1);
             this.pnl_welcome.Controls.Add(this.lbl_wlc);
-            this.pnl_welcome.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_welcome.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_welcome.Location = new System.Drawing.Point(335, 107);
             this.pnl_welcome.Name = "pnl_welcome";
             this.pnl_welcome.Size = new System.Drawing.Size(513, 213);
-            this.pnl_welcome.TabIndex = 44;
+            this.pnl_welcome.TabIndex = 44;          
             // 
             // guna2Shapes3
             // 
@@ -412,54 +411,13 @@
             this.lbl_wlc.Text = "Welcome to DNS Changer";
             this.lbl_wlc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // iconConnect
-            // 
-            this.iconConnect.BackColor = System.Drawing.Color.Transparent;
-            this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.iconConnect.Image = global::ForceConnect.Properties.Resources.turn_on;
-            this.iconConnect.ImageRotate = 0F;
-            this.iconConnect.Location = new System.Drawing.Point(90, 107);
-            this.iconConnect.Name = "iconConnect";
-            this.iconConnect.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.iconConnect.Size = new System.Drawing.Size(158, 150);
-            this.iconConnect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.iconConnect.TabIndex = 36;
-            this.iconConnect.TabStop = false;
-            this.iconConnect.UseTransparentBackground = true;
-            this.iconConnect.WaitOnLoad = true;
-            this.iconConnect.Click += new System.EventHandler(this.connectEvent);
-            // 
-            // wp_dnsProgress
-            // 
-            this.wp_dnsProgress.AnimationSpeed = 60;
-            this.wp_dnsProgress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.wp_dnsProgress.Location = new System.Drawing.Point(100, 116);
-            this.wp_dnsProgress.Name = "wp_dnsProgress";
-            this.wp_dnsProgress.ProgressColor = System.Drawing.Color.LightGray;
-            this.wp_dnsProgress.Size = new System.Drawing.Size(137, 131);
-            this.wp_dnsProgress.TabIndex = 23;
-            this.wp_dnsProgress.Visible = false;
-            // 
-            // shape_connect
-            // 
-            this.shape_connect.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(70)))), ((int)(((byte)(194)))));
-            this.shape_connect.BorderThickness = 0;
-            this.shape_connect.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.shape_connect.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.shape_connect.Location = new System.Drawing.Point(46, 62);
-            this.shape_connect.Name = "shape_connect";
-            this.shape_connect.PolygonSkip = 1;
-            this.shape_connect.Rotate = 0F;
-            this.shape_connect.Shape = Guna.UI2.WinForms.Enums.ShapeType.Ellipse;
-            this.shape_connect.Size = new System.Drawing.Size(242, 238);
-            this.shape_connect.TabIndex = 35;
-            this.shape_connect.Zoom = 100;
-            this.shape_connect.Click += new System.EventHandler(this.connectEvent);
-            // 
             // progressBarConnection
             // 
             this.progressBarConnection.Animated = true;
-            this.progressBarConnection.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(213)))), ((int)(((byte)(218)))), ((int)(((byte)(223)))));
+            this.progressBarConnection.Controls.Add(this.iconConnect);
+            this.progressBarConnection.Controls.Add(this.wp_dnsProgress);
+            this.progressBarConnection.Controls.Add(this.shape_connect);
+            this.progressBarConnection.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.progressBarConnection.FillThickness = 2;
             this.progressBarConnection.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.progressBarConnection.ForeColor = System.Drawing.Color.White;
@@ -473,18 +431,63 @@
             this.progressBarConnection.Size = new System.Drawing.Size(268, 268);
             this.progressBarConnection.TabIndex = 38;
             // 
+            // iconConnect
+            // 
+            this.iconConnect.BackColor = System.Drawing.Color.Transparent;
+            this.iconConnect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.iconConnect.Image = global::ForceConnect.Properties.Resources.turn_on;
+            this.iconConnect.ImageRotate = 0F;
+            this.iconConnect.Location = new System.Drawing.Point(55, 53);
+            this.iconConnect.Name = "iconConnect";
+            this.iconConnect.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.iconConnect.Size = new System.Drawing.Size(158, 150);
+            this.iconConnect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.iconConnect.TabIndex = 36;
+            this.iconConnect.TabStop = false;
+            this.iconConnect.UseTransparentBackground = true;
+            this.iconConnect.WaitOnLoad = true;
+            this.iconConnect.Click += new System.EventHandler(this.connectEvent);
+            // 
+            // wp_dnsProgress
+            // 
+            this.wp_dnsProgress.AnimationSpeed = 60;
+            this.wp_dnsProgress.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.wp_dnsProgress.Location = new System.Drawing.Point(69, 66);
+            this.wp_dnsProgress.Name = "wp_dnsProgress";
+            this.wp_dnsProgress.ProgressColor = System.Drawing.Color.LightGray;
+            this.wp_dnsProgress.Size = new System.Drawing.Size(137, 131);
+            this.wp_dnsProgress.TabIndex = 23;
+            this.wp_dnsProgress.Visible = false;
+            // 
+            // shape_connect
+            // 
+            this.shape_connect.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(82)))), ((int)(((byte)(70)))), ((int)(((byte)(194)))));
+            this.shape_connect.BorderThickness = 0;
+            this.shape_connect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.shape_connect.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.shape_connect.Location = new System.Drawing.Point(13, 14);
+            this.shape_connect.Name = "shape_connect";
+            this.shape_connect.PolygonSkip = 1;
+            this.shape_connect.Rotate = 0F;
+            this.shape_connect.Shape = Guna.UI2.WinForms.Enums.ShapeType.Ellipse;
+            this.shape_connect.Size = new System.Drawing.Size(242, 238);
+            this.shape_connect.TabIndex = 35;
+            this.shape_connect.Zoom = 100;
+            this.shape_connect.Click += new System.EventHandler(this.connectEvent);
+            // 
             // btn_refresh
             // 
             this.btn_refresh.Animated = true;
             this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
-            this.btn_refresh.BorderColor = System.Drawing.Color.White;
+            this.btn_refresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_refresh.BorderRadius = 10;
+            this.btn_refresh.BorderThickness = 2;
             this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_refresh.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_refresh.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
             this.btn_refresh.Image = global::ForceConnect.Properties.Resources.sync;
@@ -498,20 +501,21 @@
             // pnl_addressStatusSection
             // 
             this.pnl_addressStatusSection.BackColor = System.Drawing.Color.Transparent;
-            this.pnl_addressStatusSection.BorderColor = System.Drawing.Color.WhiteSmoke;
+            this.pnl_addressStatusSection.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_addressStatusSection.BorderRadius = 10;
+            this.pnl_addressStatusSection.BorderThickness = 2;
             this.pnl_addressStatusSection.Controls.Add(this.pnl_serviceAddress);
             this.pnl_addressStatusSection.Controls.Add(this.label2);
             this.pnl_addressStatusSection.Controls.Add(this.pnl_statusColor);
             this.pnl_addressStatusSection.Controls.Add(this.label5);
-            this.pnl_addressStatusSection.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_addressStatusSection.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_addressStatusSection.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_addressStatusSection.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_addressStatusSection.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_addressStatusSection.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_addressStatusSection.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_addressStatusSection.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_addressStatusSection.Location = new System.Drawing.Point(335, 190);
             this.pnl_addressStatusSection.Name = "pnl_addressStatusSection";
             this.pnl_addressStatusSection.Size = new System.Drawing.Size(512, 130);
-            this.pnl_addressStatusSection.TabIndex = 33;
+            this.pnl_addressStatusSection.TabIndex = 33;            
             // 
             // pnl_serviceAddress
             // 
@@ -607,14 +611,15 @@
             // pnl_cardDns
             // 
             this.pnl_cardDns.BackColor = System.Drawing.Color.Transparent;
-            this.pnl_cardDns.BorderColor = System.Drawing.Color.WhiteSmoke;
+            this.pnl_cardDns.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_cardDns.BorderRadius = 10;
+            this.pnl_cardDns.BorderThickness = 2;
             this.pnl_cardDns.Controls.Add(this.pb_dnsPicture);
             this.pnl_cardDns.Controls.Add(this.lbl_name);
-            this.pnl_cardDns.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_cardDns.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_cardDns.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
-            this.pnl_cardDns.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_cardDns.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_cardDns.FillColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_cardDns.FillColor3 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
+            this.pnl_cardDns.FillColor4 = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_cardDns.Location = new System.Drawing.Point(335, 107);
             this.pnl_cardDns.Name = "pnl_cardDns";
             this.pnl_cardDns.Size = new System.Drawing.Size(305, 73);
@@ -687,15 +692,15 @@
             // btn_flushDNS
             // 
             this.btn_flushDNS.Animated = true;
-            this.btn_flushDNS.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.btn_flushDNS.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_flushDNS.BorderRadius = 10;
-            this.btn_flushDNS.BorderThickness = 1;
+            this.btn_flushDNS.BorderThickness = 2;
             this.btn_flushDNS.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_flushDNS.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_flushDNS.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_flushDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_flushDNS.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_flushDNS.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_flushDNS.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_flushDNS.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_flushDNS.ForeColor = System.Drawing.Color.White;
             this.btn_flushDNS.Image = global::ForceConnect.Properties.Resources.clean;
@@ -708,7 +713,7 @@
             // 
             // lbl_hintSelectDNS
             // 
-            this.lbl_hintSelectDNS.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.lbl_hintSelectDNS.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.lbl_hintSelectDNS.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_hintSelectDNS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
             this.lbl_hintSelectDNS.Location = new System.Drawing.Point(347, 63);
@@ -722,13 +727,14 @@
             // cb_selectDNS
             // 
             this.cb_selectDNS.BackColor = System.Drawing.Color.Transparent;
-            this.cb_selectDNS.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.cb_selectDNS.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.cb_selectDNS.BorderRadius = 10;
+            this.cb_selectDNS.BorderThickness = 2;
             this.cb_selectDNS.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cb_selectDNS.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.cb_selectDNS.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.cb_selectDNS.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_selectDNS.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.cb_selectDNS.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.cb_selectDNS.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.cb_selectDNS.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.cb_selectDNS.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -756,14 +762,15 @@
             // 
             this.guna2Panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.guna2Panel1.BackColor = System.Drawing.Color.Transparent;
-            this.guna2Panel1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.guna2Panel1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel1.BorderRadius = 10;
+            this.guna2Panel1.BorderThickness = 2;
             this.guna2Panel1.Controls.Add(this.lbl_version);
-            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel1.Location = new System.Drawing.Point(696, 331);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(152, 49);
-            this.guna2Panel1.TabIndex = 15;
+            this.guna2Panel1.TabIndex = 15;            
             // 
             // lbl_version
             // 
@@ -871,6 +878,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureLatency)).EndInit();
             this.pnl_welcome.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.guna2CirclePictureBox1)).EndInit();
+            this.progressBarConnection.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.iconConnect)).EndInit();
             this.pnl_addressStatusSection.ResumeLayout(false);
             this.pnl_serviceAddress.ResumeLayout(false);

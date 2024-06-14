@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.pnl_services = new Guna.UI2.WinForms.Guna2Panel();
             this.pnl_latencySection = new Guna.UI2.WinForms.Guna2Panel();
+            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.btn_ping = new Guna.UI2.WinForms.Guna2Button();
             this.lbl_ping = new System.Windows.Forms.Label();
             this.txt_address2 = new Guna.UI2.WinForms.Guna2TextBox();
@@ -41,7 +42,6 @@
             this.btn_cancel = new Guna.UI2.WinForms.Guna2Button();
             this.btn_addService = new Guna.UI2.WinForms.Guna2Button();
             this.bf_form = new Guna.UI2.WinForms.Guna2BorderlessForm(this.components);
-            this.pb_latencyPicture = new Guna.UI2.WinForms.Guna2PictureBox();
             this.pnl_services.SuspendLayout();
             this.pnl_latencySection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pb_latencyPicture)).BeginInit();
@@ -59,7 +59,7 @@
             this.pnl_services.Controls.Add(this.btn_cancel);
             this.pnl_services.Controls.Add(this.btn_addService);
             this.pnl_services.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnl_services.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_services.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_services.Location = new System.Drawing.Point(0, 0);
             this.pnl_services.Name = "pnl_services";
             this.pnl_services.Size = new System.Drawing.Size(422, 441);
@@ -67,7 +67,7 @@
             // 
             // pnl_latencySection
             // 
-            this.pnl_latencySection.BorderColor = System.Drawing.Color.White;
+            this.pnl_latencySection.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_latencySection.BorderRadius = 5;
             this.pnl_latencySection.BorderThickness = 1;
             this.pnl_latencySection.Controls.Add(this.pb_latencyPicture);
@@ -77,6 +77,19 @@
             this.pnl_latencySection.Name = "pnl_latencySection";
             this.pnl_latencySection.Size = new System.Drawing.Size(319, 62);
             this.pnl_latencySection.TabIndex = 28;
+            // 
+            // pb_latencyPicture
+            // 
+            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
+            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
+            this.pb_latencyPicture.ImageRotate = 0F;
+            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
+            this.pb_latencyPicture.Name = "pb_latencyPicture";
+            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
+            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pb_latencyPicture.TabIndex = 27;
+            this.pb_latencyPicture.TabStop = false;
             // 
             // btn_ping
             // 
@@ -114,6 +127,7 @@
             // 
             this.txt_address2.Animated = true;
             this.txt_address2.BackColor = System.Drawing.Color.Transparent;
+            this.txt_address2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.txt_address2.BorderRadius = 5;
             this.txt_address2.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_address2.DefaultText = "";
@@ -121,7 +135,7 @@
             this.txt_address2.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
             this.txt_address2.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
             this.txt_address2.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txt_address2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.txt_address2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.txt_address2.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txt_address2.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txt_address2.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
@@ -140,6 +154,7 @@
             // 
             this.txt_address1.Animated = true;
             this.txt_address1.BackColor = System.Drawing.Color.Transparent;
+            this.txt_address1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.txt_address1.BorderRadius = 5;
             this.txt_address1.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_address1.DefaultText = "";
@@ -147,7 +162,7 @@
             this.txt_address1.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
             this.txt_address1.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
             this.txt_address1.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txt_address1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.txt_address1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.txt_address1.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txt_address1.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txt_address1.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
@@ -166,6 +181,7 @@
             // 
             this.txt_name.Animated = true;
             this.txt_name.BackColor = System.Drawing.Color.Transparent;
+            this.txt_name.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.txt_name.BorderRadius = 5;
             this.txt_name.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txt_name.DefaultText = "";
@@ -173,7 +189,7 @@
             this.txt_name.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
             this.txt_name.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
             this.txt_name.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txt_name.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.txt_name.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.txt_name.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txt_name.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txt_name.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
@@ -236,7 +252,7 @@
             // 
             this.btn_addService.Animated = true;
             this.btn_addService.BackColor = System.Drawing.Color.Transparent;
-            this.btn_addService.BorderColor = System.Drawing.Color.White;
+            this.btn_addService.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_addService.BorderRadius = 5;
             this.btn_addService.BorderThickness = 1;
             this.btn_addService.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -244,7 +260,7 @@
             this.btn_addService.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_addService.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_addService.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_addService.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_addService.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_addService.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_addService.ForeColor = System.Drawing.Color.White;
             this.btn_addService.Location = new System.Drawing.Point(172, 360);
@@ -264,19 +280,6 @@
             this.bf_form.HasFormShadow = false;
             this.bf_form.ResizeForm = false;
             this.bf_form.TransparentWhileDrag = true;
-            // 
-            // pb_latencyPicture
-            // 
-            this.pb_latencyPicture.BackColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.FillColor = System.Drawing.Color.Transparent;
-            this.pb_latencyPicture.Image = global::ForceConnect.Properties.Resources.signalGreen;
-            this.pb_latencyPicture.ImageRotate = 0F;
-            this.pb_latencyPicture.Location = new System.Drawing.Point(11, 15);
-            this.pb_latencyPicture.Name = "pb_latencyPicture";
-            this.pb_latencyPicture.Size = new System.Drawing.Size(37, 31);
-            this.pb_latencyPicture.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pb_latencyPicture.TabIndex = 27;
-            this.pb_latencyPicture.TabStop = false;
             // 
             // frm_service
             // 

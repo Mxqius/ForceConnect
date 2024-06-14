@@ -56,14 +56,15 @@
             // 
             this.btn_networkInformation.Animated = true;
             this.btn_networkInformation.BackColor = System.Drawing.Color.Transparent;
-            this.btn_networkInformation.BorderColor = System.Drawing.Color.White;
+            this.btn_networkInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_networkInformation.BorderRadius = 10;
+            this.btn_networkInformation.BorderThickness = 2;
             this.btn_networkInformation.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_networkInformation.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_networkInformation.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_networkInformation.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_networkInformation.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_networkInformation.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_networkInformation.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_networkInformation.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_networkInformation.ForeColor = System.Drawing.Color.White;
             this.btn_networkInformation.Image = global::ForceConnect.Properties.Resources.network_panel;
@@ -80,9 +81,9 @@
             this.cb_autoUpdate.Animated = true;
             this.cb_autoUpdate.AutoRoundedCorners = true;
             this.cb_autoUpdate.BackColor = System.Drawing.Color.Transparent;
-            this.cb_autoUpdate.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_autoUpdate.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_autoUpdate.CheckedState.BorderRadius = 11;
-            this.cb_autoUpdate.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_autoUpdate.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_autoUpdate.CheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.cb_autoUpdate.CheckedState.InnerBorderRadius = 7;
             this.cb_autoUpdate.CheckedState.InnerColor = System.Drawing.Color.White;
@@ -105,9 +106,9 @@
             this.ts_discordRPC.AutoRoundedCorners = true;
             this.ts_discordRPC.BackColor = System.Drawing.Color.Transparent;
             this.ts_discordRPC.Checked = true;
-            this.ts_discordRPC.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.ts_discordRPC.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.ts_discordRPC.CheckedState.BorderRadius = 11;
-            this.ts_discordRPC.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.ts_discordRPC.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.ts_discordRPC.CheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.ts_discordRPC.CheckedState.InnerBorderRadius = 7;
             this.ts_discordRPC.CheckedState.InnerColor = System.Drawing.Color.White;
@@ -129,9 +130,9 @@
             this.cb_minimizeInTray.Animated = true;
             this.cb_minimizeInTray.AutoRoundedCorners = true;
             this.cb_minimizeInTray.BackColor = System.Drawing.Color.Transparent;
-            this.cb_minimizeInTray.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_minimizeInTray.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_minimizeInTray.CheckedState.BorderRadius = 11;
-            this.cb_minimizeInTray.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_minimizeInTray.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_minimizeInTray.CheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.cb_minimizeInTray.CheckedState.InnerBorderRadius = 7;
             this.cb_minimizeInTray.CheckedState.InnerColor = System.Drawing.Color.White;
@@ -153,9 +154,9 @@
             this.cb_launchOnWindows.Animated = true;
             this.cb_launchOnWindows.AutoRoundedCorners = true;
             this.cb_launchOnWindows.BackColor = System.Drawing.Color.Transparent;
-            this.cb_launchOnWindows.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_launchOnWindows.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_launchOnWindows.CheckedState.BorderRadius = 11;
-            this.cb_launchOnWindows.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cb_launchOnWindows.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(96)))), ((int)(((byte)(176)))));
             this.cb_launchOnWindows.CheckedState.InnerBorderColor = System.Drawing.Color.White;
             this.cb_launchOnWindows.CheckedState.InnerBorderRadius = 7;
             this.cb_launchOnWindows.CheckedState.InnerColor = System.Drawing.Color.White;
@@ -222,14 +223,15 @@
             this.btn_updateSofware.Animated = true;
             this.btn_updateSofware.AnimatedGIF = true;
             this.btn_updateSofware.BackColor = System.Drawing.Color.Transparent;
-            this.btn_updateSofware.BorderColor = System.Drawing.Color.White;
+            this.btn_updateSofware.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_updateSofware.BorderRadius = 10;
+            this.btn_updateSofware.BorderThickness = 2;
             this.btn_updateSofware.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_updateSofware.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_updateSofware.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_updateSofware.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_updateSofware.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_updateSofware.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_updateSofware.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_updateSofware.ForeColor = System.Drawing.Color.White;
             this.btn_updateSofware.Image = global::ForceConnect.Properties.Resources.update;
@@ -305,11 +307,13 @@
             // 
             // guna2Panel1
             // 
+            this.guna2Panel1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel1.BorderRadius = 10;
+            this.guna2Panel1.BorderThickness = 2;
             this.guna2Panel1.Controls.Add(this.cb_launchOnWindows);
             this.guna2Panel1.Controls.Add(this.lbl_descriptionOption1);
             this.guna2Panel1.Controls.Add(this.lbl_launchOnWindows);
-            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel1.Location = new System.Drawing.Point(37, 44);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(399, 128);
@@ -317,11 +321,13 @@
             // 
             // guna2Panel2
             // 
+            this.guna2Panel2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel2.BorderRadius = 10;
+            this.guna2Panel2.BorderThickness = 2;
             this.guna2Panel2.Controls.Add(this.cb_autoUpdate);
             this.guna2Panel2.Controls.Add(this.lbl_descriptionOption2);
             this.guna2Panel2.Controls.Add(this.lbl_automaticUpdate);
-            this.guna2Panel2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel2.Location = new System.Drawing.Point(37, 182);
             this.guna2Panel2.Name = "guna2Panel2";
             this.guna2Panel2.Size = new System.Drawing.Size(399, 128);
@@ -329,11 +335,13 @@
             // 
             // guna2Panel3
             // 
+            this.guna2Panel3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel3.BorderRadius = 10;
+            this.guna2Panel3.BorderThickness = 2;
             this.guna2Panel3.Controls.Add(this.cb_minimizeInTray);
             this.guna2Panel3.Controls.Add(this.lbl_minimizeInTray);
             this.guna2Panel3.Controls.Add(this.lbl_minimizeDescription);
-            this.guna2Panel3.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel3.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel3.Location = new System.Drawing.Point(448, 44);
             this.guna2Panel3.Name = "guna2Panel3";
             this.guna2Panel3.Size = new System.Drawing.Size(399, 128);
@@ -341,11 +349,13 @@
             // 
             // guna2Panel4
             // 
+            this.guna2Panel4.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel4.BorderRadius = 10;
+            this.guna2Panel4.BorderThickness = 2;
             this.guna2Panel4.Controls.Add(this.ts_discordRPC);
             this.guna2Panel4.Controls.Add(this.lbl_theme);
             this.guna2Panel4.Controls.Add(this.lbl_discordDescription);
-            this.guna2Panel4.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel4.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel4.Location = new System.Drawing.Point(448, 182);
             this.guna2Panel4.Name = "guna2Panel4";
             this.guna2Panel4.Size = new System.Drawing.Size(399, 128);
@@ -355,7 +365,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
             this.Controls.Add(this.btn_networkInformation);
             this.Controls.Add(this.guna2Panel2);

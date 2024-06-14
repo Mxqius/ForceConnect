@@ -48,11 +48,13 @@
             // pnl_descriptionAbout
             // 
             this.pnl_descriptionAbout.BackColor = System.Drawing.Color.Transparent;
+            this.pnl_descriptionAbout.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_descriptionAbout.BorderRadius = 10;
+            this.pnl_descriptionAbout.BorderThickness = 2;
             this.pnl_descriptionAbout.Controls.Add(this.guna2Shapes1);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_description);
             this.pnl_descriptionAbout.Controls.Add(this.lbl_titleDescription);
-            this.pnl_descriptionAbout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.pnl_descriptionAbout.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_descriptionAbout.Location = new System.Drawing.Point(430, 35);
             this.pnl_descriptionAbout.Name = "pnl_descriptionAbout";
             this.pnl_descriptionAbout.Size = new System.Drawing.Size(404, 325);
@@ -104,7 +106,7 @@
             this.pnl_developreCard.Controls.Add(this.lbl_descriptionDeveloper);
             this.pnl_developreCard.Controls.Add(this.lbl_nameDeveloper);
             this.pnl_developreCard.Controls.Add(this.pb_aboutPicture);
-            this.pnl_developreCard.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(248)))), ((int)(((byte)(249)))));
+            this.pnl_developreCard.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.pnl_developreCard.Location = new System.Drawing.Point(59, 35);
             this.pnl_developreCard.Name = "pnl_developreCard";
             this.pnl_developreCard.Size = new System.Drawing.Size(339, 325);
@@ -215,7 +217,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(884, 408);
             this.Controls.Add(this.pnl_developreCard);
             this.Controls.Add(this.pnl_descriptionAbout);

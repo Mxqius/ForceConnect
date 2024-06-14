@@ -250,15 +250,15 @@
             // 
             this.btn_close.Animated = true;
             this.btn_close.BackColor = System.Drawing.Color.Transparent;
-            this.btn_close.BorderColor = System.Drawing.Color.White;
+            this.btn_close.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_close.BorderRadius = 5;
-            this.btn_close.BorderThickness = 1;
+            this.btn_close.BorderThickness = 2;
             this.btn_close.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_close.DisabledState.BorderColor = System.Drawing.Color.White;
             this.btn_close.DisabledState.CustomBorderColor = System.Drawing.Color.White;
             this.btn_close.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
             this.btn_close.DisabledState.ForeColor = System.Drawing.Color.White;
-            this.btn_close.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_close.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_close.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_close.ForeColor = System.Drawing.Color.White;
             this.btn_close.ImageOffset = new System.Drawing.Point(-10, 0);
@@ -273,15 +273,15 @@
             // 
             this.btn_refresh.Animated = true;
             this.btn_refresh.BackColor = System.Drawing.Color.Transparent;
-            this.btn_refresh.BorderColor = System.Drawing.Color.White;
+            this.btn_refresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.btn_refresh.BorderRadius = 5;
-            this.btn_refresh.BorderThickness = 1;
+            this.btn_refresh.BorderThickness = 2;
             this.btn_refresh.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btn_refresh.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
             this.btn_refresh.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
             this.btn_refresh.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.btn_refresh.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btn_refresh.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btn_refresh.ForeColor = System.Drawing.Color.White;
             this.btn_refresh.ImageOffset = new System.Drawing.Point(-10, 0);
@@ -346,12 +346,14 @@
             // 
             // guna2Panel1
             // 
+            this.guna2Panel1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.guna2Panel1.BorderRadius = 5;
+            this.guna2Panel1.BorderThickness = 2;
             this.guna2Panel1.Controls.Add(this.guna2Shapes2);
             this.guna2Panel1.Controls.Add(this.lbl_uploadSpeed);
             this.guna2Panel1.Controls.Add(this.guna2Shapes4);
             this.guna2Panel1.Controls.Add(this.lbl_downloadSpeed);
-            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.guna2Panel1.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.guna2Panel1.Location = new System.Drawing.Point(56, 363);
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(235, 31);
@@ -399,7 +401,7 @@
             // 
             // lbl_hintNetworkAdapter
             // 
-            this.lbl_hintNetworkAdapter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.lbl_hintNetworkAdapter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.lbl_hintNetworkAdapter.Font = new System.Drawing.Font("Rubik", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_hintNetworkAdapter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
             this.lbl_hintNetworkAdapter.Location = new System.Drawing.Point(445, 63);
@@ -413,14 +415,15 @@
             // cb_selectNetworkAdapter
             // 
             this.cb_selectNetworkAdapter.BackColor = System.Drawing.Color.Transparent;
-            this.cb_selectNetworkAdapter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(244)))), ((int)(((byte)(244)))));
+            this.cb_selectNetworkAdapter.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.cb_selectNetworkAdapter.BorderRadius = 5;
+            this.cb_selectNetworkAdapter.BorderThickness = 2;
             this.cb_selectNetworkAdapter.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cb_selectNetworkAdapter.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.cb_selectNetworkAdapter.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.cb_selectNetworkAdapter.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.cb_selectNetworkAdapter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_selectNetworkAdapter.Enabled = false;
-            this.cb_selectNetworkAdapter.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(67)))));
+            this.cb_selectNetworkAdapter.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.cb_selectNetworkAdapter.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.cb_selectNetworkAdapter.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.cb_selectNetworkAdapter.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -435,9 +438,9 @@
             // 
             // pnl_networkInformation
             // 
-            this.pnl_networkInformation.BorderColor = System.Drawing.Color.White;
+            this.pnl_networkInformation.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(73)))), ((int)(((byte)(73)))));
             this.pnl_networkInformation.BorderRadius = 5;
-            this.pnl_networkInformation.BorderThickness = 1;
+            this.pnl_networkInformation.BorderThickness = 2;
             this.pnl_networkInformation.Controls.Add(this.lbl_interface);
             this.pnl_networkInformation.Controls.Add(this.lbl_intrfaceDesc);
             this.pnl_networkInformation.Controls.Add(this.lbl_intrfaceStatus);
@@ -445,6 +448,7 @@
             this.pnl_networkInformation.Controls.Add(this.label6);
             this.pnl_networkInformation.Controls.Add(this.label7);
             this.pnl_networkInformation.Controls.Add(this.label5);
+            this.pnl_networkInformation.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.pnl_networkInformation.Location = new System.Drawing.Point(435, 114);
             this.pnl_networkInformation.Name = "pnl_networkInformation";
             this.pnl_networkInformation.Size = new System.Drawing.Size(319, 218);
@@ -454,7 +458,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(45)))), ((int)(((byte)(52)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.ClientSize = new System.Drawing.Size(810, 450);
             this.ControlBox = false;
             this.Controls.Add(this.pnl_networkInformation);
