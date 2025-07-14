@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace ForceConnect.User_Controls
+namespace ForceConnect.UserControls
 {
     public partial class ServiceControl : UserControl
     {

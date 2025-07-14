@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32;
 using System.Reflection;
 
-namespace ForceConnect.Launch
+namespace ForceConnect.Startup
 {
     internal class LaunchProgram
     {

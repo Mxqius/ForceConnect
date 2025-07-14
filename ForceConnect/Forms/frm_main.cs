@@ -1,10 +1,10 @@
 ﻿using ForceConnect.API;
 using ForceConnect.Interfaces;
-using ForceConnect.Launch;
-using ForceConnect.NetworkTrafficMonitor;
+using ForceConnect.Startup;
+using ForceConnect.Network;
 using ForceConnect.Services;
-using ForceConnect.User_Controls;
-using ForceConnect.Utility;
+using ForceConnect.UserControls;
+using ForceConnect.Utilities;
 using Guna.UI2.WinForms;
 using System;
 using System.Collections.Generic;
@@ -14,78 +14,173 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ForceConnect
+namespace ForceConnect.Forms
 {
     public partial class frm_main : Form
     {
-        private bool dragging = false;
-        private Point dragCursorPoint, dragFormPoint;
+        private bool _dragging = false;
+        private Point _dragCursorPoint, _dragFormPoint;
 
-        public DnsAddress currentDNS, connectedDNS;
-        private List<DnsAddress> servicesUser;
-        private Guna2Button currentSelectedMenuOption;
-        public Form currentFormLoaded;
+        public DnsAddress CurrentDNS { get; private set; }
+        public DnsAddress ConnectedDNS { get; private set; }
+        private List<DnsAddress> _servicesUser;
+        private Guna2Button _currentSelectedMenuOption;
+        public Form CurrentFormLoaded { get; private set; }
 
         private long _currentLatency = 0;
-        public bool _connected;
-        public bool discordRPCStatus = true;
-        private bool pendingRequest, _internetConnection = true;
-        private readonly Version version = Version.Parse(Application.ProductVersion);
+        public bool IsConnected { get; private set; }
+        public bool DiscordRPCStatus { get; set; } = true;
+        private bool _pendingRequest, _internetConnection = true;
+        private readonly Version _version = Version.Parse(Application.ProductVersion);
         private readonly string _repositoryOwner = "Mxqius", _repositoryName = "ForceConnect";
         private string _statusConnectionService, _previewAddress;
 
-        private List<ServiceControl> serviceControls = new List<ServiceControl>();
+        private readonly List<ServiceControl> _serviceControls = new List<ServiceControl>();
 
-        private Thread serviceThread, monitoringThread;
+        private Thread _serviceThread, _monitoringThread;
 
-        private sbyte serviceComboBoxSelectedIndex = -1;
+        private sbyte _serviceComboBoxSelectedIndex = -1;
 
         public frm_main()
         {
             InitializeComponent();
-            updateVersion();
-            currentSelectedMenuOption = btn_home;
+            InitializeLocalization();
+            UpdateVersion();
+            _currentSelectedMenuOption = btn_home;
 
             btn_home.ImageSize = new Size(35, 35);
             btn_home.FillColor = Color.FromArgb(44, 45, 52);
-            btn_home.Text = "HOME";
+            btn_home.Text = LocalizationManager.GetString("home", "HOME");
 
-            servicesUser = DnsAddressItems.GetServicesUser();
-
-            // Just for test
-            //currentDNS = servicesUser[0];
+            _servicesUser = DnsAddressItems.GetServicesUser();
         }
 
-        private void updateServices()
+        /// <summary>
+        /// Initializes localization for the main form.
+        /// </summary>
+        private void InitializeLocalization()
         {
-            servicesUser.Clear();
-            servicesUser = DnsAddressItems.GetServicesUser();
+            try
+            {
+                // Apply Persian settings if needed
+                if (LocalizationManager.IsPersianLanguage())
+                {
+                    LocalizationManager.ApplyPersianSettings(this);
+                }
 
+                // Update form texts
+                UpdateFormTexts();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize localization: {ex.Message}");
+            }
         }
-        private async Task checkInternetConnection()
+
+        /// <summary>
+        /// Updates form texts with localized strings.
+        /// </summary>
+        private void UpdateFormTexts()
+        {
+            try
+            {
+                // Update menu buttons
+                btn_home.Text = LocalizationManager.GetString("home", "HOME");
+                btn_explore.Text = LocalizationManager.GetString("explore", "EXPLORE");
+                btn_settings.Text = LocalizationManager.GetString("settings", "SETTINGS");
+                btn_about.Text = LocalizationManager.GetString("about", "ABOUT");
+
+                // Update other UI elements
+                lbl_latency.Text = LocalizationManager.GetString("latency", "Latency");
+                lbl_address.Text = LocalizationManager.GetString("address", "Address");
+                lbl_selectServiceHint.Text = LocalizationManager.GetString("selectServiceHint", "Select a service");
+
+                // Update context menu items
+                if (cms_mainMenu != null)
+                {
+                    foreach (ToolStripItem item in cms_mainMenu.Items)
+                    {
+                        UpdateMenuItemText(item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update form texts: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates menu item text with localized strings.
+        /// </summary>
+        /// <param name="item">The menu item to update.</param>
+        private void UpdateMenuItemText(ToolStripItem item)
+        {
+            try
+            {
+                switch (item.Text)
+                {
+                    case "Exit":
+                        item.Text = LocalizationManager.GetString("exit", "Exit");
+                        break;
+                    case "Minimize":
+                        item.Text = LocalizationManager.GetString("minimize", "Minimize");
+                        break;
+                    case "Refresh":
+                        item.Text = LocalizationManager.GetString("refresh", "Refresh");
+                        break;
+                    case "Flush DNS":
+                        item.Text = LocalizationManager.GetString("flushDNS", "Flush DNS");
+                        break;
+                    case "Add Service":
+                        item.Text = LocalizationManager.GetString("addService", "Add Service");
+                        break;
+                    case "Delete Service":
+                        item.Text = LocalizationManager.GetString("deleteService", "Delete Service");
+                        break;
+                    case "Check Updates":
+                        item.Text = LocalizationManager.GetString("updateSoftware", "Check Updates");
+                        break;
+                    case "Network Information":
+                        item.Text = LocalizationManager.GetString("networkInformation", "Network Information");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to update menu item text: {ex.Message}");
+            }
+        }
+
+        private void UpdateServices()
+        {
+            _servicesUser.Clear();
+            _servicesUser = DnsAddressItems.GetServicesUser();
+        }
+        private async Task CheckInternetConnection()
         {
             await Task.Run(async () =>
             {
-                if (await getLatencyDNS("google.com") == -1)
-                    changeAppStatus(false);
+                if (await GetLatencyDNS("google.com") == -1)
+                    ChangeAppStatus(false);
                 else
-                    changeAppStatus(true);
+                    ChangeAppStatus(true);
             });
         }
-        private void changeAppStatus(bool internetConnection)
+        private void ChangeAppStatus(bool internetConnection)
         {
             _internetConnection = internetConnection;
 
             this.Invoke(new MethodInvoker(delegate
             {
-                if (internetConnection && _connected)
+                if (internetConnection && IsConnected)
                 {
                     lbl_status.Text = "CLICK TO DISCONNECT";
                     iconConnect.Image = Properties.Resources.turn_on;
                     iconConnect.ImageRotate = 180;
                     return;
                 }
-                else if (internetConnection && !_connected)
+                else if (internetConnection && !IsConnected)
                 {
                     lbl_status.Text = "CLICK TO CONNECT";
                     iconConnect.Image = Properties.Resources.turn_on;
@@ -99,13 +194,17 @@ namespace ForceConnect
                     iconConnect.ImageRotate = 0;
                 }
             }));
-
         }
-        public async Task<bool> delay(int milisecound)
+        /// <summary>
+        /// Delays execution for the specified number of milliseconds.
+        /// </summary>
+        /// <param name="milliseconds">The number of milliseconds to delay.</param>
+        /// <returns>A task that completes after the specified delay.</returns>
+        public async Task<bool> DelayAsync(int milliseconds)
         {
             return await Task.Run(() =>
             {
-                Thread.Sleep(milisecound);
+                Thread.Sleep(milliseconds);
                 return true;
             });
         }
@@ -132,32 +231,36 @@ namespace ForceConnect
             ((Guna2Button)sender).ImageSize = new Size(35, 35);
         }
 
-        private async void welcomeAction()
+        /// <summary>
+        /// Displays the welcome animation with the app name.
+        /// </summary>
+        private async void WelcomeAction()
         {
             lbl_appName_wlc.Text = string.Empty;
-            string wlcName = "";
+            var welcomeName = "";
             foreach (char letter in "ForceConnect")
             {
-                wlcName += letter;
-                lbl_appName_wlc.Text = wlcName + "|";
+                welcomeName += letter;
+                lbl_appName_wlc.Text = welcomeName + "|";
                 await Task.Delay(200);
             }
-            lbl_appName_wlc.Text = wlcName;
+            lbl_appName_wlc.Text = welcomeName;
         }
-        private void hideWelcomePanel()
+        /// <summary>
+        /// Hides the welcome panel and shows the main interface.
+        /// </summary>
+        private void HideWelcomePanel()
         {
-            //transitionEffect.HideSync(pnl_welcome);
             pnl_welcome.Visible = lbl_hintSelectDNS.Visible = false;
-            //transitionEffect.ShowSync(pnl_information);
             lbl_version.Visible = pnl_cardDns.Visible = pnl_addressStatusSection.Visible = true;
         }
         private void cb_selectDNS_SelectedIndexChanged(object sender, EventArgs e)
         {
-            hideWelcomePanel();
-            if (connectedDNS != null)
+            HideWelcomePanel();
+            if (ConnectedDNS != null)
             {
-                if (_connected)
-                    if (connectedDNS.Name.ToLower() != cb_selectDNS.Text.ToLower())
+                if (IsConnected)
+                    if (ConnectedDNS.Name.ToLower() != cb_selectDNS.Text.ToLower())
                     {
                         pnl_statusColor.FillColor = Color.FromArgb(79, 43, 41);
                         lbl_statusText.ForeColor = Color.FromArgb(178, 61, 61);
@@ -173,47 +276,47 @@ namespace ForceConnect
 
                         lbl_statusText.Text = "Connected";
                     }
-                //new frm_messageBox()
-                //{
-                //    MessageCaption = "Warning",
-                //    MessageText = $"You Are still connect to perviosly dns ({connectedDNS.Name})",
-                //    MessageIcon = frm_messageBox.Icon.Warning,
-                //    MessageButtons = frm_messageBox.Buttons.OK
-                //}.ShowMessage();
-                if (connectedDNS.Name.ToLower() == cb_selectDNS.Text.ToLower())
-                    updateVersion();
+
+                if (ConnectedDNS.Name.ToLower() == cb_selectDNS.Text.ToLower())
+                    UpdateVersion();
             }
-            changeServer();
-            serviceComboBoxSelectedIndex = (sbyte)cb_selectDNS.SelectedIndex;
+            ChangeServer();
+            _serviceComboBoxSelectedIndex = (sbyte)cb_selectDNS.SelectedIndex;
         }
 
-        private void changeServer()
+        /// <summary>
+        /// Changes the selected DNS server.
+        /// </summary>
+        private void ChangeServer()
         {
-            if (servicesUser.Exists(x => x.Name == cb_selectDNS.Text))
+            if (_servicesUser.Exists(x => x.Name == cb_selectDNS.Text))
             {
-                currentDNS = servicesUser.Find(item => item.Name == cb_selectDNS.Text);
-                showInformation();
+                CurrentDNS = _servicesUser.Find(item => item.Name == cb_selectDNS.Text);
+                ShowInformation();
             }
         }
-        private async void showInformation()
+        /// <summary>
+        /// Shows information about the selected DNS service.
+        /// </summary>
+        private async void ShowInformation()
         {
-            lbl_name.Text = currentDNS.Name;
-            if (currentDNS.dnsAddress.Length > 1)
+            lbl_name.Text = CurrentDNS.Name;
+            if (CurrentDNS.dnsAddress.Length > 1)
             {
-                _previewAddress = currentDNS.dnsAddress[0] + " - " + currentDNS.dnsAddress[1];
+                _previewAddress = CurrentDNS.dnsAddress[0] + " - " + CurrentDNS.dnsAddress[1];
                 lbl_previewAddress.Text = _previewAddress;
             }
             else
             {
-                _previewAddress = currentDNS.dnsAddress[0];
+                _previewAddress = CurrentDNS.dnsAddress[0];
                 lbl_previewAddress.Text = _previewAddress;
             }
-            pb_dnsPicture.Image = currentDNS.Picture;
+            pb_dnsPicture.Image = CurrentDNS.Picture;
             if (_internetConnection)
-                await syncLatencyDNS();
+                await SyncLatencyDNSAsync();
             else
-                lbl_latency.Text = "Latnecy: " + "-1 ms";
-            await checkInternetConnection();
+                lbl_latency.Text = "Latency: -1 ms";
+            await CheckInternetConnection();
         }
 
         private void pnl_control_MouseDown(object sender, MouseEventArgs e)
@@ -244,37 +347,65 @@ namespace ForceConnect
             await delay(1000);
             lbl_previewAddress.Text = currentDNS.dnsAddress[0] + " - " + currentDNS.dnsAddress[1];
         }
-        private async Task<long> getLatencyDNS(string address)
+        /// <summary>
+        /// Gets the latency for a DNS address.
+        /// </summary>
+        /// <param name="address">The DNS address to measure.</param>
+        /// <returns>The latency in milliseconds.</returns>
+        private async Task<long> GetLatencyDNSAsync(string address)
         {
-            return await Task.Run(() =>
-            {
-                return Latency.MeasureLatency(address);
-            });
-        }
-        private async Task syncLatency()
-        {
+            if (string.IsNullOrWhiteSpace(address))
+                return -1;
 
-            await Task.Run(async () =>
+            try
             {
-                _currentLatency = await getLatencyDNS("google.com");
-                this.Invoke(new MethodInvoker(delegate
-                {
-                    lbl_latency.Text = "Latnecy: " + _currentLatency.ToString() + " ms";
-                }));
-                updateLatencyStatusColor();
-            });
-
+                return await Latency.MeasureLatencyAsync(address);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to get latency for {address}: {ex.Message}");
+                return -1;
+            }
         }
-        private async Task syncLatencyDNS()
+        /// <summary>
+        /// Synchronizes the latency display.
+        /// </summary>
+        private async Task SyncLatencyAsync()
         {
-            await Task.Run(async () =>
+            try
             {
-                _currentLatency = await getLatencyDNS(currentDNS.dnsAddress[0]);
-                this.Invoke(new MethodInvoker(delegate
+                _currentLatency = await GetLatencyDNSAsync("google.com");
+                await this.InvokeAsync(() =>
                 {
-                    lbl_latency.Text = "Latnecy: " + _currentLatency.ToString() + " ms";
-                }));
-            });
+                    lbl_latency.Text = $"Latency: {_currentLatency} ms";
+                    UpdateLatencyStatusColor();
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to sync latency: {ex.Message}");
+            }
+        }
+        /// <summary>
+        /// Synchronizes the latency display for the current DNS.
+        /// </summary>
+        private async Task SyncLatencyDNSAsync()
+        {
+            if (CurrentDNS?.dnsAddress == null || CurrentDNS.dnsAddress.Length == 0)
+                return;
+
+            try
+            {
+                _currentLatency = await GetLatencyDNSAsync(CurrentDNS.dnsAddress[0]);
+                await this.InvokeAsync(() =>
+                {
+                    lbl_latency.Text = $"Latency: {_currentLatency} ms";
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to sync latency: {ex.Message}");
+            }
         }
         private void registrySync()
         {
@@ -359,16 +490,20 @@ namespace ForceConnect
 
         private async void btn_sync_Click(object sender, EventArgs e)
         {
-            if (pendingRequest) return;
-            pendingRequest = true;
-            await syncLatency();
-            await checkInternetConnection();
-            pendingRequest = false;
+            if (_pendingRequest) return;
+            _pendingRequest = true;
+            await SyncLatencyAsync();
+            await CheckInternetConnection();
+            _pendingRequest = false;
         }
 
-        private string updateVersion()
+        /// <summary>
+        /// Updates the version display.
+        /// </summary>
+        /// <returns>The updated version text.</returns>
+        private string UpdateVersion()
         {
-            return lbl_version.Text = "VERSION " + version.Major + "." + version.Minor;
+            return lbl_version.Text = $"VERSION {_version.Major}.{_version.Minor}";
         }
         private async Task<string> getLastestVersionApplication()
         {
@@ -377,9 +512,9 @@ namespace ForceConnect
                 return LaunchUpdate.GetLatestVersionFromGitHub("Mxqius", "ForceConnect"); ;
             });
         }
-        private async void checkAutoUpdate()
+        private async void CheckAutoUpdate()
         {
-            if (await getLatencyDNS("google.com") == -1) return;
+            if (await GetLatencyDNSAsync("google.com") == -1) return;
             string isAutoUpdate = RegistryApplication.RetrieveData("AutoUpdate");
             if (isAutoUpdate == "false" || isAutoUpdate == null) return;
             string lastestVersion = await getLastestVersionApplication();
@@ -429,9 +564,9 @@ namespace ForceConnect
         }
         private async void frm_main_Load(object sender, EventArgs e)
         {
-            loadServices();
-            await syncLatency();
-            welcomeAction();
+            LoadServices();
+            await SyncLatencyAsync();
+            WelcomeAction();
             registrySync();
             tsm_exit.Click += Tsm_exit_Click;
             currentFormLoaded = this;
@@ -442,27 +577,29 @@ namespace ForceConnect
             //  Initialize Discord RPC
             DiscordRPCManager.GetInstance();
         }
-        private void updateLatencyStatusColor()
+        /// <summary>
+        /// Updates the latency status color based on current latency.
+        /// </summary>
+        private void UpdateLatencyStatusColor()
         {
-
             this.Invoke(new MethodInvoker(delegate
             {
                 if (_currentLatency > 1 && _currentLatency <= 120)
-                    //shapeStatus.FillColor = Color.FromArgb(60, 207, 78);
                     pictureLatency.Image = Properties.Resources.signalGreen;
                 else if (_currentLatency > 120 && _currentLatency <= 180)
-                    //shapeStatus.FillColor = Color.FromArgb(255, 176, 0);
                     pictureLatency.Image = Properties.Resources.signalYellow;
                 else
-                    //shapeStatus.FillColor = Color.FromArgb(216, 0, 50);
                     pictureLatency.Image = Properties.Resources.signalRed;
             }));
         }
-        private async void loadServices()
+        /// <summary>
+        /// Loads DNS services into the combo box.
+        /// </summary>
+        private async void LoadServices()
         {
             await Task.Run(() =>
             {
-                foreach (DnsAddress dns in servicesUser)
+                foreach (DnsAddress dns in _servicesUser)
                 {
                     this.Invoke(new MethodInvoker(delegate
                     {
@@ -576,7 +713,6 @@ namespace ForceConnect
 
                 PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
 
-                //await delay(3000);
                 // Connect Thread 
                 serviceThread = new Thread(() =>
                 {
@@ -642,7 +778,6 @@ namespace ForceConnect
 
                 PerformTaskConnection(1, Color.FromArgb(255, 176, 0));
 
-                //await delay(3000);
                 // Disconnect Thread
                 serviceThread = new Thread(() =>
                 {
@@ -682,27 +817,12 @@ namespace ForceConnect
             notifyForm.Visible = false;
         }
 
-        //private void btn_nextServices_Click(object sender, EventArgs e)
-        //{
-        //    if (serviceControls.Count > 3)
-        //    {
-        //        List<ServiceControl> itemsToMove = serviceControls.GetRange(0, 3); // Get the three items starting from index 2.
 
-        //        // Remove the three items from their current positions.
-        //        serviceControls.RemoveRange(0, 3);
-
-        //        // Add the three items to the end of the list.
-        //        serviceControls.AddRange(itemsToMove);
-
-        //        pnl_information.Controls.Clear();
-        //        pnl_information.Controls.AddRange(new[] { serviceControls[0], serviceControls[1], serviceControls[2] });
-        //    }
-        //}
 
         private async void timerLatency_Tick(object sender, EventArgs e)
         {
-            await syncLatency();
-            await checkInternetConnection();
+            await SyncLatencyAsync();
+            await CheckInternetConnection();
         }
         private void tsm_donateUs_Click(object sender, EventArgs e)
         {
@@ -711,8 +831,8 @@ namespace ForceConnect
 
         private async void btn_refresh_Click(object sender, EventArgs e)
         {
-            await syncLatency();
-            await checkInternetConnection();
+            await SyncLatencyAsync();
+            await CheckInternetConnection();
         }
 
 

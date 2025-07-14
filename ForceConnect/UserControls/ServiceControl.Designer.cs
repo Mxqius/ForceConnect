@@ -1,4 +1,4 @@
-﻿namespace ForceConnect.User_Controls
+﻿namespace ForceConnect.UserControls
 {
     partial class ServiceControl
     {

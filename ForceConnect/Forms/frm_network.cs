@@ -26,7 +26,6 @@ namespace ForceConnect
         {
             this.Invoke(new Action(async () =>
             {
-                // lbl_downloadSpeed.Text = $"{await SpeedTest.MeasureDownloadSpeedAsync("")} MBps";
                 loadingProgressSpeed.Stop();
                 loadingProgressSpeed.Visible = false;
             }));

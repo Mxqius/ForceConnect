@@ -1,7 +1,7 @@
 ﻿using DiscordRPC;
 using System;
 
-namespace ForceConnect.Utility
+namespace ForceConnect.Utilities
 {
     public class DiscordRPCManager
     {

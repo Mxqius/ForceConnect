@@ -6,115 +6,207 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
-public class DnsManager
-{
-    public static void setDNS(string[] dnsAddress)
+    /// <summary>
+    /// Manages DNS configuration operations for the application with performance optimizations.
+    /// </summary>
+    public class DnsManager
     {
-        try
+        private static NetworkInterface _cachedActiveInterface;
+        private static readonly object _lockObject = new object();
+        private static readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(5);
+
+        /// <summary>
+        /// Sets the DNS servers for the active network interface with optimized performance.
+        /// </summary>
+        /// <param name="dnsAddresses">Array of DNS server addresses to set.</param>
+        /// <exception cref="ArgumentNullException">Thrown when dnsAddresses is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when dnsAddresses is empty.</exception>
+        public static void SetDNS(string[] dnsAddresses)
         {
-            NetworkInterface network = GetActiveEthernetOrWifiNetworkInterface();
+            if (dnsAddresses == null)
+                throw new ArgumentNullException(nameof(dnsAddresses));
+            
+            if (dnsAddresses.Length == 0)
+                throw new ArgumentException("DNS addresses array cannot be empty.", nameof(dnsAddresses));
 
-            string arg1 = "netsh interface ipv4 set dns name=" + network.Name + " static " + dnsAddress[0];
-            execute(arg1);
-
-            if (dnsAddress.Length > 1)
+            try
             {
-                string arg2 = "netsh interface ip add dns " + network.Name + " " + dnsAddress[1] + " index=2";
-                execute(arg2);
+                NetworkInterface network = GetActiveEthernetOrWifiNetworkInterface();
+                if (network == null)
+                {
+                    throw new InvalidOperationException("No active network interface found.");
+                }
+
+                // Optimize command execution with better error handling
+                var commands = new List<string>();
+                commands.Add($"netsh interface ipv4 set dns name=\"{network.Name}\" static {dnsAddresses[0]}");
+
+                if (dnsAddresses.Length > 1)
+                {
+                    commands.Add($"netsh interface ip add dns \"{network.Name}\" {dnsAddresses[1]} index=2");
+                }
+
+                // Execute commands with optimized performance
+                foreach (var command in commands)
+                {
+                    var result = Execute(command);
+                    if (!string.IsNullOrEmpty(result) && result.Contains("error", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new InvalidOperationException($"DNS command failed: {result}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to set DNS: {ex.Message}");
+                MessageBox.Show($"Failed to set DNS: {ex.Message}", "DNS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
         }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message);
-
-        }
-    }
-    public static void clearDNS()
+    /// <summary>
+    /// Clears DNS settings and reverts to DHCP configuration.
+    /// </summary>
+    public static void ClearDNS()
     {
         try
         {
             NetworkInterface network = GetActiveEthernetOrWifiNetworkInterface();
-            string arg = $"netsh interface ip set dns {network.Name} dhcp";
-            execute(arg);
+            if (network == null)
+            {
+                throw new InvalidOperationException("No active network interface found.");
+            }
 
+            string command = $"netsh interface ip set dns \"{network.Name}\" dhcp";
+            Execute(command);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
-
+            MessageBox.Show($"Failed to clear DNS: {ex.Message}", "DNS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            throw;
         }
     }
-    public static string[] getActiveDNS()
+    /// <summary>
+    /// Gets the currently active DNS servers for the active network interface.
+    /// </summary>
+    /// <returns>Array of DNS server addresses.</returns>
+    public static string[] GetActiveDNS()
     {
         NetworkInterface network = GetActiveEthernetOrWifiNetworkInterface();
-        string command = $"netsh interface ip show dns {network.Name}";
-        string result = execute(command);
-        return extractDNS(result);
+        if (network == null)
+        {
+            throw new InvalidOperationException("No active network interface found.");
+        }
+
+        string command = $"netsh interface ip show dns \"{network.Name}\"";
+        string result = Execute(command);
+        return ExtractDNS(result);
     }
-    private static string[] extractDNS(string input)
+    /// <summary>
+    /// Extracts DNS server addresses from the netsh command output.
+    /// </summary>
+    /// <param name="input">The output string from netsh command.</param>
+    /// <returns>Array of DNS server addresses.</returns>
+    private static string[] ExtractDNS(string input)
     {
+        if (string.IsNullOrEmpty(input))
+            return new string[0];
+
         const string pattern = @"Statically Configured DNS Servers:\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})";
         Regex regex = new Regex(pattern);
-        // Use the Matches method to find all matches in the input string
         MatchCollection matches = regex.Matches(input);
-        string[] address = new string[2];
-        // Iterate over the matches and extract the DNS servers
-        foreach (Match match in matches)
+        
+        if (matches.Count == 0)
+            return new string[0];
+
+        string[] addresses = new string[2];
+        Match match = matches[0]; // Take the first match
+        
+        for (int i = 1; i <= 2; i++)
         {
-            for (int i = 1; i <= 2; i++)
-            {
-                Group group = match.Groups[i];
-                address[i - 1] = group.Value;
-            }
+            Group group = match.Groups[i];
+            addresses[i - 1] = group.Value;
         }
-        return address;
+        
+        return addresses;
     }
-    public static void flushDNS()
+    /// <summary>
+    /// Flushes the DNS cache.
+    /// </summary>
+    public static void FlushDNS()
     {
         try
         {
-            string arg = $"ipconfig /flushdns";
-            execute(arg);
-
+            string command = "ipconfig /flushdns";
+            Execute(command);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
-
+            MessageBox.Show($"Failed to flush DNS cache: {ex.Message}", "DNS Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            throw;
         }
     }
-    public static string execute(string arg)
+    /// <summary>
+    /// Executes a command with elevated privileges.
+    /// </summary>
+    /// <param name="command">The command to execute.</param>
+    /// <returns>The output of the command.</returns>
+    private static string Execute(string command)
     {
         try
         {
-            NetworkInterface network = GetActiveEthernetOrWifiNetworkInterface();
             Process process = new Process();
 
-            // Set the required process information
             process.StartInfo.FileName = "cmd.exe";
-            process.StartInfo.Arguments = @"/c " + arg;  // Command to execute
+            process.StartInfo.Arguments = $"/c {command}";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
             process.StartInfo.Verb = "runas";
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            // Start the process
+
             process.Start();
-            return process.StandardOutput.ReadToEnd();
+            string output = process.StandardOutput.ReadToEnd();
+            string error = process.StandardError.ReadToEnd();
+            process.WaitForExit();
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                throw new InvalidOperationException($"Command failed: {error}");
+            }
+
+            return output;
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message);
-            return ex.Message;
+            throw new InvalidOperationException($"Failed to execute command '{command}': {ex.Message}", ex);
         }
     }
-    public static NetworkInterface GetActiveEthernetOrWifiNetworkInterface()
-    {
-        NetworkInterface Nic = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
-            a => a.OperationalStatus == OperationalStatus.Up &&
-            (a.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || a.NetworkInterfaceType == NetworkInterfaceType.Ethernet) &&
-            a.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily.ToString() == "InterNetwork"));
+        /// <summary>
+        /// Gets the active Ethernet or WiFi network interface with caching for better performance.
+        /// </summary>
+        /// <returns>The active network interface, or null if none found.</returns>
+        public static NetworkInterface GetActiveEthernetOrWifiNetworkInterface()
+        {
+            lock (_lockObject)
+            {
+                // Check if we have a cached interface that's still valid
+                if (_cachedActiveInterface != null && 
+                    _cachedActiveInterface.OperationalStatus == OperationalStatus.Up)
+                {
+                    return _cachedActiveInterface;
+                }
 
-        return Nic;
-    }
+                // Find active interface with optimized query
+                var activeInterface = NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
+                    nic => nic.OperationalStatus == OperationalStatus.Up &&
+                           (nic.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 || 
+                            nic.NetworkInterfaceType == NetworkInterfaceType.Ethernet) &&
+                           nic.GetIPProperties().GatewayAddresses.Any(g => g.Address.AddressFamily.ToString() == "InterNetwork"));
+
+                // Cache the result for better performance
+                _cachedActiveInterface = activeInterface;
+                return activeInterface;
+            }
+        }
 }

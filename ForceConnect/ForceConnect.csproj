@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>ForceConnect</RootNamespace>
     <AssemblyName>ForceConnect</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -98,121 +98,124 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Latency.cs" />
-    <Compile Include="frm_language.cs">
+    <Compile Include="Forms\frm_language.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_language.Designer.cs">
+    <Compile Include="Forms\frm_language.Designer.cs">
       <DependentUpon>frm_language.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_messageBox.cs">
+    <Compile Include="Forms\frm_messageBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_messageBox.Designer.cs">
+    <Compile Include="Forms\frm_messageBox.Designer.cs">
       <DependentUpon>frm_messageBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_network.cs">
+    <Compile Include="Forms\frm_network.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_network.Designer.cs">
+    <Compile Include="Forms\frm_network.Designer.cs">
       <DependentUpon>frm_network.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_networkAdapter.cs">
+    <Compile Include="Forms\frm_networkAdapter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_networkAdapter.Designer.cs">
+    <Compile Include="Forms\frm_networkAdapter.Designer.cs">
       <DependentUpon>frm_networkAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\NetworkInterfaceInfo.cs" />
-    <Compile Include="Launch\RegistryApplication.cs" />
-    <Compile Include="NetworkTrafficMonitor\NetworkMonitor.cs" />
+    <Compile Include="Startup\RegistryApplication.cs" />
+    <Compile Include="Network\NetworkMonitor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\DnsAddressItems.cs" />
-    <Compile Include="frm_about.cs">
+    <Compile Include="Forms\frm_about.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_about.Designer.cs">
+    <Compile Include="Forms\frm_about.Designer.cs">
       <DependentUpon>frm_about.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_explore.cs">
+    <Compile Include="Forms\frm_explore.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_explore.Designer.cs">
+    <Compile Include="Forms\frm_explore.Designer.cs">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_service.cs">
+    <Compile Include="Forms\frm_service.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_service.Designer.cs">
+    <Compile Include="Forms\frm_service.Designer.cs">
       <DependentUpon>frm_service.cs</DependentUpon>
     </Compile>
-    <Compile Include="frm_settings.cs">
+    <Compile Include="Forms\frm_settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_settings.Designer.cs">
+    <Compile Include="Forms\frm_settings.Designer.cs">
       <DependentUpon>frm_settings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Launch\LaunchProgram.cs" />
-    <Compile Include="Launch\LaunchUpdate.cs" />
-    <Compile Include="NotificationForm.cs">
+    <Compile Include="Startup\LaunchProgram.cs" />
+    <Compile Include="Startup\LaunchUpdate.cs" />
+    <Compile Include="Forms\NotificationForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="NotificationForm.Designer.cs">
+    <Compile Include="Forms\NotificationForm.Designer.cs">
       <DependentUpon>NotificationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Services\NetworkInformation.cs" />
     <Compile Include="Services\Service.cs" />
-    <Compile Include="User Controls\ServiceControl.cs">
+    <Compile Include="UserControls\ServiceControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="User Controls\ServiceControl.Designer.cs">
+    <Compile Include="UserControls\ServiceControl.Designer.cs">
       <DependentUpon>ServiceControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Utility\DiscordRPCManager.cs" />
-    <Compile Include="Utility\FontManager.cs" />
-    <Compile Include="Utility\FormManager.cs" />
-    <Compile Include="frm_main.cs">
+    <Compile Include="Utilities\DiscordRPCManager.cs" />
+    <Compile Include="Utilities\FontManager.cs" />
+    <Compile Include="Utilities\FormManager.cs" />
+    <Compile Include="Utilities\LocalizationManager.cs" />
+    <Compile Include="Utilities\PersianFontManager.cs" />
+    <Compile Include="Utilities\LanguageTest.cs" />
+    <Compile Include="Forms\frm_main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frm_main.Designer.cs">
+    <Compile Include="Forms\frm_main.Designer.cs">
       <DependentUpon>frm_main.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DnsAddress.cs" />
     <Compile Include="Services\DnsManager.cs" />
-    <Compile Include="Utility\SpeedTest.cs" />
-    <EmbeddedResource Include="frm_about.resx">
+    <Compile Include="Utilities\SpeedTest.cs" />
+    <EmbeddedResource Include="Forms\frm_about.resx">
       <DependentUpon>frm_about.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_explore.resx">
+    <EmbeddedResource Include="Forms\frm_explore.resx">
       <DependentUpon>frm_explore.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_language.resx">
+    <EmbeddedResource Include="Forms\frm_language.resx">
       <DependentUpon>frm_language.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_network.resx">
+    <EmbeddedResource Include="Forms\frm_network.resx">
       <DependentUpon>frm_network.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_networkAdapter.resx">
+    <EmbeddedResource Include="Forms\frm_networkAdapter.resx">
       <DependentUpon>frm_networkAdapter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_service.resx">
+    <EmbeddedResource Include="Forms\frm_service.resx">
       <DependentUpon>frm_service.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_settings.resx">
+    <EmbeddedResource Include="Forms\frm_settings.resx">
       <DependentUpon>frm_settings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_main.resx">
+    <EmbeddedResource Include="Forms\frm_main.resx">
       <DependentUpon>frm_main.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frm_messageBox.resx">
+    <EmbeddedResource Include="Forms\frm_messageBox.resx">
       <DependentUpon>frm_messageBox.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NotificationForm.resx">
+    <EmbeddedResource Include="Forms\NotificationForm.resx">
       <DependentUpon>NotificationForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -220,7 +223,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="User Controls\ServiceControl.resx">
+    <EmbeddedResource Include="UserControls\ServiceControl.resx">
       <DependentUpon>ServiceControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />

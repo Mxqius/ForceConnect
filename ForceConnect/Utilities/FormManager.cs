@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace ForceConnect
+namespace ForceConnect.Utilities
 {
     internal class FormManager
     {
