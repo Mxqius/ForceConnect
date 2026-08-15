@@ -1,0 +1,52 @@
+[package]
+name = "forceconnect-helper"
+description = "Elevated helper process for ForceConnect"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "forceconnect-helper"
+path = "src/main.rs"
+# The embedded manifest requests requireAdministrator, so Windows refuses to
+# launch anything built from this target without elevation — including a test
+# harness, which would fail with ERROR_ELEVATION_REQUIRED (740) on every
+# `cargo test`. Testable logic lives in forceconnect-ipc and forceconnect-net.
+test = false
+
+[dependencies]
+forceconnect-ipc.workspace = true
+forceconnect-net = { workspace = true, features = ["privileged"] }
+
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Current-thread runtime: the helper serves exactly one client, sequentially.
+# A smaller, more predictable process is worth more here than throughput.
+tokio = { version = "1.53", default-features = false, features = [
+    "rt",
+    "net",
+    "time",
+    "sync",
+    "macros",
+    "io-util",
+] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Security_Authorization",
+    "Win32_System_Memory",
+    "Win32_System_Pipes",
+    "Win32_System_Threading",
+] }
+
+[build-dependencies]
+embed-resource = "3.0.11"

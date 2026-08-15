@@ -1,0 +1,88 @@
+[workspace]
+members = ["crates/dns", "crates/ipc", "crates/net", "crates/helper"]
+
+[workspace.package]
+version = "2.0.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/mxqius/forceconnect"
+authors = ["Mxqius"]
+
+[workspace.dependencies]
+forceconnect-dns = { path = "crates/dns" }
+forceconnect-ipc = { path = "crates/ipc" }
+forceconnect-net = { path = "crates/net" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tokio = "1.53"
+specta = "=2.0.0-rc.25"
+windows = "0.62"
+
+[package]
+name = "forceconnect"
+description = "A fast, modern DNS manager for Windows"
+# Disambiguates `cargo run` now that `export-bindings` is a second binary;
+# without it `tauri dev` cannot decide which one to launch.
+default-run = "forceconnect"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+# The `_lib` suffix keeps the library name from colliding with the binary name
+# on Windows. See rust-lang/cargo#8519.
+name = "forceconnect_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+forceconnect-ipc.workspace = true
+
+tauri = { version = "2.11", features = ["tray-icon", "image-png"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-store = "2"
+
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+# tauri-plugin-log's level filter is expressed in `log` types.
+log = "0.4"
+
+# The Tauri 2 line of specta is still tagged rc upstream but is the standard
+# type-generation stack for Tauri 2. Pinned exactly so a contributor's build
+# cannot drift onto a different rc.
+specta.workspace = true
+specta-typescript = "0.0.12"
+tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_Threading",
+] }
+
+# Single-instance and window-state are desktop-only.
+[target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

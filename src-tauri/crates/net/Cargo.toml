@@ -1,0 +1,30 @@
+[package]
+name = "forceconnect-net"
+description = "Windows adapter enumeration and DNS configuration for ForceConnect"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[features]
+default = []
+# Gates the functions that write DNS settings. Only the elevated helper turns
+# this on, which makes the privileged/unprivileged split a compile-time
+# property rather than a convention someone can forget.
+privileged = []
+
+[dependencies]
+forceconnect-ipc.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+    "Win32_Foundation",
+    "Win32_NetworkManagement_IpHelper",
+    "Win32_NetworkManagement_Ndis",
+    "Win32_Networking_WinSock",
+] }
