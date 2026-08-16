@@ -18,7 +18,7 @@ export const interactiveBase =
 
 /** Text inputs and anything that should read as a text input. */
 export const controlBase = cn(
-  "w-full rounded-md border border-border-default bg-surface-inset px-2.5 text-sm text-text-primary",
+  "w-full rounded-lg border border-border-default bg-surface-inset px-3 text-sm text-text-primary",
   "placeholder:text-text-faint transition-colors",
   "hover:border-border-strong",
   "focus:border-accent",
@@ -31,7 +31,7 @@ export const controlBase = cn(
 
 /** Floating surfaces: popovers, tooltips, menus, select popups. */
 export const overlaySurface = cn(
-  "z-50 rounded-md border border-border-default bg-surface-elevated shadow-popup",
+  "z-50 rounded-xl border border-border-default bg-surface-elevated shadow-popup",
   "transition-[opacity,transform] duration-100",
   "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
   "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",

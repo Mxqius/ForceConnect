@@ -23,6 +23,8 @@ specta = { workspace = true, optional = true, features = ["derive"] }
 
 hickory-proto.workspace = true
 hickory-resolver.workspace = true
+hickory-server.workspace = true
+async-trait = "0.1"
 
 [target.'cfg(windows)'.dependencies]
 forceconnect-net.workspace = true

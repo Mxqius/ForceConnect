@@ -1,6 +1,12 @@
 import { isTauri } from "@tauri-apps/api/core";
 
-import { commands, type CommandError } from "@/lib/bindings";
+import {
+  commands,
+  type CommandError,
+  type NewServer,
+  type Protocol,
+  type Server,
+} from "@/lib/bindings";
 import * as fixtures from "@/lib/fixtures";
 
 export type {
@@ -11,6 +17,9 @@ export type {
   CommandError,
   DnsSource,
   Endpoint,
+  HelperStatus,
+  LatencyResult,
+  NewServer,
   Protocol,
   Server,
   ServerSource,
@@ -80,4 +89,31 @@ export const ipc = {
     useFixtures
       ? fixture(fixtures.protocols)
       : unwrap(commands.listProtocols()),
+
+  listCustomServers: () =>
+    useFixtures
+      ? fixture([] as Server[])
+      : unwrap(commands.listCustomServers()),
+  addCustomServer: (server: NewServer) =>
+    useFixtures
+      ? Promise.reject(new Error("custom servers need the desktop app"))
+      : unwrap(commands.addCustomServer(server)),
+  removeCustomServer: (id: string) =>
+    useFixtures ? fixture(null) : unwrap(commands.removeCustomServer(id)),
+
+  helperStatus: () =>
+    useFixtures
+      ? fixture({ connected: false, version: null, pid: null })
+      : unwrap(commands.helperStatus()),
+  setDns: (luid: string, servers: string[]) =>
+    useFixtures
+      ? Promise.reject(new Error("changing DNS needs the desktop app"))
+      : unwrap(commands.setDns(luid, servers)),
+  clearDns: (luid: string) =>
+    useFixtures
+      ? Promise.reject(new Error("changing DNS needs the desktop app"))
+      : unwrap(commands.clearDns(luid)),
+
+  probeServers: (protocol: Protocol) =>
+    useFixtures ? fixture([]) : unwrap(commands.probeServers(protocol)),
 };

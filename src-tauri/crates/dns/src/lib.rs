@@ -5,6 +5,7 @@
 //! `cargo test -p forceconnect-dns` and reasoned about without a running app.
 
 pub mod catalog;
+pub mod forwarder;
 pub mod probe;
 pub mod server;
 pub mod upstream;

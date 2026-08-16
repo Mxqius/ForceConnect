@@ -23,6 +23,9 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::dns::set_dns,
         commands::dns::clear_dns,
         commands::probe::probe_servers,
+        commands::custom::list_custom_servers,
+        commands::custom::add_custom_server,
+        commands::custom::remove_custom_server,
     ])
 }
 

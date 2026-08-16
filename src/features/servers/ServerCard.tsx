@@ -1,4 +1,4 @@
-import { ExternalLink, Lock } from "lucide-react";
+import { ExternalLink, Lock, Star, Trash2 } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 import {
@@ -17,14 +17,25 @@ interface ServerCardProps {
   /** Which protocol tab is active, so its addresses are the ones shown. */
   focusProtocol: Protocol | null;
   selected?: boolean;
+  favourite?: boolean;
+  /** Measured latency for the focused protocol, if a probe has run. */
+  latencyMs?: number | null;
+  latencyPending?: boolean;
   onSelect?: (server: Server) => void;
+  onToggleFavourite?: (id: string) => void;
+  onRemove?: (id: string) => void;
 }
 
 export function ServerCard({
   server,
   focusProtocol,
   selected,
+  favourite,
+  latencyMs,
+  latencyPending,
   onSelect,
+  onToggleFavourite,
+  onRemove,
 }: ServerCardProps) {
   // Under a protocol tab, show that protocol's addresses; otherwise fall back
   // to the first endpoint, which is plain DNS for most providers.
@@ -35,9 +46,11 @@ export function ServerCard({
   return (
     <article
       className={cn(
-        "border-border-subtle bg-surface group rounded-lg border transition-colors",
-        onSelect && "hover:border-border-strong cursor-pointer",
-        selected && "border-accent bg-accent-surface/30",
+        "border-border-subtle bg-surface group rounded-2xl border transition-all duration-200",
+        onSelect &&
+          "hover:border-border-strong hover:bg-surface-hover cursor-pointer",
+        selected &&
+          "border-accent bg-accent-surface/40 shadow-[0_4px_20px_-10px_var(--accent-glow)]",
       )}
       onClick={onSelect ? () => onSelect(server) : undefined}
     >
@@ -67,7 +80,34 @@ export function ServerCard({
             </div>
 
             <div className="flex shrink-0 items-center gap-1">
-              <LatencyBadge />
+              <LatencyBadge ms={latencyMs} pending={latencyPending} />
+
+              {onToggleFavourite ? (
+                <Tooltip content={favourite ? "Remove favourite" : "Favourite"}>
+                  <IconButton
+                    label={
+                      favourite
+                        ? `Unfavourite ${server.name}`
+                        : `Favourite ${server.name}`
+                    }
+                    size="sm"
+                    onClick={(event) => {
+                      // The card is clickable; starring must not also select.
+                      event.stopPropagation();
+                      onToggleFavourite(server.id);
+                    }}
+                    className={cn(
+                      "transition-opacity",
+                      favourite
+                        ? "text-accent"
+                        : "text-text-faint opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                    )}
+                  >
+                    <Star className={cn(favourite && "fill-current")} />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+
               {server.homepage ? (
                 <Tooltip content="Open provider site">
                   <IconButton
@@ -75,13 +115,28 @@ export function ServerCard({
                     size="sm"
                     className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                     onClick={(event) => {
-                      // The card itself is clickable; opening a browser must
-                      // not also select the server.
                       event.stopPropagation();
                       void openUrl(server.homepage!);
                     }}
                   >
                     <ExternalLink />
+                  </IconButton>
+                </Tooltip>
+              ) : null}
+
+              {onRemove && server.source === "custom" ? (
+                <Tooltip content="Remove this server">
+                  <IconButton
+                    label={`Remove ${server.name}`}
+                    size="sm"
+                    variant="ghost"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onRemove(server.id);
+                    }}
+                    className="text-text-faint hover:text-danger opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                  >
+                    <Trash2 />
                   </IconButton>
                 </Tooltip>
               ) : null}

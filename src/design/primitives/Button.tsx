@@ -21,9 +21,9 @@ const VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  sm: "h-7 px-2.5 text-xs gap-1.5 rounded-sm",
-  md: "h-8 px-3 text-sm gap-2 rounded-md",
-  lg: "h-10 px-4 text-base gap-2 rounded-md",
+  sm: "h-7 px-3 text-xs gap-1.5 rounded-lg",
+  md: "h-9 px-4 text-sm gap-2 rounded-lg",
+  lg: "h-11 px-5 text-base gap-2 rounded-xl",
 };
 
 interface ButtonProps extends ComponentPropsWithoutRef<typeof BaseButton> {
@@ -74,9 +74,9 @@ interface IconButtonProps extends Omit<ButtonProps, "startIcon" | "endIcon"> {
 }
 
 const ICON_SIZES: Record<ButtonSize, string> = {
-  sm: "size-7 rounded-sm",
-  md: "size-8 rounded-md",
-  lg: "size-10 rounded-md",
+  sm: "size-7 rounded-lg",
+  md: "size-9 rounded-lg",
+  lg: "size-11 rounded-xl",
 };
 
 export function IconButton({

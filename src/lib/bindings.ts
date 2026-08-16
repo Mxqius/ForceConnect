@@ -46,6 +46,18 @@ export const commands = {
 	 *  rather than round-trip time.
 	 */
 	probeServers: (protocol: Protocol) => typedError<LatencyResult[], CommandError>(__TAURI_INVOKE("probe_servers", { protocol })),
+	/**  Every server: built-ins first, then the user's own. */
+	listCustomServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_custom_servers")),
+	/**
+	 *  Validate and save a custom server.
+	 * 
+	 *  Validation runs through the same rules as the built-in catalog, so a custom
+	 *  entry cannot be saved in a state that would fail at connect time — including
+	 *  the bootstrap requirement that keeps an encrypted upstream from trying to
+	 *  resolve itself through us.
+	 */
+	addCustomServer: (server: NewServer) => typedError<Server, CommandError>(__TAURI_INVOKE("add_custom_server", { server })),
+	removeCustomServer: (id: string) => typedError<null, CommandError>(__TAURI_INVOKE("remove_custom_server", { id })),
 };
 
 /* Types */
@@ -174,6 +186,20 @@ export type LatencyResult = {
 	jitterMs: number | null,
 	answered: number,
 	rounds: number,
+};
+
+/**  What the add-server form sends. */
+export type NewServer = {
+	name: string,
+	protocol: Protocol,
+	/**
+	 *  One or more addresses: IPs for plain DNS, a URL for DoH/DoH3, a
+	 *  hostname for DoT/DoQ.
+	 */
+	addrs: string[],
+	/**  Required for encrypted endpoints named by hostname. */
+	bootstrap: string[],
+	tags: string[],
 };
 
 export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";

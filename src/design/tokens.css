@@ -17,49 +17,61 @@
 :root {
   color-scheme: dark;
 
-  /* Surfaces, from furthest back to closest to the viewer. */
-  --surface-base: oklch(0.17 0.008 265);
-  --surface-subtle: oklch(0.2 0.008 265);
-  --surface: oklch(0.225 0.009 265);
-  --surface-elevated: oklch(0.265 0.01 265);
-  --surface-inset: oklch(0.14 0.008 265);
-  --surface-hover: oklch(0.28 0.011 265);
-  --surface-active: oklch(0.31 0.012 265);
+  /*
+   * Surfaces carry a slight warm hue (chroma at ~40deg) rather than being
+   * neutral grey. Against the orange accent a cold grey reads as a colour
+   * clash; a hint of the accent's own hue in the greys makes the whole thing
+   * feel like one palette instead of an orange pasted onto slate.
+   */
+  --surface-base: oklch(0.16 0.006 40);
+  --surface-subtle: oklch(0.19 0.007 40);
+  --surface: oklch(0.215 0.008 40);
+  --surface-elevated: oklch(0.255 0.009 40);
+  --surface-inset: oklch(0.135 0.006 40);
+  --surface-hover: oklch(0.27 0.01 40);
+  --surface-active: oklch(0.3 0.011 40);
 
-  /* Borders. `subtle` separates, `default` outlines, `strong` is for focus
-     and selected states. */
-  --border-subtle: oklch(0.28 0.01 265);
-  --border-default: oklch(0.34 0.012 265);
-  --border-strong: oklch(0.44 0.014 265);
+  --border-subtle: oklch(0.27 0.008 40);
+  --border-default: oklch(0.33 0.01 40);
+  --border-strong: oklch(0.43 0.013 40);
 
-  --text-primary: oklch(0.96 0.003 265);
-  --text-secondary: oklch(0.79 0.006 265);
-  --text-muted: oklch(0.63 0.008 265);
-  --text-faint: oklch(0.5 0.008 265);
-  --text-on-accent: oklch(0.15 0.012 245);
+  --text-primary: oklch(0.96 0.004 40);
+  --text-secondary: oklch(0.79 0.006 40);
+  --text-muted: oklch(0.63 0.008 40);
+  --text-faint: oklch(0.5 0.008 40);
+  /* Near-black rather than white: #F2613F is a light colour, and white text
+     on it fails contrast at small sizes. */
+  --text-on-accent: oklch(0.16 0.01 40);
 
-  /* One accent. A second one would be a decision every component has to
-     re-litigate. */
-  --accent: oklch(0.7 0.145 245);
-  --accent-hover: oklch(0.76 0.15 245);
-  --accent-active: oklch(0.65 0.14 245);
-  --accent-muted: oklch(0.38 0.085 245);
-  --accent-surface: oklch(0.26 0.045 245);
+  /*
+   * The brand colour, stated exactly rather than approximated in oklch —
+   * an oklch round-trip lands a couple of points off, and a brand colour
+   * should be the value it is. Variants are derived with `color-mix` in
+   * oklab so the steps stay perceptually even without drifting the hue.
+   */
+  --accent: #f2613f;
+  --accent-hover: color-mix(in oklab, var(--accent) 86%, white);
+  --accent-active: color-mix(in oklab, var(--accent) 88%, black);
+  --accent-muted: color-mix(in oklab, var(--accent) 45%, var(--surface-base));
+  --accent-surface: color-mix(in oklab, var(--accent) 15%, var(--surface-base));
+  --accent-glow: color-mix(in srgb, var(--accent) 30%, transparent);
 
-  /* Status. `success`/`warning`/`danger` double as the latency bands — the
-     1.x app used 120ms and 180ms as its thresholds and they held up. */
-  --success: oklch(0.74 0.165 152);
-  --success-surface: oklch(0.26 0.05 152);
-  --warning: oklch(0.8 0.145 82);
-  --warning-surface: oklch(0.27 0.05 82);
-  --danger: oklch(0.66 0.19 25);
-  --danger-surface: oklch(0.26 0.06 25);
-  --danger-hover: oklch(0.71 0.195 25);
+  /*
+   * Status colours are pulled away from the accent's hue so they stay
+   * distinguishable. Danger in particular is pushed toward red-magenta —
+   * a red near 38deg would be almost indistinguishable from the accent, and
+   * "delete" must never look like "primary action".
+   */
+  --success: oklch(0.75 0.16 152);
+  --success-surface: oklch(0.25 0.05 152);
+  --warning: oklch(0.82 0.15 92);
+  --warning-surface: oklch(0.26 0.05 92);
+  --danger: oklch(0.63 0.21 12);
+  --danger-hover: oklch(0.68 0.215 12);
+  --danger-surface: oklch(0.25 0.065 12);
 
-  /* Protocol accents for the server browser. Distinct enough to scan, muted
-     enough not to turn a dense table into a rainbow. */
-  --protocol-plain: oklch(0.63 0.008 265);
-  --protocol-encrypted: oklch(0.72 0.13 165);
+  --protocol-plain: oklch(0.63 0.008 40);
+  --protocol-encrypted: oklch(0.74 0.13 168);
 
   --focus-ring: var(--accent);
 }
@@ -67,40 +79,42 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  --surface-base: oklch(0.985 0.002 265);
-  --surface-subtle: oklch(0.965 0.003 265);
+  --surface-base: oklch(0.985 0.003 40);
+  --surface-subtle: oklch(0.965 0.004 40);
   --surface: oklch(1 0 0);
   --surface-elevated: oklch(1 0 0);
-  --surface-inset: oklch(0.955 0.004 265);
-  --surface-hover: oklch(0.94 0.005 265);
-  --surface-active: oklch(0.9 0.006 265);
+  --surface-inset: oklch(0.955 0.005 40);
+  --surface-hover: oklch(0.945 0.006 40);
+  --surface-active: oklch(0.9 0.008 40);
 
-  --border-subtle: oklch(0.91 0.005 265);
-  --border-default: oklch(0.85 0.007 265);
-  --border-strong: oklch(0.72 0.01 265);
+  --border-subtle: oklch(0.92 0.005 40);
+  --border-default: oklch(0.86 0.007 40);
+  --border-strong: oklch(0.72 0.01 40);
 
-  --text-primary: oklch(0.22 0.01 265);
-  --text-secondary: oklch(0.4 0.011 265);
-  --text-muted: oklch(0.54 0.011 265);
-  --text-faint: oklch(0.66 0.01 265);
-  --text-on-accent: oklch(0.99 0 0);
+  --text-primary: oklch(0.22 0.01 40);
+  --text-secondary: oklch(0.4 0.011 40);
+  --text-muted: oklch(0.54 0.011 40);
+  --text-faint: oklch(0.66 0.01 40);
+  --text-on-accent: oklch(1 0 0);
 
-  --accent: oklch(0.53 0.16 245);
-  --accent-hover: oklch(0.48 0.165 245);
-  --accent-active: oklch(0.44 0.16 245);
-  --accent-muted: oklch(0.78 0.09 245);
-  --accent-surface: oklch(0.95 0.03 245);
+  /* Darkened for contrast against light surfaces; the hue is unchanged. */
+  --accent: color-mix(in oklab, #f2613f 88%, black);
+  --accent-hover: color-mix(in oklab, #f2613f 76%, black);
+  --accent-active: color-mix(in oklab, #f2613f 66%, black);
+  --accent-muted: color-mix(in oklab, #f2613f 40%, white);
+  --accent-surface: color-mix(in oklab, #f2613f 10%, white);
+  --accent-glow: color-mix(in srgb, #f2613f 22%, transparent);
 
   --success: oklch(0.52 0.15 152);
-  --success-surface: oklch(0.94 0.04 152);
-  --warning: oklch(0.58 0.13 70);
-  --warning-surface: oklch(0.95 0.05 82);
-  --danger: oklch(0.55 0.2 25);
-  --danger-surface: oklch(0.95 0.04 25);
-  --danger-hover: oklch(0.5 0.205 25);
+  --success-surface: oklch(0.95 0.04 152);
+  --warning: oklch(0.6 0.13 80);
+  --warning-surface: oklch(0.96 0.05 92);
+  --danger: oklch(0.54 0.21 12);
+  --danger-hover: oklch(0.49 0.215 12);
+  --danger-surface: oklch(0.96 0.04 12);
 
-  --protocol-plain: oklch(0.54 0.011 265);
-  --protocol-encrypted: oklch(0.5 0.12 165);
+  --protocol-plain: oklch(0.54 0.011 40);
+  --protocol-encrypted: oklch(0.5 0.12 168);
 }
 
 @theme inline {
@@ -163,13 +177,21 @@
   --text-2xl: 1.5rem;
   --text-2xl--line-height: 2rem;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
+  /*
+   * Generous radii. The whole scale moved up a step: controls are pill-ish,
+   * cards are softly rounded. Combined with borders doing the separating
+   * rather than shadows, that is most of what reads as "modern" here.
+   */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
 
-  /* Borders do the separating; shadows only lift things off the page. */
   --shadow-popup:
-    0 10px 30px -10px oklch(0 0 0 / 0.55), 0 2px 8px -2px oklch(0 0 0 / 0.35);
-  --shadow-dialog: 0 24px 60px -12px oklch(0 0 0 / 0.65);
+    0 12px 32px -12px oklch(0 0 0 / 0.6), 0 2px 8px -2px oklch(0 0 0 / 0.35);
+  --shadow-dialog: 0 28px 64px -16px oklch(0 0 0 / 0.7);
+  /* Used sparingly — only the connect control, where it reads as "live". */
+  --shadow-glow:
+    0 0 0 1px var(--accent-glow), 0 8px 28px -8px var(--accent-glow);
 }

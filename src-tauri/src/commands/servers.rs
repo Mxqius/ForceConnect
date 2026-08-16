@@ -80,7 +80,7 @@ pub struct Server {
     pub source: ServerSource,
 }
 
-fn to_dto(server: &forceconnect_dns::DnsServer) -> Server {
+pub(crate) fn to_dto(server: &forceconnect_dns::DnsServer) -> Server {
     Server {
         id: server.id.clone(),
         name: server.name.clone(),
