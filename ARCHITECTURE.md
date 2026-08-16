@@ -75,6 +75,42 @@ general-purpose privileged operation "just for debugging", that is the moment
 this architecture stops being worth its complexity. Add a specific, validated
 operation instead.
 
+### The pipe has two barriers, not one
+
+Making an elevated-owned pipe reachable by an unelevated client trips people up
+because there are two independent gates and only one is obvious.
+
+**The DACL.** With null security attributes the default descriptor grants full
+control to SYSTEM, Administrators, and the creator, and _read_ access to
+Everyone. The client runs on the filtered token where Administrators is
+deny-only, so it matches only the Everyone entry: read, no write.
+
+**Mandatory Integrity Control.** An object created by a High-integrity process
+is labelled High with `NO_WRITE_UP`, and MIC is evaluated _before_ the DACL. A
+Medium-integrity client is refused no matter what the DACL says. Lowering the
+label is what actually makes the pipe usable.
+
+So the descriptor is:
+
+```
+D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;0x0012019B;;;<logon-sid>)S:(ML;;NW;;;ME)
+```
+
+Two details in there are deliberate. `S:(ML;;NW;;;ME)` is the integrity label —
+omit it and everything else is pointless. And the client is granted
+`0x0012019B` rather than generic write, because `FILE_APPEND_DATA` and
+`FILE_CREATE_PIPE_INSTANCE` share a bit: generic write would let any process
+with client access publish a rogue instance of our pipe name and impersonate the
+helper to a later client.
+
+The SID is the **client's logon SID**, read from its token. Using our own would
+break over-the-shoulder elevation — where a standard user enters an
+administrator's credentials, the helper lands in a different logon session, and
+a DACL built from its own token locks out the very process meant to connect.
+
+Fixing only the DACL produces a bug that works in development, where both
+processes were started elevated, and fails for every real user.
+
 ### What the nonce is and is not
 
 The helper is launched with a nonce on its command line and will not serve a
@@ -108,8 +144,18 @@ running GUI to work on.
 adapters to display them and the helper writes DNS to one of them. If each side
 marshalled adapter identity independently, they could disagree about which
 adapter the user picked — a bug that surfaces as "I clicked connect and nothing
-happened". The `privileged` feature makes the read/write split a compile-time
-property rather than a convention.
+happened".
+
+That crate is **read-only**. Writing DNS settings lives in the helper crate,
+which the UI does not depend on, so there is no code path from the UI to a
+privileged call.
+
+An earlier version instead put the writes in `forceconnect-net` behind a
+`privileged` feature that only the helper enabled. That does not work, and it is
+worth knowing why: Cargo unifies features across workspace members sharing a
+dependency, so `cargo build --workspace` turned the feature on for the UI crate
+too and the gate compiled away. **Crate boundaries hold where feature flags do
+not.**
 
 Adapters are identified by **LUID**, not by interface index or friendly name.
 Indices are explicitly not persistent across adapter disable/enable, and

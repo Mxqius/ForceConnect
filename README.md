@@ -94,6 +94,20 @@ Two exclusions are deliberate and worth knowing about:
   administrator rights, so Windows refuses to launch a test harness built from
   it. Its logic lives in `forceconnect-ipc`.
 
+### Checking the elevation path
+
+The UAC prompt is modal, so the helper cannot be exercised by anything
+unattended. This runs the whole path — launch, pipe, handshake, caller pinning —
+in one command and one click, and changes nothing:
+
+```bash
+cargo run --manifest-path src-tauri/Cargo.toml --bin helper-check
+```
+
+Add `-- --apply` to also write DNS to the active adapter and revert it, which is
+the only way to confirm the restore path really returns a DHCP adapter to DHCP
+rather than pinning it to whatever the router was handing out.
+
 ### Regenerating bindings
 
 `src/lib/bindings.ts` is generated from the Rust command signatures and is
