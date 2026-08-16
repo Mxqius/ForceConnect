@@ -55,8 +55,11 @@ hatch in the protocol, which is the actual security boundary. See
 ## Building from source
 
 Requires [Rust](https://rustup.rs) 1.85+, [Node](https://nodejs.org) 20+,
-[pnpm](https://pnpm.io) 10+, and the Visual Studio C++ build tools. Windows 10
-build 19041 (2004) or later — the DNS configuration API predates nothing older.
+[pnpm](https://pnpm.io) 10+, and the Visual Studio C++ build tools.
+
+Windows 10 build 19041 (2004) is the supported floor. That is not arbitrary:
+`SetInterfaceDnsSettings`, the API used to configure adapter DNS without
+shelling out to `netsh`, was introduced in that build.
 
 ```bash
 pnpm install
