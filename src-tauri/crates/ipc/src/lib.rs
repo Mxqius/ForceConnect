@@ -46,7 +46,7 @@ pub const PIPE_PREFIX: &str = r"\\.\pipe\forceconnect";
 pub const MAX_FRAME_BYTES: usize = 64 * 1024;
 
 /// Which address family a DNS change applies to.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Family {
     V4,
     V6,

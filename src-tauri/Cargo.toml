@@ -65,6 +65,7 @@ thiserror.workspace = true
 tracing.workspace = true
 # tauri-plugin-log's level filter is expressed in `log` types.
 log = "0.4"
+tokio = { workspace = true, features = ["net", "io-util", "sync", "time", "rt"] }
 
 # The Tauri 2 line of specta is still tagged rc upstream but is the standard
 # type-generation stack for Tauri 2. Pinned exactly so a contributor's build
@@ -77,7 +78,14 @@ tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 windows = { workspace = true, features = [
     "Win32_Foundation",
     "Win32_Security",
+    "Win32_Security_Cryptography",
+    "Win32_System_Com",
+    # ShellExecuteExW is gated on this: SHELLEXECUTEINFOW carries an HKEY field,
+    # so the whole API lands behind the registry feature.
+    "Win32_System_Registry",
     "Win32_System_Threading",
+    "Win32_UI_Shell",
+    "Win32_UI_WindowsAndMessaging",
 ] }
 
 # Single-instance and window-state are desktop-only.

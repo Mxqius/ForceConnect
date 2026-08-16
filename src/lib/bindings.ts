@@ -26,6 +26,17 @@ export const commands = {
 	 *  tab that would always be empty.
 	 */
 	listProtocols: () => typedError<Protocol[], CommandError>(__TAURI_INVOKE("list_protocols")),
+	helperStatus: () => typedError<HelperStatus, CommandError>(__TAURI_INVOKE("helper_status")),
+	/**
+	 *  Point an adapter at a list of DNS servers.
+	 * 
+	 *  Triggers a UAC prompt if no helper session exists yet. Both address families
+	 *  present in `servers` are applied, because setting IPv4 alone while IPv6 DNS
+	 *  stays on DHCP lets Windows resolve around the change entirely.
+	 */
+	setDns: (luid: string, servers: string[]) => typedError<null, CommandError>(__TAURI_INVOKE("set_dns", { luid, servers })),
+	/**  Return an adapter to DHCP-assigned DNS for both families. */
+	clearDns: (luid: string) => typedError<null, CommandError>(__TAURI_INVOKE("clear_dns", { luid })),
 };
 
 /* Types */
@@ -121,6 +132,20 @@ export type Endpoint = {
 	encrypted: boolean,
 	/**  Whether selecting this endpoint requires the local forwarder. */
 	requiresForwarder: boolean,
+};
+
+export type HelperStatus = {
+	/**
+	 *  Whether a helper session is live. `false` means the next privileged
+	 *  action will show a UAC prompt.
+	 */
+	connected: boolean,
+	version: string | null,
+	/**
+	 *  Process id of the elevated helper, so a user can verify in Task Manager
+	 *  exactly which process is running with administrator rights.
+	 */
+	pid: number | null,
 };
 
 export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";

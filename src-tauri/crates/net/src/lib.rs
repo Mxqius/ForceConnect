@@ -6,9 +6,15 @@
 //! the user selected — a bug that would show up as "I set DNS and nothing
 //! happened". One implementation, one notion of identity.
 //!
-//! The write half is behind the `privileged` feature, which only the helper
-//! enables. Everything reachable from the UI crate is read-only by
-//! construction.
+//! **This crate is read-only.** Writing DNS settings lives in the helper crate,
+//! which the UI does not depend on, so there is no code path from the UI to a
+//! privileged call.
+//!
+//! An earlier version gated the writes behind a `privileged` feature here
+//! instead. That does not work: Cargo unifies features across workspace members
+//! sharing a dependency, so a `--workspace` build enabled the feature for the
+//! UI crate too and the "gate" compiled away. Crate boundaries hold where
+//! feature flags do not.
 //!
 //! # Platform floor
 //!

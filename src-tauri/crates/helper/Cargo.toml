@@ -19,7 +19,7 @@ test = false
 
 [dependencies]
 forceconnect-ipc.workspace = true
-forceconnect-net = { workspace = true, features = ["privileged"] }
+forceconnect-net.workspace = true
 
 serde.workspace = true
 serde_json.workspace = true
@@ -41,6 +41,9 @@ tokio = { version = "1.53", default-features = false, features = [
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
     "Win32_Foundation",
+    "Win32_NetworkManagement_IpHelper",
+    "Win32_NetworkManagement_Ndis",
+    "Win32_Networking_WinSock",
     "Win32_Security",
     "Win32_Security_Authorization",
     "Win32_System_Memory",

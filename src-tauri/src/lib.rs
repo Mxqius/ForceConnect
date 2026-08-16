@@ -1,6 +1,9 @@
 //! ForceConnect — application entry point and Tauri wiring.
 
 mod commands;
+/// Public so `src/bin/helper-check.rs` can drive the elevation path directly.
+pub mod elevate;
+mod state;
 
 use tauri_specta::{Builder, collect_commands};
 
@@ -16,6 +19,9 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::adapters::list_adapters,
         commands::servers::list_servers,
         commands::servers::list_protocols,
+        commands::dns::helper_status,
+        commands::dns::set_dns,
+        commands::dns::clear_dns,
     ])
 }
 
@@ -101,6 +107,7 @@ pub fn run() {
     // look configured while silently rejecting every update.
 
     app.invoke_handler(builder.invoke_handler())
+        .manage(state::AppState::default())
         .setup(move |app| {
             builder.mount_events(app);
             Ok(())

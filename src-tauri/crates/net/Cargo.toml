@@ -8,13 +8,6 @@ license.workspace = true
 repository.workspace = true
 authors.workspace = true
 
-[features]
-default = []
-# Gates the functions that write DNS settings. Only the elevated helper turns
-# this on, which makes the privileged/unprivileged split a compile-time
-# property rather than a convention someone can forget.
-privileged = []
-
 [dependencies]
 forceconnect-ipc.workspace = true
 serde.workspace = true
