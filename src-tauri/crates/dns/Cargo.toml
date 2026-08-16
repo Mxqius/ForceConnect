@@ -23,6 +23,9 @@ specta = { workspace = true, optional = true, features = ["derive"] }
 
 hickory-proto.workspace = true
 hickory-resolver.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+forceconnect-net.workspace = true
 tokio = { workspace = true, features = ["rt", "time", "net", "sync", "macros"] }
 futures-util = "0.3"
 

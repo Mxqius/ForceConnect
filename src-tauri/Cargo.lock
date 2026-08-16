@@ -1173,6 +1173,7 @@ dependencies = [
 name = "forceconnect-dns"
 version = "2.0.0"
 dependencies = [
+ "forceconnect-net",
  "futures-util",
  "hickory-proto",
  "hickory-resolver",

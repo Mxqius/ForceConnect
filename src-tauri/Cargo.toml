@@ -31,6 +31,12 @@ windows = "0.62"
 # would be circular.
 hickory-proto = "0.26.1"
 hickory-net = "0.26.1"
+# The listener half. Provides the UDP/TCP plumbing — TCP length framing,
+# per-connection timeouts, EDNS and truncation — which is a week of subtle bugs
+# to reimplement.
+hickory-server = { version = "0.26.1", default-features = false, features = [
+    "resolver",
+] }
 hickory-resolver = { version = "0.26.1", default-features = false, features = [
     "tokio",
     "tls-ring",

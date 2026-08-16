@@ -26,6 +26,8 @@
 #[cfg(windows)]
 pub mod adapters;
 #[cfg(windows)]
+pub mod ports;
+#[cfg(windows)]
 pub mod route;
 
 use std::net::IpAddr;
