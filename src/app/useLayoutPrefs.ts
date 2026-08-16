@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { create } from "zustand";
 
+import { ipc } from "@/lib/ipc";
 import {
   DEFAULT_PREFS,
   readPref,
@@ -11,9 +12,11 @@ import {
 interface LayoutState {
   navLayout: NavLayout;
   theme: "dark" | "light";
+  minimizeToTray: boolean;
   hydrated: boolean;
   setNavLayout: (layout: NavLayout) => void;
   setTheme: (theme: "dark" | "light") => void;
+  setMinimizeToTray: (enabled: boolean) => void;
   hydrate: () => Promise<void>;
 }
 
@@ -27,6 +30,7 @@ interface LayoutState {
 export const useLayoutPrefs = create<LayoutState>((set) => ({
   navLayout: DEFAULT_PREFS.navLayout,
   theme: DEFAULT_PREFS.theme,
+  minimizeToTray: DEFAULT_PREFS.minimizeToTray,
   hydrated: false,
 
   setNavLayout: (navLayout) => {
@@ -40,14 +44,25 @@ export const useLayoutPrefs = create<LayoutState>((set) => ({
     void writePref("theme", theme);
   },
 
+  setMinimizeToTray: (minimizeToTray) => {
+    set({ minimizeToTray });
+    void writePref("minimizeToTray", minimizeToTray);
+    void ipc.setMinimizeToTray(minimizeToTray);
+  },
+
   hydrate: async () => {
-    const [navLayout, theme] = await Promise.all([
+    const [navLayout, theme, minimizeToTray] = await Promise.all([
       readPref("navLayout"),
       readPref("theme"),
+      readPref("minimizeToTray"),
     ]);
 
     document.documentElement.dataset.theme = theme;
-    set({ navLayout, theme, hydrated: true });
+    set({ navLayout, theme, minimizeToTray, hydrated: true });
+    // The backend's copy of the flag starts false on every launch — the main
+    // window-close handler needs it before the user can ever reach the
+    // toggle, so hydrate pushes the persisted value across immediately.
+    void ipc.setMinimizeToTray(minimizeToTray);
   },
 }));
 

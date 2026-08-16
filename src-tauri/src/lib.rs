@@ -1,10 +1,17 @@
 //! ForceConnect — application entry point and Tauri wiring.
+//!
+//! One process, running elevated. The executable embeds a
+//! `requireAdministrator` manifest (see `build.rs`), so Windows asks for
+//! consent once at launch and every privileged operation afterwards is a direct
+//! call into `forceconnect-privileged` rather than a round trip to a second
+//! executable.
 
 mod commands;
-/// Public so `src/bin/helper-check.rs` can drive the elevation path directly.
-pub mod elevate;
 mod state;
+mod tray;
 
+use tauri::{Manager as _, RunEvent};
+use tauri_plugin_window_state::StateFlags;
 use tauri_specta::{Builder, collect_commands};
 
 /// Assemble the typed command surface.
@@ -16,13 +23,16 @@ use tauri_specta::{Builder, collect_commands};
 fn specta_builder() -> Builder<tauri::Wry> {
     Builder::<tauri::Wry>::new().commands(collect_commands![
         commands::app::app_info,
+        commands::app::set_minimize_to_tray,
+        commands::app::set_tray_status,
         commands::adapters::list_adapters,
         commands::servers::list_servers,
         commands::servers::list_protocols,
-        commands::dns::helper_status,
         commands::dns::set_dns,
         commands::dns::clear_dns,
+        commands::dns::flush_dns_cache,
         commands::probe::probe_servers,
+        commands::probe::probe_server,
         commands::custom::list_custom_servers,
         commands::custom::add_custom_server,
         commands::custom::remove_custom_server,
@@ -71,11 +81,10 @@ pub fn run() {
     #[cfg(desktop)]
     {
         app = app.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
-            use tauri::Manager as _;
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.unminimize();
-                let _ = window.set_focus();
-            }
+            // Covers both cases a second launch can find the app in: minimized
+            // to the taskbar, and hidden to the tray (`show` alone is a no-op
+            // for the former, `unminimize` alone leaves the latter invisible).
+            tray::show_main_window(app);
         }));
     }
 
@@ -96,7 +105,22 @@ pub fn run() {
     #[cfg(desktop)]
     {
         app = app
-            .plugin(tauri_plugin_window_state::Builder::default().build())
+            // Position only. The other flags all restore state the window no
+            // longer has: it is undecorated (custom title bar), fixed-size, and
+            // not maximizable, so a saved `decorated: true`, an old window size,
+            // or a maximized flag from a previous build would each fight the
+            // configuration rather than restore anything the user chose.
+            .plugin(
+                tauri_plugin_window_state::Builder::new()
+                    .with_state_flags(
+                        StateFlags::all()
+                            .difference(StateFlags::DECORATIONS)
+                            .difference(StateFlags::SIZE)
+                            .difference(StateFlags::MAXIMIZED)
+                            .difference(StateFlags::FULLSCREEN),
+                    )
+                    .build(),
+            )
             .plugin(tauri_plugin_autostart::init(
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 None,
@@ -110,14 +134,50 @@ pub fn run() {
     // pipeline. A placeholder key would be worse than none: the plugin would
     // look configured while silently rejecting every update.
 
-    app.invoke_handler(builder.invoke_handler())
+    let app = app
+        .invoke_handler(builder.invoke_handler())
         .manage(state::AppState::default())
         .setup(move |app| {
             builder.mount_events(app);
+            recover_from_a_previous_run();
+
+            #[cfg(desktop)]
+            tray::setup(app.handle())?;
+
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running ForceConnect");
+        .build(tauri::generate_context!())
+        .expect("error while starting ForceConnect");
+
+    // Leaving an adapter pointed at a resolver that is no longer running costs
+    // the user all name resolution, so the revert happens on the way out rather
+    // than being left to the journal — the journal is the backstop for the
+    // exits we do not get to observe.
+    app.run(|handle, event| {
+        if matches!(event, RunEvent::Exit)
+            && let Some(state) = handle.try_state::<state::AppState>()
+            && state.has_pending_changes()
+        {
+            log::info!("restoring DNS settings before exit");
+            state.restore_all();
+        }
+    });
+}
+
+/// Undo anything a previous run left behind before the UI can ask for more.
+///
+/// A crash, a forced shutdown, or a power loss leaves the adapter pointing at a
+/// resolver that died with the process. The journal under `%PROGRAMDATA%`
+/// records what to put back; this is the only thing that reads it, and it runs
+/// before the window is shown.
+fn recover_from_a_previous_run() {
+    let journal = forceconnect_privileged::journal::default_path();
+    match forceconnect_privileged::recover(&journal) {
+        0 => {}
+        restored => log::warn!(
+            "restored {restored} DNS setting(s) left behind by a previous run that did not exit cleanly"
+        ),
+    }
 }
 
 // No `#[cfg(test)]` module here on purpose. A test harness linked against the

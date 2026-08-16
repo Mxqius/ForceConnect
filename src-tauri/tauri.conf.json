@@ -14,15 +14,16 @@
       {
         "label": "main",
         "title": "ForceConnect",
-        "width": 1100,
-        "height": 720,
-        "minWidth": 900,
-        "minHeight": 620,
-        "resizable": true,
+        "width": 800,
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": false,
+        "maximizable": false,
         "center": true,
-        "decorations": true,
+        "decorations": false,
         "theme": "Dark",
-        "backgroundColor": "#131519"
+        "backgroundColor": "#050506"
       }
     ],
     "security": {
