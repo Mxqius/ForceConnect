@@ -48,7 +48,7 @@ export function Tab({ className, badge, children, ...props }: TabProps) {
   return (
     <BaseTabs.Tab
       className={cn(
-        "text-text-muted relative -mb-px flex cursor-pointer items-center gap-1.5 rounded-t-sm px-3 py-2 text-sm font-medium transition-colors",
+        "text-text-muted relative -mb-px flex cursor-pointer items-center gap-2 rounded-t-md px-4 py-3 text-sm font-medium transition-colors",
         "hover:text-text-secondary",
         "data-[selected]:text-text-primary",
         focusRing,
@@ -58,7 +58,7 @@ export function Tab({ className, badge, children, ...props }: TabProps) {
     >
       {children}
       {badge !== undefined ? (
-        <span className="bg-surface-active text-text-muted text-2xs rounded-full px-1.5 py-0.5 tabular-nums">
+        <span className="bg-surface-active text-text-muted text-2xs rounded-full px-2 py-0.5 tabular-nums">
           {badge}
         </span>
       ) : null}

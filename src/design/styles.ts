@@ -16,10 +16,16 @@ export const focusRing =
 export const interactiveBase =
   "inline-flex select-none items-center justify-center whitespace-nowrap font-medium transition-colors disabled:pointer-events-none disabled:opacity-45";
 
-/** Text inputs and anything that should read as a text input. */
+/**
+ * Text inputs and anything that should read as a text input.
+ *
+ * Sized to match `Button`'s `md`: a form row where the field and the button
+ * beside it differ by two pixels looks like a mistake, and matching them is
+ * most of what makes a dialog look considered.
+ */
 export const controlBase = cn(
-  "w-full rounded-lg border border-border-default bg-surface-inset px-3 text-sm text-text-primary",
-  "placeholder:text-text-faint transition-colors",
+  "w-full rounded-xl border border-border-default bg-surface-inset px-4 text-sm text-text-primary",
+  "placeholder:text-text-muted transition-colors",
   "hover:border-border-strong",
   "focus:border-accent",
   "disabled:cursor-not-allowed disabled:opacity-50",

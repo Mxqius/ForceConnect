@@ -64,7 +64,7 @@ export function ChipInput({
     <div
       className={cn(
         controlBase,
-        "flex min-h-8 cursor-text flex-wrap items-center gap-1 px-1.5 py-1",
+        "flex min-h-11 cursor-text flex-wrap items-center gap-1.5 px-2.5 py-2",
         "focus-within:border-accent",
         className,
       )}
@@ -92,7 +92,7 @@ export function ChipInput({
         // Committing on blur avoids the trap where a typed but uncommitted
         // tag is silently discarded when the user clicks Save.
         onBlur={() => commit(draft)}
-        className="placeholder:text-text-faint min-w-24 flex-1 bg-transparent text-sm outline-none disabled:cursor-not-allowed"
+        className="placeholder:text-text-muted min-w-24 flex-1 bg-transparent text-sm outline-none disabled:cursor-not-allowed"
       />
     </div>
   );

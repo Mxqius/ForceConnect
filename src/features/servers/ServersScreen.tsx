@@ -98,7 +98,7 @@ export function ServersScreen() {
   });
 
   return (
-    <div className="mx-auto flex h-full max-w-3xl flex-col gap-4 p-6">
+    <div className="mx-auto flex h-full max-w-3xl flex-col gap-5 p-8">
       <header className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Servers</h1>
@@ -112,20 +112,20 @@ export function ServersScreen() {
       </header>
 
       <div className="relative">
-        <Search className="text-text-faint pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2" />
+        <Search className="text-text-faint pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search by name, address, or tag…"
           aria-label="Search servers"
-          className="h-10 rounded-xl pr-9 pl-9"
+          className="pr-12 pl-11"
         />
         {query ? (
           <IconButton
             label="Clear search"
             size="sm"
             onClick={() => setQuery("")}
-            className="absolute top-1/2 right-1 -translate-y-1/2"
+            className="absolute top-1/2 right-1.5 -translate-y-1/2"
           >
             <X />
           </IconButton>
@@ -150,15 +150,15 @@ export function ServersScreen() {
       </Tabs>
 
       {error ? (
-        <p className="border-danger/30 bg-danger-surface text-danger rounded-xl border px-3 py-2 text-sm">
+        <p className="border-danger/30 bg-danger-surface text-danger rounded-xl border px-4 py-3 text-sm">
           {error instanceof Error ? error.message : String(error)}
         </p>
       ) : null}
 
-      <div className="fc-scroll -mr-2 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pr-2">
+      <div className="fc-scroll -mr-2 flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pr-2">
         {isPending
           ? [0, 1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+              <Skeleton key={i} className="h-28 w-full rounded-2xl" />
             ))
           : null}
 
@@ -173,9 +173,7 @@ export function ServersScreen() {
             }
             action={
               query ? (
-                <Button size="sm" onClick={() => setQuery("")}>
-                  Clear search
-                </Button>
+                <Button onClick={() => setQuery("")}>Clear search</Button>
               ) : undefined
             }
           />
@@ -183,14 +181,14 @@ export function ServersScreen() {
 
         {starred.length > 0 ? (
           <>
-            <SectionLabel icon={<Star className="size-3 fill-current" />}>
+            <SectionLabel icon={<Star className="size-3.5 fill-current" />}>
               Favourites
             </SectionLabel>
             {starred.map((server) => (
               <ServerCard key={server.id} {...cardProps(server)} />
             ))}
             {rest.length > 0 ? (
-              <SectionLabel icon={<Zap className="size-3" />}>
+              <SectionLabel icon={<Zap className="size-3.5" />}>
                 All servers
               </SectionLabel>
             ) : null}
@@ -213,7 +211,7 @@ function SectionLabel({
   children: React.ReactNode;
 }) {
   return (
-    <h2 className="text-text-faint text-2xs mt-2 flex items-center gap-1.5 px-1 font-semibold tracking-widest uppercase first:mt-0">
+    <h2 className="text-text-faint text-2xs mt-3 flex items-center gap-2 px-1 font-semibold tracking-widest uppercase first:mt-0">
       {icon}
       {children}
     </h2>

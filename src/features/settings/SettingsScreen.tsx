@@ -10,6 +10,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import {
   Badge,
   Select,
+  StatusDot,
   Switch,
   toast,
   type SelectOption,
@@ -24,8 +25,8 @@ const NAV_OPTIONS: SelectOption<"rail" | "dock">[] = [
 ];
 
 const THEME_OPTIONS: SelectOption<"dark" | "light">[] = [
-  { value: "dark", label: "Dark", hint: "The design target" },
-  { value: "light", label: "Light", hint: "Supported, secondary" },
+  { value: "dark", label: "Dark" },
+  { value: "light", label: "Light" },
 ];
 
 export function SettingsScreen() {
@@ -33,16 +34,12 @@ export function SettingsScreen() {
   const setNavLayout = useLayoutPrefs((state) => state.setNavLayout);
   const theme = useLayoutPrefs((state) => state.theme);
   const setTheme = useLayoutPrefs((state) => state.setTheme);
+  const minimizeToTray = useLayoutPrefs((state) => state.minimizeToTray);
+  const setMinimizeToTray = useLayoutPrefs((state) => state.setMinimizeToTray);
 
   const { data: info } = useQuery({
     queryKey: queryKeys.appInfo,
     queryFn: ipc.appInfo,
-  });
-
-  const { data: helper } = useQuery({
-    queryKey: queryKeys.helper,
-    queryFn: ipc.helperStatus,
-    refetchInterval: 5000,
   });
 
   const [autostart, setAutostart] = useState(false);
@@ -66,7 +63,7 @@ export function SettingsScreen() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8 p-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-9 p-8">
       <header>
         <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
       </header>
@@ -81,17 +78,20 @@ export function SettingsScreen() {
             value={navLayout}
             onValueChange={(value) => setNavLayout(value ?? "rail")}
             options={NAV_OPTIONS}
-            className="w-44"
+            className="w-48"
           />
         </Row>
 
-        <Row label="Theme" hint="Dark is the design target.">
+        <Row
+          label="Theme"
+          hint="Both are neutral greys, so the only colour on screen carries meaning."
+        >
           <Select
             label="Theme"
             value={theme}
             onValueChange={(value) => setTheme(value ?? "dark")}
             options={THEME_OPTIONS}
-            className="w-44"
+            className="w-48"
           />
         </Row>
       </Section>
@@ -106,26 +106,35 @@ export function SettingsScreen() {
             onCheckedChange={(checked) => void toggleAutostart(checked)}
           />
         </Row>
+
+        <Row
+          label="Minimize to tray"
+          hint="Closing the window sends ForceConnect to the system tray instead of quitting. Your connection keeps running — use the tray icon's Quit to actually exit."
+        >
+          <Switch
+            checked={minimizeToTray}
+            onCheckedChange={(checked) => setMinimizeToTray(checked)}
+          />
+        </Row>
       </Section>
 
       <Section title="Privileges">
         <Row
-          label="Helper process"
-          hint="Changing DNS needs administrator rights. The interface never runs elevated; a small helper does, and only while the app is open."
+          label="Administrator rights"
+          hint="Changing an adapter's DNS and flushing the resolver cache both need them. ForceConnect asks Windows once, when it starts, and holds them for that session only."
         >
-          {helper?.connected ? (
-            <Badge tone="success">running · pid {helper.pid ?? "?"}</Badge>
-          ) : (
-            <Badge tone="neutral">not started</Badge>
-          )}
+          <Badge tone={info?.elevated ? "success" : "danger"}>
+            <StatusDot tone={info?.elevated ? "success" : "danger"} />
+            {info?.elevated ? "granted" : "not granted"}
+          </Badge>
         </Row>
 
         <Row
-          label="This process"
-          hint="Expected to be unelevated. Anything else means the app was started as administrator."
+          label="Process"
+          hint="One process, not two. This is the id to look for in Task Manager if you want to confirm what is running elevated."
         >
-          <Badge tone={info?.elevated ? "warning" : "neutral"}>
-            {info?.elevated ? "elevated" : "standard"}
+          <Badge tone="neutral" mono>
+            pid {info?.pid ?? "—"}
           </Badge>
         </Row>
       </Section>
@@ -140,7 +149,7 @@ export function SettingsScreen() {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-1">
-      <h2 className="text-text-secondary mb-2 text-xs font-semibold tracking-widest uppercase">
+      <h2 className="text-text-secondary mb-3 text-xs font-semibold tracking-widest uppercase">
         {title}
       </h2>
       <div className="border-border-subtle bg-surface divide-border-subtle divide-y rounded-2xl border">
@@ -160,10 +169,10 @@ function Row({
   children: ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-6 px-4 py-3.5">
+    <div className="flex items-center justify-between gap-8 px-5 py-4">
       <div className="min-w-0">
         <p className="text-sm font-medium">{label}</p>
-        {hint ? <p className="text-text-muted mt-0.5 text-xs">{hint}</p> : null}
+        {hint ? <p className="text-text-muted mt-1 text-xs">{hint}</p> : null}
       </div>
       <div className="shrink-0">{children}</div>
     </div>

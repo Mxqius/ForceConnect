@@ -42,7 +42,7 @@ export function InterfacesScreen() {
   const rest = data?.filter((a) => !a.eligible) ?? [];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+    <div className="mx-auto flex max-w-3xl flex-col gap-7 p-8">
       <header>
         <h1 className="text-xl font-semibold tracking-tight">Interfaces</h1>
         <p className="text-text-muted mt-1 text-sm">
@@ -52,15 +52,15 @@ export function InterfacesScreen() {
       </header>
 
       {error ? (
-        <p className="border-danger/30 bg-danger-surface text-danger rounded-md border px-3 py-2 text-sm">
+        <p className="border-danger/30 bg-danger-surface text-danger rounded-xl border px-4 py-3 text-sm">
           {error instanceof Error ? error.message : String(error)}
         </p>
       ) : null}
 
       {isPending ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-19 w-full" />
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
           ))}
         </div>
       ) : null}
@@ -74,7 +74,7 @@ export function InterfacesScreen() {
       ) : null}
 
       {eligible.length > 0 ? (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-2.5">
           <SectionLabel
             title="Available"
             hint="Ordered by interface metric — lower wins"
@@ -86,7 +86,7 @@ export function InterfacesScreen() {
       ) : null}
 
       {rest.length > 0 ? (
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-2.5">
           <SectionLabel
             title="Not available"
             hint="Disconnected, loopback, or with no route off-link"
@@ -102,7 +102,7 @@ export function InterfacesScreen() {
 
 function SectionLabel({ title, hint }: { title: string; hint: string }) {
   return (
-    <div className="flex items-baseline gap-2">
+    <div className="flex items-baseline gap-2.5">
       <h2 className="text-text-secondary text-xs font-semibold tracking-widest uppercase">
         {title}
       </h2>
@@ -124,19 +124,19 @@ function AdapterCard({
   return (
     <article
       className={cn(
-        "border-border-subtle bg-surface rounded-lg border p-3 transition-colors",
+        "border-border-subtle bg-surface rounded-xl border p-4 transition-colors",
         adapter.isActive && "border-accent-muted bg-accent-surface/30",
         muted && "opacity-60",
       )}
     >
-      <div className="flex items-start gap-3">
-        <div className="bg-surface-inset text-text-muted mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md">
-          <Icon className="size-4" />
+      <div className="flex items-start gap-4">
+        <div className="bg-surface-inset text-text-muted mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg">
+          <Icon className="size-5" />
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="truncate text-sm font-medium">{adapter.name}</h3>
+            <h3 className="truncate text-sm font-semibold">{adapter.name}</h3>
 
             {adapter.isActive ? (
               <Tooltip content="The routing table sends internet traffic here">
@@ -160,11 +160,11 @@ function AdapterCard({
             ) : null}
           </div>
 
-          <p className="text-text-muted mt-0.5 truncate text-xs">
+          <p className="text-text-muted mt-1 truncate text-xs">
             {adapter.description}
           </p>
 
-          <dl className="text-text-muted mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+          <dl className="text-text-muted mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs">
             <Detail label="Metric">
               <span className="font-mono tabular-nums">{adapter.metricV4}</span>
             </Detail>

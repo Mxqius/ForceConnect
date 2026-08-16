@@ -47,7 +47,9 @@ export function Select<T extends string>({
       <BaseSelect.Trigger
         aria-label={label}
         className={cn(
-          "border-border-default bg-surface-inset text-text-primary flex h-8 w-full items-center justify-between gap-2 rounded-md border px-2.5 text-sm",
+          // Matches `Input` and `Button`'s `md`, so a select never looks like
+          // the runt of a form row.
+          "border-border-default bg-surface-inset text-text-primary flex h-11 w-full items-center justify-between gap-2 rounded-xl border px-4 text-sm",
           "hover:border-border-strong transition-colors",
           "data-[popup-open]:border-accent",
           "disabled:cursor-not-allowed disabled:opacity-50",
@@ -56,16 +58,19 @@ export function Select<T extends string>({
         )}
       >
         <BaseSelect.Value className="truncate">
-          {(selected: SelectOption<T> | null) =>
-            selected ? (
+          {(selectedValue: T | null) => {
+            const selected = options.find(
+              (option) => option.value === selectedValue,
+            );
+            return selected ? (
               selected.label
             ) : (
-              <span className="text-text-faint">{placeholder}</span>
-            )
-          }
+              <span className="text-text-muted">{placeholder}</span>
+            );
+          }}
         </BaseSelect.Value>
         <BaseSelect.Icon>
-          <ChevronsUpDown className="text-text-muted size-3.5 shrink-0" />
+          <ChevronsUpDown className="text-text-muted size-4 shrink-0" />
         </BaseSelect.Icon>
       </BaseSelect.Trigger>
 
@@ -74,7 +79,7 @@ export function Select<T extends string>({
           <BaseSelect.Popup
             className={cn(
               overlaySurface,
-              "fc-scroll max-h-72 min-w-[var(--anchor-width)] overflow-y-auto p-1",
+              "fc-scroll max-h-80 min-w-[var(--anchor-width)] overflow-y-auto p-1.5",
             )}
           >
             {options.map((option) => (
@@ -83,7 +88,7 @@ export function Select<T extends string>({
                 value={option.value}
                 disabled={option.disabled}
                 className={cn(
-                  "group flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none",
+                  "group flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm outline-none",
                   "data-[highlighted]:bg-surface-hover",
                   "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
                 )}
@@ -91,9 +96,9 @@ export function Select<T extends string>({
                 {/* Fixed-width slot: the indicator unmounts when the item is
                     not selected, and without reserved space every other row
                     would shift left. */}
-                <span className="flex w-3.5 shrink-0 justify-center">
-                  <BaseSelect.ItemIndicator className="text-accent flex">
-                    <Check className="size-3.5" strokeWidth={3} />
+                <span className="flex w-4 shrink-0 justify-center">
+                  <BaseSelect.ItemIndicator className="text-accent-bright flex">
+                    <Check className="size-4" strokeWidth={3} />
                   </BaseSelect.ItemIndicator>
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col group-data-[selected]:font-medium">

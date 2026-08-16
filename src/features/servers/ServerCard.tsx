@@ -54,13 +54,13 @@ export function ServerCard({
       )}
       onClick={onSelect ? () => onSelect(server) : undefined}
     >
-      <div className="flex items-start gap-3 p-3">
+      <div className="flex items-start gap-4 p-4">
         <ProviderMark provider={server.provider} name={server.name} />
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="truncate text-sm font-medium">
+              <h3 className="truncate text-sm font-semibold">
                 {server.name}
                 {server.variant ? (
                   <span className="text-text-muted font-normal">
@@ -71,7 +71,7 @@ export function ServerCard({
               </h3>
 
               {shown ? (
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                   {shown.addrs.map((addr) => (
                     <CopyableValue key={addr} value={addr} />
                   ))}
@@ -99,7 +99,7 @@ export function ServerCard({
                     className={cn(
                       "transition-opacity",
                       favourite
-                        ? "text-accent"
+                        ? "text-accent-bright"
                         : "text-text-faint opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
                     )}
                   >
@@ -143,7 +143,7 @@ export function ServerCard({
             </div>
           </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {server.endpoints.map((endpoint) => (
               <Badge
                 key={endpoint.protocol}
@@ -155,7 +155,7 @@ export function ServerCard({
                     "opacity-45",
                 )}
               >
-                {endpoint.encrypted ? <Lock className="size-2.5" /> : null}
+                {endpoint.encrypted ? <Lock className="size-3" /> : null}
                 {endpoint.label}
               </Badge>
             ))}

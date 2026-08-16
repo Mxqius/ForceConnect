@@ -17,13 +17,23 @@ const VARIANTS: Record<ButtonVariant, string> = {
     "bg-transparent text-text-secondary border border-transparent hover:bg-surface-hover hover:text-text-primary active:bg-surface-active",
   danger:
     "bg-danger text-white border border-transparent hover:bg-danger-hover",
-  link: "bg-transparent text-accent border border-transparent underline-offset-2 hover:underline p-0 h-auto",
+  link: "bg-transparent text-accent-bright border border-transparent underline-offset-2 hover:underline p-0 h-auto",
 };
 
+/**
+ * Heights are on a 4px grid and start at 36px.
+ *
+ * The previous scale topped out where this one begins. A 28px button with 12px
+ * of padding is a web-page density; this is a desktop utility people click
+ * quickly and often, and every size here now clears the 32px minimum target
+ * that Windows' own controls use. Padding grew faster than height on purpose —
+ * cramped horizontal padding is what made the old buttons read as small even
+ * at the sizes where they were not.
+ */
 const SIZES: Record<ButtonSize, string> = {
-  sm: "h-7 px-3 text-xs gap-1.5 rounded-lg",
-  md: "h-9 px-4 text-sm gap-2 rounded-lg",
-  lg: "h-11 px-5 text-base gap-2 rounded-xl",
+  sm: "h-9 px-4 text-xs gap-2 rounded-lg",
+  md: "h-11 px-5 text-sm gap-2 rounded-xl",
+  lg: "h-13 px-7 text-base gap-2.5 rounded-xl",
 };
 
 interface ButtonProps extends ComponentPropsWithoutRef<typeof BaseButton> {
@@ -54,9 +64,8 @@ export function Button({
         VARIANTS[variant],
         variant !== "link" && SIZES[size],
         block && "w-full",
-        // Sizing icons here rather than at every call site keeps a stray
-        // 24px lucide icon from silently changing the button's height.
-        "[&_svg]:size-4 [&_svg]:shrink-0",
+        GLYPHS[size],
+        "[&_svg]:shrink-0",
         className,
       )}
       {...props}
@@ -73,10 +82,24 @@ interface IconButtonProps extends Omit<ButtonProps, "startIcon" | "endIcon"> {
   label: string;
 }
 
+/**
+ * Glyph size per button size.
+ *
+ * Pinned here rather than at the call sites so a stray 24px lucide icon cannot
+ * silently change a button's height, and so icons scale with the control
+ * instead of staying 16px inside a 52px button.
+ */
+const GLYPHS: Record<ButtonSize, string> = {
+  sm: "[&_svg]:size-4",
+  md: "[&_svg]:size-[1.125rem]",
+  lg: "[&_svg]:size-5",
+};
+
+/** Square counterparts to `SIZES`, so an icon button lines up in a row of them. */
 const ICON_SIZES: Record<ButtonSize, string> = {
-  sm: "size-7 rounded-lg",
-  md: "size-9 rounded-lg",
-  lg: "size-11 rounded-xl",
+  sm: "size-9 rounded-lg",
+  md: "size-11 rounded-xl",
+  lg: "size-13 rounded-xl",
 };
 
 export function IconButton({
@@ -95,7 +118,8 @@ export function IconButton({
         focusRing,
         VARIANTS[variant],
         ICON_SIZES[size],
-        "p-0 [&_svg]:size-4 [&_svg]:shrink-0",
+        GLYPHS[size],
+        "p-0 [&_svg]:shrink-0",
         className,
       )}
       {...props}

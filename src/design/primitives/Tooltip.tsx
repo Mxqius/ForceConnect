@@ -33,7 +33,7 @@ export function Tooltip({ content, side = "top", children }: TooltipProps) {
           <BaseTooltip.Popup
             className={cn(
               overlaySurface,
-              "text-text-secondary px-2 py-1 text-xs",
+              "text-text-secondary max-w-64 px-3 py-2 text-xs",
             )}
           >
             {content}
@@ -65,7 +65,7 @@ export function Popover({
       <BasePopover.Trigger render={trigger} />
       <BasePopover.Portal>
         <BasePopover.Positioner side={side} align={align} sideOffset={6}>
-          <BasePopover.Popup className={cn(overlaySurface, "p-3", className)}>
+          <BasePopover.Popup className={cn(overlaySurface, "p-4", className)}>
             {children}
           </BasePopover.Popup>
         </BasePopover.Positioner>

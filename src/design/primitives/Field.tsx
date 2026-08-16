@@ -9,7 +9,9 @@ export function Input({
   className,
   ...props
 }: ComponentPropsWithoutRef<typeof BaseInput>) {
-  return <BaseInput className={cn(controlBase, "h-8", className)} {...props} />;
+  return (
+    <BaseInput className={cn(controlBase, "h-11", className)} {...props} />
+  );
 }
 
 interface FieldProps {
@@ -36,7 +38,7 @@ export function Field({
   children,
 }: FieldProps) {
   return (
-    <BaseField.Root className={cn("flex flex-col gap-1.5", className)}>
+    <BaseField.Root className={cn("flex flex-col gap-2", className)}>
       {label ? (
         <BaseField.Label className="text-text-secondary flex items-center gap-1 text-xs font-medium">
           {label}

@@ -12,9 +12,14 @@ const backdrop = cn(
   "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
 );
 
+// The window is small and fixed-size, so a dialog can easily be taller than the
+// viewport. Capping the popup and making it a flex column is what keeps the
+// footer — and therefore the primary action — on screen at any height: the
+// header and footer hold their size and the body absorbs the overflow.
 const popup = cn(
   "fixed top-1/2 left-1/2 z-50 w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2",
-  "rounded-xl border border-border-default bg-surface-elevated shadow-dialog",
+  "flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden",
+  "rounded-2xl border border-border-default bg-surface-elevated shadow-dialog",
   "transition-[opacity,transform] duration-150",
   "data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0",
   "data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0",
@@ -50,7 +55,7 @@ export function Dialog({
       <BaseDialog.Portal>
         <BaseDialog.Backdrop className={backdrop} />
         <BaseDialog.Popup className={cn(popup, className)}>
-          <header className="border-border-subtle flex items-start gap-4 border-b px-5 py-4">
+          <header className="border-border-subtle flex shrink-0 items-start gap-4 border-b px-6 py-5">
             <div className="min-w-0 flex-1">
               <BaseDialog.Title className="text-lg font-semibold tracking-tight">
                 {title}
@@ -71,10 +76,14 @@ export function Dialog({
             />
           </header>
 
-          {children ? <div className="px-5 py-4">{children}</div> : null}
+          {children ? (
+            <div className="fc-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
+              {children}
+            </div>
+          ) : null}
 
           {footer ? (
-            <footer className="border-border-subtle flex items-center justify-end gap-2 border-t px-5 py-3">
+            <footer className="border-border-subtle flex shrink-0 items-center justify-end gap-2 border-t px-6 py-4">
               {footer}
             </footer>
           ) : null}
@@ -120,7 +129,7 @@ export function AlertDialog({
       <BaseAlertDialog.Portal>
         <BaseAlertDialog.Backdrop className={backdrop} />
         <BaseAlertDialog.Popup className={cn(popup, "w-[min(26rem,90vw)]")}>
-          <div className="px-5 py-4">
+          <div className="fc-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5">
             <BaseAlertDialog.Title className="text-base font-semibold">
               {title}
             </BaseAlertDialog.Title>
@@ -132,7 +141,7 @@ export function AlertDialog({
             {children}
           </div>
 
-          <footer className="border-border-subtle flex items-center justify-end gap-2 border-t px-5 py-3">
+          <footer className="border-border-subtle flex shrink-0 items-center justify-end gap-2 border-t px-6 py-4">
             {footer}
           </footer>
         </BaseAlertDialog.Popup>

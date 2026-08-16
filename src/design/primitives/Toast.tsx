@@ -78,7 +78,7 @@ const TONE_COLORS: Record<ToastTone, string> = {
   success: "text-success",
   error: "text-danger",
   warning: "text-warning",
-  info: "text-accent",
+  info: "text-accent-bright",
 };
 
 function ToastList() {
@@ -93,15 +93,15 @@ function ToastList() {
         key={item.id}
         toast={item}
         className={cn(
-          "border-border-default bg-surface-elevated shadow-popup absolute right-0 bottom-0 w-[22rem] rounded-lg border p-3",
-          "flex items-start gap-2.5",
+          "border-border-default bg-surface-elevated shadow-popup absolute right-0 bottom-0 w-88 rounded-lg border p-3",
+          "flex items-center gap-2.5",
           "transition-[opacity,transform] duration-250 ease-out",
           // Base UI publishes stack geometry as CSS variables; the newest
           // toast sits at index 0 and older ones slide down behind it.
-          "[transform:translateY(calc(var(--toast-offset-y)*-1))]",
-          "data-[starting-style]:translate-y-4 data-[starting-style]:opacity-0",
-          "data-[ending-style]:translate-y-4 data-[ending-style]:opacity-0",
-          "data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)*-1))]",
+          "transform-[translateY(calc(var(--toast-offset-y)*-1))]",
+          "data-starting-style:translate-y-4 data-starting-style:opacity-0",
+          "data-ending-style:translate-y-4 data-ending-style:opacity-0",
+          "data-expanded:transform-[translateY(calc(var(--toast-offset-y)*-1))]",
         )}
       >
         <Icon className={cn("mt-0.5 size-4 shrink-0", TONE_COLORS[tone])} />
@@ -110,7 +110,7 @@ function ToastList() {
           <BaseToast.Title className="text-sm font-medium" />
           <BaseToast.Description className="text-text-muted mt-0.5 text-xs" />
           {item.actionProps ? (
-            <BaseToast.Action className="text-accent mt-2 text-xs font-medium hover:underline" />
+            <BaseToast.Action className="text-accent-bright mt-2 text-xs font-medium hover:underline" />
           ) : null}
         </div>
 
@@ -131,7 +131,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <BaseToast.Provider toastManager={manager} limit={4}>
       {children}
       <BaseToast.Portal>
-        <BaseToast.Viewport className="fixed right-4 bottom-4 z-100 flex w-[22rem] outline-none">
+        <BaseToast.Viewport className="fixed right-4 bottom-4 z-100 flex w-88 outline-none">
           <ToastList />
         </BaseToast.Viewport>
       </BaseToast.Portal>

@@ -9,7 +9,7 @@ export type BadgeTone =
 
 const TONES: Record<BadgeTone, string> = {
   neutral: "bg-surface-active text-text-secondary border-border-subtle",
-  accent: "bg-accent-surface text-accent border-accent-muted",
+  accent: "bg-accent-surface text-accent-bright border-accent-muted",
   success: "bg-success-surface text-success border-success/30",
   warning: "bg-warning-surface text-warning border-warning/30",
   danger: "bg-danger-surface text-danger border-danger/30",
@@ -34,7 +34,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        "text-2xs inline-flex shrink-0 items-center gap-1 rounded-sm border px-1.5 py-0.5 leading-none font-medium",
+        "text-2xs inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 leading-none font-medium",
         TONES[tone],
         mono && "font-mono tabular-nums",
         className,
@@ -63,7 +63,7 @@ export function Chip({
   return (
     <span
       className={cn(
-        "bg-surface-active text-text-secondary border-border-subtle inline-flex items-center gap-1 rounded-sm border py-0.5 pr-0.5 pl-1.5 text-xs",
+        "bg-surface-active text-text-secondary border-border-subtle inline-flex items-center gap-1 rounded-md border py-1 pr-1 pl-2.5 text-xs",
         className,
       )}
     >

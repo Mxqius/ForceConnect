@@ -11,110 +11,203 @@
  * straight to `var(--surface)` and flipping the attribute on <html> re-themes
  * the whole app with no rebuild.
  *
- * Dark is the default and the design target. Light is supported but secondary.
+ * # The greys are neutral, and that is the whole idea
+ *
+ * An earlier version tinted every surface toward the brand's blue on the theory
+ * that a shared hue makes a palette feel like one thing. In practice it made
+ * the dark theme read as navy rather than dark, and the light theme as cold —
+ * a blue-white page is the single most fatiguing thing to look at for an hour.
+ *
+ * So: the surfaces are neutral, top to bottom, in both themes. Colour is
+ * information here — the accent means "this is actionable", green means
+ * connected, red means it failed — and it carries that meaning better when it
+ * is the only colour on screen. The dark theme starts at very nearly black and
+ * lifts in even steps; text stops short of pure white, because #fff on #000 at
+ * 13px produces the smeary halo that makes people turn dark mode off.
  */
 
 :root {
   color-scheme: dark;
 
   /*
-   * Surfaces carry a slight warm hue (chroma at ~40deg) rather than being
-   * neutral grey. Against the orange accent a cold grey reads as a colour
-   * clash; a hint of the accent's own hue in the greys makes the whole thing
-   * feel like one palette instead of an orange pasted onto slate.
+   * The dark ladder. Each step is a real, visible lift, so depth is legible
+   * without a single shadow: the window is the darkest thing, chrome sits just
+   * above it, cards above that, popups highest.
    */
-  --surface-base: oklch(0.16 0.006 40);
-  --surface-subtle: oklch(0.19 0.007 40);
-  --surface: oklch(0.215 0.008 40);
-  --surface-elevated: oklch(0.255 0.009 40);
-  --surface-inset: oklch(0.135 0.006 40);
-  --surface-hover: oklch(0.27 0.01 40);
-  --surface-active: oklch(0.3 0.011 40);
+  --surface-base: #050506;
+  --surface-subtle: #0a0a0c;
+  --surface: #121214;
+  --surface-elevated: #1a1a1e;
+  /* Fields read as recessed *into* a card, so this sits below `--surface`
+     rather than above it. Still above `--surface-base`, or an input floating on
+     the window background would vanish. */
+  --surface-inset: #0d0d0f;
+  --surface-hover: #232327;
+  --surface-active: #2c2c31;
 
-  --border-subtle: oklch(0.27 0.008 40);
-  --border-default: oklch(0.33 0.01 40);
-  --border-strong: oklch(0.43 0.013 40);
-
-  --text-primary: oklch(0.96 0.004 40);
-  --text-secondary: oklch(0.79 0.006 40);
-  --text-muted: oklch(0.63 0.008 40);
-  --text-faint: oklch(0.5 0.008 40);
-  /* Near-black rather than white: #F2613F is a light colour, and white text
-     on it fails contrast at small sizes. */
-  --text-on-accent: oklch(0.16 0.01 40);
+  --border-subtle: #1a1a1e;
+  --border-default: #26262b;
+  --border-strong: #3a3a41;
 
   /*
-   * The brand colour, stated exactly rather than approximated in oklch —
-   * an oklch round-trip lands a couple of points off, and a brand colour
-   * should be the value it is. Variants are derived with `color-mix` in
-   * oklab so the steps stay perceptually even without drifting the hue.
+   * Four tiers, and the bottom one is not for reading.
+   *
+   * `primary`, `secondary`, and `muted` all clear 4.5:1 on the surfaces they
+   * appear on, so anything a user has to read — including input placeholders —
+   * belongs in one of those three. `faint` sits at ~4:1 by design and is for
+   * text that carries no information the user needs: separators, the "—" that
+   * stands in for an absent value, decorative section markers.
    */
-  --accent: #f2613f;
-  --accent-hover: color-mix(in oklab, var(--accent) 86%, white);
-  --accent-active: color-mix(in oklab, var(--accent) 88%, black);
-  --accent-muted: color-mix(in oklab, var(--accent) 45%, var(--surface-base));
-  --accent-surface: color-mix(in oklab, var(--accent) 15%, var(--surface-base));
-  --accent-glow: color-mix(in srgb, var(--accent) 30%, transparent);
+  --text-primary: #ececee;
+  --text-secondary: #a3a3a9;
+  --text-muted: #87878f;
+  --text-faint: #74747d;
+  --text-on-accent: #ffffff;
 
   /*
-   * Status colours are pulled away from the accent's hue so they stay
-   * distinguishable. Danger in particular is pushed toward red-magenta —
-   * a red near 38deg would be almost indistinguishable from the accent, and
-   * "delete" must never look like "primary action".
+   * The brand blue, stated exactly rather than approximated in oklch — an
+   * oklch round-trip lands a couple of points off, and a brand colour should be
+   * the value it is. Variants are derived with `color-mix` in oklab so the
+   * steps stay perceptually even without drifting the hue.
+   *
+   * Dark and light carry different values of it on purpose: the same blue
+   * cannot clear contrast against near-black *and* against white.
+   *
+   * `--accent-bright` is the same blue used as *ink* rather than as ground —
+   * link text, a selected checkmark, the connected power icon. It exists
+   * because one value cannot do both jobs on this background. Against
+   * near-black, a blue dark enough for white button text to reach 4.5:1 is
+   * itself too dark to read as text at 4.5:1; the two requirements cross at
+   * almost exactly the same luminance, so both would land on 4.49 and fail.
+   * Two tokens: the fill clears 4.74:1 with white on it, the ink clears 5.85:1
+   * on a card.
    */
-  --success: oklch(0.75 0.16 152);
-  --success-surface: oklch(0.25 0.05 152);
-  --warning: oklch(0.82 0.15 92);
-  --warning-surface: oklch(0.26 0.05 92);
-  --danger: oklch(0.63 0.21 12);
-  --danger-hover: oklch(0.68 0.215 12);
-  --danger-surface: oklch(0.25 0.065 12);
+  --accent: #1b6bf2;
+  --accent-bright: #4d8dff;
+  --accent-hover: color-mix(in oklab, var(--accent) 84%, white);
+  --accent-active: color-mix(in oklab, var(--accent) 86%, black);
+  --accent-muted: color-mix(in oklab, var(--accent) 42%, var(--surface-base));
+  --accent-surface: color-mix(in oklab, var(--accent) 16%, var(--surface-base));
+  --accent-glow: color-mix(in srgb, var(--accent) 32%, transparent);
 
-  --protocol-plain: oklch(0.63 0.008 40);
-  --protocol-encrypted: oklch(0.74 0.13 168);
+  /* A second accent, reserved for "live" moments — the connect glow — so it
+     does not read as merely a brighter version of the everyday one. */
+  --accent-cyan: #22d3ee;
+  --accent-cyan-hover: color-mix(in oklab, var(--accent-cyan) 84%, white);
+  --accent-cyan-surface: color-mix(
+    in oklab,
+    var(--accent-cyan) 14%,
+    var(--surface-base)
+  );
+  --accent-cyan-glow: color-mix(in srgb, var(--accent-cyan) 35%, transparent);
+
+  /*
+   * Status colours, pulled well away from the brand hue so they stay
+   * distinguishable, and pulled *down* in chroma from the usual web defaults:
+   * a fully saturated green or amber against near-black glares.
+   */
+  --success: #35c46f;
+  --success-surface: color-mix(
+    in oklab,
+    var(--success) 16%,
+    var(--surface-base)
+  );
+  --warning: #e0a92e;
+  --warning-surface: color-mix(
+    in oklab,
+    var(--warning) 16%,
+    var(--surface-base)
+  );
+  /* Red-magenta rather than a red near blue's hue, which would be muddy.
+     "Delete" must never look like "primary action". */
+  --danger: #f2555a;
+  --danger-hover: color-mix(in oklab, var(--danger) 85%, white);
+  --danger-surface: color-mix(in oklab, var(--danger) 16%, var(--surface-base));
+
+  --protocol-plain: #8a8a92;
+  --protocol-encrypted: #3fd6b0;
 
   --focus-ring: var(--accent);
+
+  /*
+   * Elevation. The dark theme separates with steps in the ladder above and uses
+   * shadow only where something genuinely floats; a shadow on near-black is
+   * nearly invisible anyway, so these lean on a bright hairline instead.
+   */
+  --elevation-popup:
+    0 0 0 1px oklch(1 0 0 / 0.06), 0 16px 40px -16px oklch(0 0 0 / 0.9),
+    0 4px 12px -4px oklch(0 0 0 / 0.7);
+  --elevation-dialog:
+    0 0 0 1px oklch(1 0 0 / 0.07), 0 32px 72px -20px oklch(0 0 0 / 0.95);
+  --elevation-glow:
+    0 0 0 1px var(--accent-cyan-glow), 0 8px 28px -8px var(--accent-cyan-glow);
 }
 
 [data-theme="light"] {
   color-scheme: light;
 
-  --surface-base: oklch(0.985 0.003 40);
-  --surface-subtle: oklch(0.965 0.004 40);
-  --surface: oklch(1 0 0);
-  --surface-elevated: oklch(1 0 0);
-  --surface-inset: oklch(0.955 0.005 40);
-  --surface-hover: oklch(0.945 0.006 40);
-  --surface-active: oklch(0.9 0.008 40);
+  /*
+   * The light ladder runs the other way: the window is a soft grey and cards
+   * are white, so the thing you are meant to read is the brightest thing on
+   * screen. The page background is deliberately not white — a full-window sheet
+   * of #fff is the light-mode equivalent of #fff text on #000.
+   */
+  --surface-base: #f2f2f3;
+  --surface-subtle: #f7f7f8;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-inset: #f4f4f5;
+  --surface-hover: #ebebed;
+  --surface-active: #dededf;
 
-  --border-subtle: oklch(0.92 0.005 40);
-  --border-default: oklch(0.86 0.007 40);
-  --border-strong: oklch(0.72 0.01 40);
+  --border-subtle: #e7e7e9;
+  --border-default: #dcdce0;
+  --border-strong: #b8b8be;
 
-  --text-primary: oklch(0.22 0.01 40);
-  --text-secondary: oklch(0.4 0.011 40);
-  --text-muted: oklch(0.54 0.011 40);
-  --text-faint: oklch(0.66 0.01 40);
-  --text-on-accent: oklch(1 0 0);
+  /* Near-black, not black. The difference is small on paper and considerable
+     after an hour. */
+  --text-primary: #1b1b1f;
+  --text-secondary: #55555c;
+  --text-muted: #6f6f77;
+  --text-faint: #82828a;
+  --text-on-accent: #ffffff;
 
-  /* Darkened for contrast against light surfaces; the hue is unchanged. */
-  --accent: color-mix(in oklab, #f2613f 88%, black);
-  --accent-hover: color-mix(in oklab, #f2613f 76%, black);
-  --accent-active: color-mix(in oklab, #f2613f 66%, black);
-  --accent-muted: color-mix(in oklab, #f2613f 40%, white);
-  --accent-surface: color-mix(in oklab, #f2613f 10%, white);
-  --accent-glow: color-mix(in srgb, #f2613f 22%, transparent);
+  /* Light needs no split: a blue dark enough for white text on it (5.6:1) is
+     also dark enough to read on a white card (5.0:1), because the background
+     is at the other end of the range. */
+  --accent: #0f62d6;
+  --accent-bright: var(--accent);
+  --accent-hover: color-mix(in oklab, var(--accent) 86%, black);
+  --accent-active: color-mix(in oklab, var(--accent) 74%, black);
+  --accent-muted: color-mix(in oklab, var(--accent) 38%, white);
+  --accent-surface: color-mix(in oklab, var(--accent) 9%, white);
+  --accent-glow: color-mix(in srgb, var(--accent) 22%, transparent);
 
-  --success: oklch(0.52 0.15 152);
-  --success-surface: oklch(0.95 0.04 152);
-  --warning: oklch(0.6 0.13 80);
-  --warning-surface: oklch(0.96 0.05 92);
-  --danger: oklch(0.54 0.21 12);
-  --danger-hover: oklch(0.49 0.215 12);
-  --danger-surface: oklch(0.96 0.04 12);
+  --accent-cyan: #0e7f9c;
+  --accent-cyan-hover: color-mix(in oklab, var(--accent-cyan) 86%, black);
+  --accent-cyan-surface: color-mix(in oklab, var(--accent-cyan) 9%, white);
+  --accent-cyan-glow: color-mix(in srgb, var(--accent-cyan) 22%, transparent);
 
-  --protocol-plain: oklch(0.54 0.011 40);
-  --protocol-encrypted: oklch(0.5 0.12 168);
+  --success: #15743f;
+  --success-surface: color-mix(in oklab, var(--success) 9%, white);
+  --warning: #8a6100;
+  --warning-surface: color-mix(in oklab, var(--warning) 11%, white);
+  --danger: #c9333c;
+  --danger-hover: color-mix(in oklab, var(--danger) 84%, black);
+  --danger-surface: color-mix(in oklab, var(--danger) 8%, white);
+
+  --protocol-plain: #6b6b73;
+  --protocol-encrypted: #0b7561;
+
+  /* Light mode has almost no ladder to work with — white on grey is one step —
+     so here the shadows do the separating that the steps do in the dark. */
+  --elevation-popup:
+    0 0 0 1px oklch(0 0 0 / 0.06), 0 12px 28px -10px oklch(0 0 0 / 0.16),
+    0 2px 6px -2px oklch(0 0 0 / 0.08);
+  --elevation-dialog:
+    0 0 0 1px oklch(0 0 0 / 0.07), 0 28px 60px -16px oklch(0 0 0 / 0.24);
+  --elevation-glow:
+    0 0 0 1px var(--accent-glow), 0 8px 28px -8px var(--accent-glow);
 }
 
 @theme inline {
@@ -137,10 +230,15 @@
   --color-text-on-accent: var(--text-on-accent);
 
   --color-accent: var(--accent);
+  --color-accent-bright: var(--accent-bright);
   --color-accent-hover: var(--accent-hover);
   --color-accent-active: var(--accent-active);
   --color-accent-muted: var(--accent-muted);
   --color-accent-surface: var(--accent-surface);
+
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-cyan-hover: var(--accent-cyan-hover);
+  --color-accent-cyan-surface: var(--accent-cyan-surface);
 
   --color-success: var(--success);
   --color-success-surface: var(--success-surface);
@@ -161,26 +259,31 @@
   --font-mono:
     "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
 
-  /* Dense by intent: this is a tool, and the tables it shows are long. */
-  --text-2xs: 0.6875rem;
+  /*
+   * The scale moved up a step from the original, which was set for a dense
+   * table-heavy tool and ended up smaller than anything else on the desktop.
+   * `--text-base` at 15px is the floor for body copy; the two sizes below it
+   * are for labels and badges, never for prose.
+   */
+  --text-2xs: 0.75rem;
   --text-2xs--line-height: 1rem;
-  --text-xs: 0.75rem;
-  --text-xs--line-height: 1.125rem;
-  --text-sm: 0.8125rem;
-  --text-sm--line-height: 1.25rem;
-  --text-base: 0.875rem;
-  --text-base--line-height: 1.375rem;
-  --text-lg: 1rem;
-  --text-lg--line-height: 1.5rem;
-  --text-xl: 1.25rem;
-  --text-xl--line-height: 1.75rem;
-  --text-2xl: 1.5rem;
-  --text-2xl--line-height: 2rem;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.375rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.625rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.875rem;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 2.125rem;
 
   /*
-   * Generous radii. The whole scale moved up a step: controls are pill-ish,
-   * cards are softly rounded. Combined with borders doing the separating
-   * rather than shadows, that is most of what reads as "modern" here.
+   * Generous radii: controls are pill-ish, cards are softly rounded. Combined
+   * with borders doing the separating rather than shadows, that is most of what
+   * reads as "modern" here.
    */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -188,10 +291,10 @@
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
 
-  --shadow-popup:
-    0 12px 32px -12px oklch(0 0 0 / 0.6), 0 2px 8px -2px oklch(0 0 0 / 0.35);
-  --shadow-dialog: 0 28px 64px -16px oklch(0 0 0 / 0.7);
-  /* Used sparingly — only the connect control, where it reads as "live". */
-  --shadow-glow:
-    0 0 0 1px var(--accent-glow), 0 8px 28px -8px var(--accent-glow);
+  /* Theme-aware, unlike the rest of the shadow scale — see the notes on
+     `--elevation-*` above. Used sparingly; the glow is for the connect control
+     alone, where it reads as "live". */
+  --shadow-popup: var(--elevation-popup);
+  --shadow-dialog: var(--elevation-dialog);
+  --shadow-glow: var(--elevation-glow);
 }

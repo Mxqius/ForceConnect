@@ -11,6 +11,11 @@ export {
   type ButtonVariant,
 } from "@/design/primitives/Button";
 export { ChipInput } from "@/design/primitives/ChipInput";
+export {
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+} from "@/design/primitives/Collapsible";
 export { AlertDialog, Dialog } from "@/design/primitives/Dialog";
 export {
   CopyableValue,
