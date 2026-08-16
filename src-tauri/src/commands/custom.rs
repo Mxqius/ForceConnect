@@ -33,7 +33,9 @@ fn store_path(app: &AppHandle) -> Result<PathBuf, CommandError> {
     Ok(dir.join("custom-servers.json"))
 }
 
-fn read_all(app: &AppHandle) -> Result<Vec<DnsServer>, CommandError> {
+/// Visible to `commands::probe`, which resolves a server id that may name one
+/// of the user's own entries rather than a catalog one.
+pub(crate) fn read_all(app: &AppHandle) -> Result<Vec<DnsServer>, CommandError> {
     let path = store_path(app)?;
 
     let Ok(body) = std::fs::read(&path) else {

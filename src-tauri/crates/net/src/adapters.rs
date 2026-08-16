@@ -6,7 +6,7 @@
 
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
-use windows::Win32::Foundation::{ERROR_BUFFER_OVERFLOW, ERROR_SUCCESS, NO_ERROR};
+use windows::Win32::Foundation::{ERROR_BUFFER_OVERFLOW, ERROR_NO_DATA, ERROR_SUCCESS, NO_ERROR};
 use windows::Win32::NetworkManagement::IpHelper::{
     DNS_INTERFACE_SETTINGS, FreeInterfaceDnsSettings, GAA_FLAG_INCLUDE_GATEWAYS,
     GAA_FLAG_SKIP_ANYCAST, GAA_FLAG_SKIP_MULTICAST, GetAdaptersAddresses, GetInterfaceDnsSettings,
@@ -38,30 +38,20 @@ mod if_type {
 const DNS_INTERFACE_SETTINGS_VERSION1: u32 = 1;
 
 /// Enumerate every adapter the system knows about.
-pub fn list() -> Result<Vec<Adapter>, NetError> {
-    let buffer = fetch_adapter_buffer()?;
-
-    let mut adapters = Vec::new();
-    // SAFETY: `buffer` holds a valid linked list written by the OS and outlives
-    // this loop; every pointer dereferenced below is checked non-null first.
-    unsafe {
-        let mut current = buffer.as_ptr() as *const IP_ADAPTER_ADDRESSES_LH;
-        while !current.is_null() {
-            adapters.push(read_adapter(&*current));
-            current = (*current).Next;
-        }
-    }
-
-    Ok(adapters)
-}
-
-/// Call `GetAdaptersAddresses` into a right-sized buffer.
 ///
-/// The size is probed first, then the call is retried: the adapter set can
-/// change between the two calls, which is exactly what `ERROR_BUFFER_OVERFLOW`
-/// on the second call means. Three attempts is plenty — more than that and
+/// The whole walk happens here, while the buffer `GetAdaptersAddresses` wrote
+/// into is still alive. That is not a stylistic choice: the API returns a
+/// linked list whose `Next`, `AdapterName`, `FriendlyName`, and address-list
+/// fields are all absolute pointers *into that one allocation*. Copying the
+/// bytes out and reading the list from the copy leaves every one of those
+/// pointers dangling — it appears to work for as long as the freed memory
+/// happens to be untouched, then reads whatever was allocated over it.
+///
+/// The size is probed by the call itself and retried: the adapter set can
+/// change between two calls, which is exactly what `ERROR_BUFFER_OVERFLOW` on a
+/// correctly sized buffer means. Three attempts is plenty — more than that and
 /// something else is wrong.
-fn fetch_adapter_buffer() -> Result<Vec<u8>, NetError> {
+pub fn list() -> Result<Vec<Adapter>, NetError> {
     const FLAGS: u32 =
         GAA_FLAG_INCLUDE_GATEWAYS.0 | GAA_FLAG_SKIP_ANYCAST.0 | GAA_FLAG_SKIP_MULTICAST.0;
 
@@ -86,11 +76,23 @@ fn fetch_adapter_buffer() -> Result<Vec<u8>, NetError> {
 
         match result {
             r if r == ERROR_SUCCESS.0 || r == NO_ERROR.0 => {
-                let bytes = unsafe {
-                    std::slice::from_raw_parts(buffer.as_ptr() as *const u8, buffer.len() * 8)
-                };
-                return Ok(bytes.to_vec());
+                let mut adapters = Vec::new();
+
+                // SAFETY: the OS wrote a valid linked list into `buffer`, which
+                // outlives this loop; every pointer is checked non-null first.
+                unsafe {
+                    let mut current = ptr as *const IP_ADAPTER_ADDRESSES_LH;
+                    while !current.is_null() {
+                        adapters.push(read_adapter(&*current));
+                        current = (*current).Next;
+                    }
+                }
+
+                return Ok(adapters);
             }
+            // Success with nothing to report. The buffer is untouched, so it
+            // must not be walked — the zeroed first entry is not an adapter.
+            r if r == ERROR_NO_DATA.0 => return Ok(Vec::new()),
             r if r == ERROR_BUFFER_OVERFLOW.0 => continue,
             r => {
                 return Err(NetError::Api(format!(
@@ -386,5 +388,36 @@ mod tests {
 
         let best = crate::route::best_adapter(&adapters, Family::V4);
         println!("\nbest v4 adapter: {:?}", best.map(|a| &a.friendly_name));
+    }
+
+    /// Regression test for reading the adapter list out of a freed buffer.
+    ///
+    /// `GetAdaptersAddresses` returns a linked list of pointers into the buffer
+    /// it filled, so walking that list after the buffer is gone is a
+    /// use-after-free. It reads intact memory often enough to look correct,
+    /// which is why this loops and churns the allocator between calls: that is
+    /// what turns the latent corruption into a reliable failure.
+    #[test]
+    #[ignore = "reads live system state"]
+    fn enumeration_does_not_outlive_its_buffer() {
+        for _ in 0..200 {
+            let adapters = list().expect("enumeration should succeed");
+
+            // Reuse the freed pages, so a dangling pointer reads someone
+            // else's bytes rather than its own stale ones.
+            let churn: Vec<Vec<u8>> = (0..64).map(|_| vec![0xAAu8; 4096]).collect();
+            std::hint::black_box(&churn);
+
+            for adapter in &adapters {
+                // The GUID comes from the exact field the crash walked off the
+                // end of, and it has a shape a corrupt read cannot fake.
+                assert!(
+                    parse_guid(&adapter.guid).is_ok(),
+                    "adapter {:?} reported a malformed GUID {:?}",
+                    adapter.friendly_name,
+                    adapter.guid
+                );
+            }
+        }
     }
 }

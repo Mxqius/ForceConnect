@@ -1,20 +1,15 @@
 //! Windows adapter enumeration and DNS configuration.
 //!
-//! Shared by both processes on purpose. The UI reads adapters to display them;
-//! the helper writes DNS settings to one of them. If each side marshalled
-//! adapter identity independently, the two could disagree about which adapter
-//! the user selected — a bug that would show up as "I set DNS and nothing
-//! happened". One implementation, one notion of identity.
+//! This crate owns the notion of *adapter identity* for the whole application.
+//! Reads (enumeration, current DNS settings, routes) live here; writes live in
+//! `forceconnect-privileged`, which builds on these types. One implementation,
+//! one notion of identity — if the reading and the writing sides marshalled
+//! adapters independently they could disagree about which adapter the user
+//! picked, a bug that surfaces as "I set DNS and nothing happened".
 //!
-//! **This crate is read-only.** Writing DNS settings lives in the helper crate,
-//! which the UI does not depend on, so there is no code path from the UI to a
-//! privileged call.
-//!
-//! An earlier version gated the writes behind a `privileged` feature here
-//! instead. That does not work: Cargo unifies features across workspace members
-//! sharing a dependency, so a `--workspace` build enabled the feature for the
-//! UI crate too and the "gate" compiled away. Crate boundaries hold where
-//! feature flags do not.
+//! **This crate is read-only.** Nothing here changes system state, which is
+//! what keeps the privileged surface — now that the app runs elevated as a
+//! whole — down to one small crate a reviewer can read in a sitting.
 //!
 //! # Platform floor
 //!
@@ -34,7 +29,25 @@ use std::net::IpAddr;
 
 use serde::{Deserialize, Serialize};
 
-pub use forceconnect_ipc::{Family, InterfaceLuid};
+/// Which address family an operation applies to.
+///
+/// The two are always handled separately: `DNS_SETTING_IPV6` selects the stack
+/// a call applies to, and a server list has to match the family it is written
+/// to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Family {
+    V4,
+    V6,
+}
+
+/// Identifies an adapter by LUID rather than by name.
+///
+/// Interface indices are explicitly not persistent across adapter
+/// disable/enable, and friendly names are localized, user-renameable, and may
+/// contain spaces — all of which broke the previous `netsh`-based
+/// implementation.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct InterfaceLuid(pub u64);
 
 /// How an adapter is currently getting its DNS servers for one address family.
 ///
