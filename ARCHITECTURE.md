@@ -17,149 +17,132 @@ out to the provider.
 
 That single fact produces most of what follows.
 
-## Two processes
+## One process, elevated once
 
 ```
-┌──────────────────────────────────────────────┐
-│  forceconnect.exe          (asInvoker)       │
-│                                              │
-│  WebView2 ── React UI                        │
-│  Tauri commands                              │
-│  ├─ DNS forwarder ── binds 127.0.0.1:53      │
-│  ├─ adapter enumeration, route lookups       │
-│  ├─ latency probing                          │
-│  └─ config store (%APPDATA%)                 │
-└───────────────────┬──────────────────────────┘
-                    │ named pipe
-                    │ length-prefixed JSON
-┌───────────────────┴──────────────────────────┐
-│  forceconnect-helper.exe                     │
-│                        (requireAdministrator)│
-│  ├─ set / clear interface DNS                │
-│  ├─ flush resolver cache                     │
-│  └─ crash-safe restore journal               │
-└──────────────────────────────────────────────┘
+┌────────────────────────────────────────────────┐
+│  forceconnect.exe      (requireAdministrator)  │
+│                                                │
+│  WebView2 ── React UI                          │
+│  Tauri commands                                │
+│  ├─ DNS forwarder ── binds 127.0.0.1:53        │
+│  ├─ adapter enumeration, route lookups         │
+│  ├─ latency probing                            │
+│  ├─ config store (%APPDATA%)                   │
+│  └─ forceconnect-privileged                    │
+│     ├─ set / clear interface DNS               │
+│     ├─ flush resolver cache                    │
+│     └─ crash-safe restore journal              │
+└────────────────────────────────────────────────┘
 ```
 
-Changing an adapter's DNS requires administrator rights. Running the entire
-application elevated to get them would mean a UAC prompt at every launch, a
-WebView2 stack and an auto-updater running as administrator, and broken
-drag-and-drop from Explorer. Instead the interface runs unelevated and delegates
-the handful of privileged operations to a helper launched on demand.
+Changing an adapter's DNS and flushing the resolver cache both require
+administrator rights. The app asks Windows for them the only way a plain desktop
+application can: a `requireAdministrator` manifest, which produces exactly one
+consent prompt, at launch, before the window appears.
 
-### The helper is write-only
+### Why this replaced a separate helper
 
-Every **read** — enumerating adapters, reading current DNS settings, route
-lookups, change notifications — is unprivileged and stays in the UI process.
-The helper exists solely to perform writes.
+Earlier versions shipped two executables — an unelevated interface and an
+elevated helper it drove over a named pipe. The goal was a smaller privileged
+surface, and the price was a wire protocol, a launch nonce, a hand-built pipe
+DACL, a mandatory-integrity label, a caller-pinning check, a watchdog thread,
+and a second UAC prompt landing in the middle of the user's first connect.
 
-This is not merely tidy. It means the elevated process has a surface small
-enough to review in one sitting, and that the UI's view of system state comes
-from one place rather than two that can disagree.
+The price was not worth what it bought, for a reason that is worth stating
+plainly: **same-user processes are not a security boundary on Windows.** Any
+process running as the user can open the unelevated UI process, read its memory,
+and inject code into it. So the helper could never authenticate its caller in
+any meaningful sense; the only real protection was that it exposed nothing
+dangerous to ask for.
 
-### There is no escape hatch, and that is the point
+That protection is not a property of process separation. It is a property of the
+API, and it survives the merge intact — see below.
 
-The protocol has no `RunCommand`, no `WriteFile`, no
-`WriteRegistry { path, value }`. Every request names a specific operation with
-validated arguments.
+What genuinely is lost: the WebView2 stack now runs elevated, and drag-and-drop
+from Explorer into the window does not work, because Windows refuses drops from
+a lower-integrity process. Both are real, and both were judged smaller than an
+architecture whose subtleties took four screens of this document to explain.
 
-This matters because **same-user processes are not a security boundary on
-Windows**. Any process running as the user can open the UI process, read its
-memory, and inject into it. So the helper cannot defend itself by authenticating
-its caller — it can only limit what a caller is able to ask for. The design
-target is that a fully compromised UI process still cannot do anything the user
-could not already do through Windows Settings.
+### The privileged surface is still enumerated
 
-The consequence for contributors: if you ever find yourself wanting to add a
-general-purpose privileged operation "just for debugging", that is the moment
-this architecture stops being worth its complexity. Add a specific, validated
-operation instead.
+`forceconnect-privileged` exposes three verbs — set DNS, clear DNS, flush the
+resolver cache. There is no `run_command`, no `write_file`, no
+`write_registry { path, value }`, and adding one is the moment to stop and
+reconsider. Every argument is validated against live system state before it is
+acted on: a LUID must resolve to a currently present adapter, and server lists
+are checked for family, count, and addresses that are not resolvers at all.
 
-### The pipe has two barriers, not one
+The design target is unchanged: ForceConnect should not be able to do anything
+the user could not already do through Windows Settings.
 
-Making an elevated-owned pipe reachable by an unelevated client trips people up
-because there are two independent gates and only one is obvious.
+### The prompt is per launch, not once forever
 
-**The DACL.** With null security attributes the default descriptor grants full
-control to SYSTEM, Administrators, and the creator, and _read_ access to
-Everyone. The client runs on the filtered token where Administrators is
-deny-only, so it matches only the Everyone entry: read, no write.
-
-**Mandatory Integrity Control.** An object created by a High-integrity process
-is labelled High with `NO_WRITE_UP`, and MIC is evaluated _before_ the DACL. A
-Medium-integrity client is refused no matter what the DACL says. Lowering the
-label is what actually makes the pipe usable.
-
-So the descriptor is:
-
-```
-D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;0x0012019B;;;<logon-sid>)S:(ML;;NW;;;ME)
-```
-
-Two details in there are deliberate. `S:(ML;;NW;;;ME)` is the integrity label —
-omit it and everything else is pointless. And the client is granted
-`0x0012019B` rather than generic write, because `FILE_APPEND_DATA` and
-`FILE_CREATE_PIPE_INSTANCE` share a bit: generic write would let any process
-with client access publish a rogue instance of our pipe name and impersonate the
-helper to a later client.
-
-The SID is the **client's logon SID**, read from its token. Using our own would
-break over-the-shoulder elevation — where a standard user enters an
-administrator's credentials, the helper lands in a different logon session, and
-a DACL built from its own token locks out the very process meant to connect.
-
-Fixing only the DACL produces a bug that works in development, where both
-processes were started elevated, and fails for every real user.
-
-### What the nonce is and is not
-
-The helper is launched with a nonce on its command line and will not serve a
-client that cannot echo it back. This is a **squatting guard**, not
-authentication — command lines are readable by any process running as the same
-user.
-
-The stronger check is that the helper pins its client to the exact process ID
-_and_ process creation time of the process that triggered the UAC prompt. A
-recycled PID cannot impersonate it, and a second copy of our own signed binary
-is rejected.
+`requireAdministrator` means Windows asks every time the app starts, not once on
+first run. Getting to a genuine "approve once, never again" would mean
+installing a Windows service or a scheduled task that runs elevated at logon —
+a permanently installed, permanently elevated component, which is a materially
+larger thing to trust than a foreground app that asks each time and leaves
+nothing behind. That trade is available and deliberately not taken.
 
 ## Crates
 
-| Crate                 | Role                                                                    |
-| --------------------- | ----------------------------------------------------------------------- |
-| `forceconnect`        | Tauri shell: command surface, plugin wiring, window. Deliberately thin. |
-| `forceconnect-dns`    | Server catalog, rules engine, forwarder. **No Tauri dependency.**       |
-| `forceconnect-net`    | Adapter enumeration and route lookups. **Read-only.**                   |
-| `forceconnect-ipc`    | Wire protocol and helper command line, shared by both processes.        |
-| `forceconnect-helper` | The elevated binary, and the only place DNS settings are written.       |
+| Crate                     | Role                                                                    |
+| ------------------------- | ----------------------------------------------------------------------- |
+| `forceconnect`            | Tauri shell: command surface, plugin wiring, window. Deliberately thin. |
+| `forceconnect-dns`        | Server catalog, rules engine, forwarder. **No Tauri dependency.**       |
+| `forceconnect-net`        | Adapter enumeration and route lookups. **Read-only.**                   |
+| `forceconnect-privileged` | The only place system state is written, and the only place it can be.   |
 
-Two of these boundaries carry weight:
+Three of these boundaries carry weight:
 
 **`forceconnect-dns` has no Tauri dependency** so the resolver can be exercised
 with plain `cargo test`. It is the most intricate part of the project and the
 part most likely to attract outside contributions; it should not require a
 running GUI to work on.
 
-**`forceconnect-net` is shared** rather than duplicated because the UI reads
-adapters to display them and the helper writes DNS to one of them. If each side
-marshalled adapter identity independently, they could disagree about which
-adapter the user picked — a bug that surfaces as "I clicked connect and nothing
-happened".
+**`forceconnect-net` is read-only** and owns adapter identity for the whole
+application. Reads and writes agreeing about which adapter the user picked is
+not automatic: if each side marshalled identity independently they could
+disagree, a bug that surfaces as "I clicked connect and nothing happened".
 
-That crate is **read-only**. Writing DNS settings lives in the helper crate,
-which the UI does not depend on, so there is no code path from the UI to a
-privileged call.
+**`forceconnect-privileged` is where every write lives.** Now that the whole
+process is elevated, the crate boundary is no longer a capability boundary — it
+is a review boundary, which is the thing that was actually load-bearing. The
+question "what does ForceConnect do with administrator rights" is answered by
+reading four files.
 
 An earlier version instead put the writes in `forceconnect-net` behind a
-`privileged` feature that only the helper enabled. That does not work, and it is
-worth knowing why: Cargo unifies features across workspace members sharing a
-dependency, so `cargo build --workspace` turned the feature on for the UI crate
-too and the gate compiled away. **Crate boundaries hold where feature flags do
-not.**
+`privileged` feature. That does not work, and it is worth knowing why: Cargo
+unifies features across workspace members sharing a dependency, so
+`cargo build --workspace` turned the feature on everywhere and the gate compiled
+away. **Crate boundaries hold where feature flags do not.**
 
 Adapters are identified by **LUID**, not by interface index or friendly name.
 Indices are explicitly not persistent across adapter disable/enable, and
 friendly names are localized and user-renameable.
+
+## The manifest is attached to one binary, not the package
+
+`tauri-build` embeds an `asInvoker` manifest into every binary a package
+produces. Ours is built by hand in `build.rs` instead, with
+`cargo:rustc-link-arg-bin=forceconnect=…`, for a reason that is easy to hit and
+annoying to diagnose: `export-bindings` is a headless developer tool CI runs, and
+with `requireAdministrator` attached it cannot start at all in a non-interactive
+shell — it fails with `ERROR_ELEVATION_REQUIRED` (740).
+
+So there are two manifest files, differing in one line. Two details in the
+second one are load-bearing:
+
+- **Common-Controls v6 must be declared in both.** The exporter links the whole
+  application library, which imports comctl32 v6 entry points by way of the
+  dialog plugin. Without the dependency Windows binds the process to comctl32
+  v5, those exports are missing, and the binary dies at load with
+  `STATUS_ENTRYPOINT_NOT_FOUND` before `main` runs.
+- **`/MANIFESTUAC:NO` is required alongside `/MANIFEST:EMBED`.** The linker
+  contributes an `asInvoker` fragment of its own otherwise, and `mt.exe` refuses
+  to merge two snippets that disagree:
+  `manifest authoring error c1010001: Values of attribute "level" not equal`.
 
 ## Things that are easy to get wrong
 
@@ -193,6 +176,14 @@ many machines; Hyper-V, WSL, and Docker reserve port ranges. These surface as
 responsible, not shown an errno.
 
 **Failing closed is worse than failing open.** If the app dies while the adapter
-points at `127.0.0.1`, the machine loses all name resolution. The helper watches
-its parent and reverts on death; before applying any change it writes a restore
-journal so a hard crash or power loss is recoverable on next launch.
+points at `127.0.0.1`, the machine loses all name resolution — and nothing about
+that symptom points a user back at this app. So there are two nets. The process
+reverts everything it changed on `RunEvent::Exit`, which covers every ordinary
+way of quitting. And before applying any change it writes a restore journal to
+`%PROGRAMDATA%\ForceConnect`, which covers the ways it does not get to observe:
+a hard crash, a forced shutdown, a power loss. `recover()` replays that journal
+at startup, before the window is shown and before anything else touches DNS.
+
+The journal is written to a temporary file and renamed rather than written in
+place, so a crash midway through leaves either the old journal or the new one —
+never a truncated file that fails to parse and loses the revert entirely.

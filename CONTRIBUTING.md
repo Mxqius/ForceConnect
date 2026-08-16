@@ -98,5 +98,5 @@ Get-DnsClientServerAddress
 netsh int ipv4 show excludedportrange protocol=tcp
 ```
 
-For anything involving elevation or the helper process, please read
+For anything involving elevation or `forceconnect-privileged`, please read
 [`SECURITY.md`](SECURITY.md) first — some issues are better reported privately.

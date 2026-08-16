@@ -21,36 +21,44 @@ Version 2 keeps the job the same and changes how it is done:
 - **Query-level control.** Because every query passes through our own resolver,
   blocking, redirecting, and logging are a property of the design rather than
   features bolted on.
-- **The UI does not run as administrator.** A small helper process holds the
-  privileged operations; the interface and the web view never do.
+- **One prompt, at launch.** ForceConnect asks for administrator rights once,
+  when it starts, and holds them for that session. There is no service, no
+  scheduled task, and nothing left running when you close it.
 
 ## Architecture
 
-Two processes, deliberately:
+One process:
 
 ```
-forceconnect.exe (asInvoker)          forceconnect-helper.exe (requireAdministrator)
-├─ React UI (WebView2)                ├─ set / clear interface DNS
-├─ DNS forwarder → 127.0.0.1:53  ←──→ ├─ flush resolver cache
-├─ adapter enumeration (read-only)    └─ crash-safe restore journal
-└─ latency probing                       (named pipe, nonce-authenticated)
+forceconnect.exe (requireAdministrator)
+├─ React UI (WebView2)
+├─ DNS forwarder → 127.0.0.1:53
+├─ adapter enumeration, routes, latency probing   (read-only)
+└─ forceconnect-privileged
+   ├─ set / clear interface DNS
+   ├─ flush resolver cache
+   └─ crash-safe restore journal
 ```
 
-The helper is **write-only**: every read — adapters, current DNS, routes —
-happens unprivileged in the UI process. There is no general-purpose escape
-hatch in the protocol, which is the actual security boundary. See
-[`ARCHITECTURE.md`](ARCHITECTURE.md) for the reasoning.
+Everything that needs administrator rights lives in one small crate that
+exposes three verbs and no general-purpose escape hatch — no `run_command`, no
+arbitrary file or registry write. That, rather than process separation, is the
+actual boundary; ForceConnect cannot do anything you could not already do
+through Windows Settings.
+
+Earlier versions split this into an unelevated UI and an elevated helper talking
+over a named pipe. [`ARCHITECTURE.md`](ARCHITECTURE.md) explains why that was
+merged, and what it cost.
 
 ### Layout
 
-| Path                       | Contents                                                     |
-| -------------------------- | ------------------------------------------------------------ |
-| `src/`                     | React frontend — design system, features, generated bindings |
-| `src-tauri/`               | Tauri application shell and commands                         |
-| `src-tauri/crates/dns/`    | Server catalog, rules, forwarder. No Tauri dependency.       |
-| `src-tauri/crates/net/`    | Adapter enumeration and DNS configuration                    |
-| `src-tauri/crates/ipc/`    | Wire protocol shared by app and helper                       |
-| `src-tauri/crates/helper/` | The elevated helper binary                                   |
+| Path                           | Contents                                                     |
+| ------------------------------ | ------------------------------------------------------------ |
+| `src/`                         | React frontend — design system, features, generated bindings |
+| `src-tauri/`                   | Tauri application shell and commands                         |
+| `src-tauri/crates/dns/`        | Server catalog, rules, forwarder. No Tauri dependency.       |
+| `src-tauri/crates/net/`        | Adapter enumeration and route lookups. Read-only.            |
+| `src-tauri/crates/privileged/` | Every operation that needs administrator rights              |
 
 ## Building from source
 
@@ -85,28 +93,21 @@ side:
 cargo test --workspace --exclude forceconnect --manifest-path src-tauri/Cargo.toml
 ```
 
-Two exclusions are deliberate and worth knowing about:
+The exclusion is deliberate: a test harness linked against **`forceconnect`**
+(the Tauri app crate) fails to load on Windows before any test runs. The crate is
+kept as a thin shell for exactly this reason — logic lives in the crates beside
+it, which test normally.
 
-- **`forceconnect`** (the Tauri app crate) — a test harness linked against it
-  fails to load on Windows before any test runs. The crate is kept as a thin
-  shell for this reason; logic lives in the crates beside it.
-- **`forceconnect-helper`'s binary target** — its embedded manifest requests
-  administrator rights, so Windows refuses to launch a test harness built from
-  it. Its logic lives in `forceconnect-ipc`.
+### Running the app during development
 
-### Checking the elevation path
+`pnpm tauri dev` triggers a UAC prompt, because the app it builds requests
+administrator rights. That is the same prompt users get, and it is not
+avoidable: the app cannot write DNS settings without it.
 
-The UAC prompt is modal, so the helper cannot be exercised by anything
-unattended. This runs the whole path — launch, pipe, handshake, caller pinning —
-in one command and one click, and changes nothing:
-
-```bash
-cargo run --manifest-path src-tauri/Cargo.toml --bin helper-check
-```
-
-Add `-- --apply` to also write DNS to the active adapter and revert it, which is
-the only way to confirm the restore path really returns a DHCP adapter to DHCP
-rather than pinning it to whatever the router was handing out.
+For frontend work there is a faster path that needs no elevation and no Rust
+rebuild — `pnpm dev` and open <http://localhost:5173> in a browser. Outside
+Tauri the IPC layer serves typed fixtures instead of real commands, so layout,
+theming, and loading states can all be worked on directly.
 
 ### Regenerating bindings
 
