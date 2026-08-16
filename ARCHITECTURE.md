@@ -125,13 +125,13 @@ is rejected.
 
 ## Crates
 
-| Crate                 | Role                                                                                                           |
-| --------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `forceconnect`        | Tauri shell: command surface, plugin wiring, window. Deliberately thin.                                        |
-| `forceconnect-dns`    | Server catalog, rules engine, forwarder. **No Tauri dependency.**                                              |
-| `forceconnect-net`    | Adapter enumeration and DNS configuration. Writes gated behind a `privileged` feature only the helper enables. |
-| `forceconnect-ipc`    | Wire protocol and helper command line, shared by both processes.                                               |
-| `forceconnect-helper` | The elevated binary.                                                                                           |
+| Crate                 | Role                                                                    |
+| --------------------- | ----------------------------------------------------------------------- |
+| `forceconnect`        | Tauri shell: command surface, plugin wiring, window. Deliberately thin. |
+| `forceconnect-dns`    | Server catalog, rules engine, forwarder. **No Tauri dependency.**       |
+| `forceconnect-net`    | Adapter enumeration and route lookups. **Read-only.**                   |
+| `forceconnect-ipc`    | Wire protocol and helper command line, shared by both processes.        |
+| `forceconnect-helper` | The elevated binary, and the only place DNS settings are written.       |
 
 Two of these boundaries carry weight:
 
