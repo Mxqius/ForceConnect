@@ -45,3 +45,4 @@ desktop.ini
 .cache/
 coverage/
 scratch/
+.claude/
