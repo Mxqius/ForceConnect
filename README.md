@@ -7,6 +7,10 @@ lightweight interface.
 > **Status: in development.** This is a ground-up rewrite of ForceConnect 1.x
 > (C#/WinForms) on Tauri. The foundation is in place; features are landing
 > incrementally. It is not yet ready for daily use.
+>
+> Looking for 1.x? The C#/WinForms version lives on the
+> [`legacy-csharp`](https://github.com/Mxqius/ForceConnect/tree/legacy-csharp)
+> branch, with its full history and the `v1.x` release tags intact.
 
 ## Why a rewrite
 
