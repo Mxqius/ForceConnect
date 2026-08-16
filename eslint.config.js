@@ -50,7 +50,12 @@ export default tseslint.config(
     rules: {
       "react-refresh/only-export-components": [
         "warn",
-        { allowConstantExport: true },
+        {
+          allowConstantExport: true,
+          // `toast` is a module-level manager, deliberately callable from
+          // outside React so non-component code can raise notifications.
+          allowExportNames: ["toast"],
+        },
       ],
     },
   },

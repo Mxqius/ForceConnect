@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
+import { ToastProvider, TooltipProvider } from "@/design/primitives";
+
 function createQueryClient(): QueryClient {
   return new QueryClient({
     defaultOptions: {
@@ -21,6 +23,10 @@ export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(createQueryClient);
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }

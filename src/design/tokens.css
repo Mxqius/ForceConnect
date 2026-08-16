@@ -1,0 +1,175 @@
+/*
+ * Design tokens.
+ *
+ * Two layers, deliberately:
+ *
+ *   1. Raw palette values on `:root`, overridden under `[data-theme="light"]`.
+ *   2. `@theme inline`, which maps those to Tailwind utilities.
+ *
+ * `inline` matters. Without it Tailwind emits its own variable indirection and
+ * the theme swap stops working at runtime; with it, `bg-surface` resolves
+ * straight to `var(--surface)` and flipping the attribute on <html> re-themes
+ * the whole app with no rebuild.
+ *
+ * Dark is the default and the design target. Light is supported but secondary.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces, from furthest back to closest to the viewer. */
+  --surface-base: oklch(0.17 0.008 265);
+  --surface-subtle: oklch(0.2 0.008 265);
+  --surface: oklch(0.225 0.009 265);
+  --surface-elevated: oklch(0.265 0.01 265);
+  --surface-inset: oklch(0.14 0.008 265);
+  --surface-hover: oklch(0.28 0.011 265);
+  --surface-active: oklch(0.31 0.012 265);
+
+  /* Borders. `subtle` separates, `default` outlines, `strong` is for focus
+     and selected states. */
+  --border-subtle: oklch(0.28 0.01 265);
+  --border-default: oklch(0.34 0.012 265);
+  --border-strong: oklch(0.44 0.014 265);
+
+  --text-primary: oklch(0.96 0.003 265);
+  --text-secondary: oklch(0.79 0.006 265);
+  --text-muted: oklch(0.63 0.008 265);
+  --text-faint: oklch(0.5 0.008 265);
+  --text-on-accent: oklch(0.15 0.012 245);
+
+  /* One accent. A second one would be a decision every component has to
+     re-litigate. */
+  --accent: oklch(0.7 0.145 245);
+  --accent-hover: oklch(0.76 0.15 245);
+  --accent-active: oklch(0.65 0.14 245);
+  --accent-muted: oklch(0.38 0.085 245);
+  --accent-surface: oklch(0.26 0.045 245);
+
+  /* Status. `success`/`warning`/`danger` double as the latency bands — the
+     1.x app used 120ms and 180ms as its thresholds and they held up. */
+  --success: oklch(0.74 0.165 152);
+  --success-surface: oklch(0.26 0.05 152);
+  --warning: oklch(0.8 0.145 82);
+  --warning-surface: oklch(0.27 0.05 82);
+  --danger: oklch(0.66 0.19 25);
+  --danger-surface: oklch(0.26 0.06 25);
+  --danger-hover: oklch(0.71 0.195 25);
+
+  /* Protocol accents for the server browser. Distinct enough to scan, muted
+     enough not to turn a dense table into a rainbow. */
+  --protocol-plain: oklch(0.63 0.008 265);
+  --protocol-encrypted: oklch(0.72 0.13 165);
+
+  --focus-ring: var(--accent);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-base: oklch(0.985 0.002 265);
+  --surface-subtle: oklch(0.965 0.003 265);
+  --surface: oklch(1 0 0);
+  --surface-elevated: oklch(1 0 0);
+  --surface-inset: oklch(0.955 0.004 265);
+  --surface-hover: oklch(0.94 0.005 265);
+  --surface-active: oklch(0.9 0.006 265);
+
+  --border-subtle: oklch(0.91 0.005 265);
+  --border-default: oklch(0.85 0.007 265);
+  --border-strong: oklch(0.72 0.01 265);
+
+  --text-primary: oklch(0.22 0.01 265);
+  --text-secondary: oklch(0.4 0.011 265);
+  --text-muted: oklch(0.54 0.011 265);
+  --text-faint: oklch(0.66 0.01 265);
+  --text-on-accent: oklch(0.99 0 0);
+
+  --accent: oklch(0.53 0.16 245);
+  --accent-hover: oklch(0.48 0.165 245);
+  --accent-active: oklch(0.44 0.16 245);
+  --accent-muted: oklch(0.78 0.09 245);
+  --accent-surface: oklch(0.95 0.03 245);
+
+  --success: oklch(0.52 0.15 152);
+  --success-surface: oklch(0.94 0.04 152);
+  --warning: oklch(0.58 0.13 70);
+  --warning-surface: oklch(0.95 0.05 82);
+  --danger: oklch(0.55 0.2 25);
+  --danger-surface: oklch(0.95 0.04 25);
+  --danger-hover: oklch(0.5 0.205 25);
+
+  --protocol-plain: oklch(0.54 0.011 265);
+  --protocol-encrypted: oklch(0.5 0.12 165);
+}
+
+@theme inline {
+  --color-surface-base: var(--surface-base);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-inset: var(--surface-inset);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-active: var(--surface-active);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-faint: var(--text-faint);
+  --color-text-on-accent: var(--text-on-accent);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-surface: var(--accent-surface);
+
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-surface: var(--danger-surface);
+
+  --color-protocol-plain: var(--protocol-plain);
+  --color-protocol-encrypted: var(--protocol-encrypted);
+
+  /* Windows-first stacks. Nothing is fetched over the network — the CSP
+     forbids it, and a DNS tool that cannot render until DNS works would be a
+     poor joke. Segoe UI Variable ships with Windows 11. */
+  --font-sans:
+    "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono:
+    "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+
+  /* Dense by intent: this is a tool, and the tables it shows are long. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.125rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.375rem;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  /* Borders do the separating; shadows only lift things off the page. */
+  --shadow-popup:
+    0 10px 30px -10px oklch(0 0 0 / 0.55), 0 2px 8px -2px oklch(0 0 0 / 0.35);
+  --shadow-dialog: 0 24px 60px -12px oklch(0 0 0 / 0.65);
+}

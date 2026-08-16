@@ -1,21 +1,5 @@
 @import "tailwindcss";
-
-/*
- * Dark-first by default. The full token set lands with the design system;
- * this is the minimum needed to keep the shell from flashing white.
- */
-@theme {
-  --color-surface-base: oklch(0.18 0.008 265);
-  --color-surface-raised: oklch(0.22 0.008 265);
-  --color-border-subtle: oklch(0.3 0.01 265);
-  --color-text-primary: oklch(0.96 0.003 265);
-  --color-text-muted: oklch(0.68 0.008 265);
-  --color-accent: oklch(0.68 0.16 250);
-
-  --font-sans:
-    "Inter var", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
-}
+@import "../design/tokens.css";
 
 @layer base {
   html,
@@ -25,15 +9,21 @@
   }
 
   body {
-    background-color: var(--color-surface-base);
-    color: var(--color-text-primary);
+    background-color: var(--surface-base);
+    color: var(--text-primary);
     font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* The window is the scroll container; regions scroll individually. */
     overflow: hidden;
+    overscroll-behavior: none;
   }
 
-  /* This is a desktop shell, not a web page: kill the browser affordances
-     that make a WebView feel like a browser. */
+  /* This is a desktop shell, not a web page. Text selection, drag-to-save on
+     images, and the context menu all read as bugs here — re-enabled per
+     element where they are genuinely useful. */
   * {
     user-select: none;
     -webkit-user-drag: none;
@@ -47,7 +37,57 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+  }
+
+  /* Base UI sets aria-hidden and inert on backgrounded content; make sure it
+     cannot be interacted with even if a style leaks. */
+  [inert] {
+    pointer-events: none;
+  }
+
+  ::selection {
+    background-color: var(--accent-muted);
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  /* Scrollbars, themed. The default WebView2 scrollbar is light-on-dark and
+     ruins an otherwise careful dark UI. */
+  .fc-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+
+  .fc-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .fc-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .fc-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--border-default);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 9999px;
+  }
+
+  .fc-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--border-strong);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
