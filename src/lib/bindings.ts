@@ -6,6 +6,15 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 export const commands = {
 	appInfo: () => typedError<AppInfo, CommandError>(__TAURI_INVOKE("app_info")),
 	/**
+	 *  Sync the window-close behaviour with the persisted preference.
+	 * 
+	 *  The preference itself lives in the frontend's store; this just tells the
+	 *  close handler in `lib.rs` whether it should hide the window instead of
+	 *  letting it exit.
+	 */
+	setMinimizeToTray: (enabled: boolean) => typedError<null, CommandError>(__TAURI_INVOKE("set_minimize_to_tray", { enabled })),
+	setTrayStatus: (status: TrayStatus) => typedError<null, CommandError>(__TAURI_INVOKE("set_tray_status", { status })),
+	/**
 	 *  Every adapter the system reports, best-first among the eligible ones.
 	 * 
 	 *  Everything here is an unprivileged read, so this never triggers a UAC
@@ -26,17 +35,25 @@ export const commands = {
 	 *  tab that would always be empty.
 	 */
 	listProtocols: () => typedError<Protocol[], CommandError>(__TAURI_INVOKE("list_protocols")),
-	helperStatus: () => typedError<HelperStatus, CommandError>(__TAURI_INVOKE("helper_status")),
 	/**
 	 *  Point an adapter at a list of DNS servers.
 	 * 
-	 *  Triggers a UAC prompt if no helper session exists yet. Both address families
-	 *  present in `servers` are applied, because setting IPv4 alone while IPv6 DNS
-	 *  stays on DHCP lets Windows resolve around the change entirely.
+	 *  Both address families present in `servers` are applied, because setting IPv4
+	 *  alone while IPv6 DNS stays on DHCP lets Windows resolve around the change.
 	 */
 	setDns: (luid: string, servers: string[]) => typedError<null, CommandError>(__TAURI_INVOKE("set_dns", { luid, servers })),
 	/**  Return an adapter to DHCP-assigned DNS for both families. */
 	clearDns: (luid: string) => typedError<null, CommandError>(__TAURI_INVOKE("clear_dns", { luid })),
+	/**
+	 *  Drop every entry in the system resolver cache.
+	 * 
+	 *  Worth its own action rather than being folded into `set_dns`: records
+	 *  resolved through the previous server stay valid for their TTL, so a user who
+	 *  switches server and immediately reloads a page can see the old answer and
+	 *  conclude nothing happened. It is also useful on its own, with no DNS change
+	 *  involved at all.
+	 */
+	flushDnsCache: () => typedError<null, CommandError>(__TAURI_INVOKE("flush_dns_cache")),
 	/**
 	 *  Probe every server that offers a protocol.
 	 * 
@@ -46,6 +63,16 @@ export const commands = {
 	 *  rather than round-trip time.
 	 */
 	probeServers: (protocol: Protocol) => typedError<LatencyResult[], CommandError>(__TAURI_INVOKE("probe_servers", { protocol })),
+	/**
+	 *  Probe one server, by id.
+	 * 
+	 *  The connection screen needs a latency figure for the server the user is
+	 *  actually on, and re-probing the whole catalogue to get one number would fire
+	 *  twenty-odd handshakes for a single row. Custom servers are searched too — a
+	 *  server the user added is exactly the one whose latency they cannot look up
+	 *  anywhere else.
+	 */
+	probeServer: (serverId: string, protocol: Protocol) => typedError<LatencyResult, CommandError>(__TAURI_INVOKE("probe_server", { serverId, protocol })),
 	/**  Every server: built-ins first, then the user's own. */
 	listCustomServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_custom_servers")),
 	/**
@@ -120,12 +147,20 @@ export type AppInfo = {
 	version: string,
 	os: string,
 	/**
-	 *  Whether *this* process is elevated. Expected to be `false` in normal
-	 *  operation — the UI runs unelevated by design and delegates privileged
-	 *  work to the helper. A `true` here means someone ran the app as
-	 *  administrator, which is supported but worth surfacing.
+	 *  Whether this process holds administrator rights.
+	 * 
+	 *  Expected to be `true`: the executable embeds a `requireAdministrator`
+	 *  manifest, so Windows asks once at launch and the app has what it needs
+	 *  for the rest of the session. A `false` here means a build with the
+	 *  manifest stripped, and every DNS action will refuse rather than fail
+	 *  halfway.
 	 */
 	elevated: boolean,
+	/**
+	 *  This process's own id, so a user can confirm in Task Manager exactly
+	 *  which process is the one running elevated.
+	 */
+	pid: number,
 };
 
 /**  Anything a command can fail with, in a shape the UI can branch on. */
@@ -153,20 +188,6 @@ export type Endpoint = {
 	encrypted: boolean,
 	/**  Whether selecting this endpoint requires the local forwarder. */
 	requiresForwarder: boolean,
-};
-
-export type HelperStatus = {
-	/**
-	 *  Whether a helper session is live. `false` means the next privileged
-	 *  action will show a UAC prompt.
-	 */
-	connected: boolean,
-	version: string | null,
-	/**
-	 *  Process id of the elevated helper, so a user can verify in Task Manager
-	 *  exactly which process is running with administrator rights.
-	 */
-	pid: number | null,
 };
 
 export type LatencyResult = {
@@ -221,6 +242,20 @@ export type Server = {
 };
 
 export type ServerSource = "builtin" | "custom";
+
+/**
+ *  A snapshot of the connection, for the tray to show.
+ * 
+ *  The tray has no way to know this on its own — "connected to X over Y" is
+ *  derived from the catalog entry the user picked, not from anything the
+ *  adapter's DNS settings alone reveal — so the frontend pushes it across
+ *  whenever `useConnection`'s store changes.
+ */
+export type TrayStatus = {
+	connected: boolean,
+	serverName: string | null,
+	protocolLabel: string | null,
+};
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {

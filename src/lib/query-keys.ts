@@ -14,7 +14,10 @@ export const queryKeys = {
   customServers: ["servers", "custom"] as const,
   favourites: ["favourites"] as const,
   protocols: ["protocols"] as const,
-  helper: ["helper"] as const,
-  latency: (serverId: string) => ["latency", serverId] as const,
+  // Keyed by protocol as well as server: the same resolver answers plain UDP
+  // and DoH3 at genuinely different speeds, so one cached figure per server
+  // would show the wrong number every time the protocol changed.
+  latency: (serverId: string, protocol: string) =>
+    ["latency", serverId, protocol] as const,
   connection: ["connection"] as const,
 } as const;

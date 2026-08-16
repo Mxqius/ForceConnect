@@ -9,6 +9,7 @@ interface ActiveConnection {
   serverId: string;
   serverName: string;
   protocol: Protocol;
+  protocolLabel: string;
   adapterLuid: string;
   adapterName: string;
 }
@@ -68,6 +69,7 @@ export function useConnection() {
         serverId: server.id,
         serverName: server.displayName,
         protocol,
+        protocolLabel: endpoint.label,
         adapterLuid: adapter.luid,
         adapterName: adapter.name,
       } satisfies ActiveConnection;
@@ -75,7 +77,11 @@ export function useConnection() {
     onSuccess: (connection) => {
       setActive(connection);
       void client.invalidateQueries({ queryKey: queryKeys.adapters });
-      void client.invalidateQueries({ queryKey: queryKeys.helper });
+      void ipc.setTrayStatus({
+        connected: true,
+        serverName: connection.serverName,
+        protocolLabel: connection.protocolLabel,
+      });
     },
   });
 
@@ -88,6 +94,11 @@ export function useConnection() {
     onSuccess: () => {
       setActive(null);
       void client.invalidateQueries({ queryKey: queryKeys.adapters });
+      void ipc.setTrayStatus({
+        connected: false,
+        serverName: null,
+        protocolLabel: null,
+      });
     },
   });
 

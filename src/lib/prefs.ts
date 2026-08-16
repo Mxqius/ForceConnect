@@ -16,12 +16,14 @@ export interface Prefs {
   favourites: string[];
   navLayout: NavLayout;
   theme: "dark" | "light";
+  minimizeToTray: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = {
   favourites: [],
   navLayout: "rail",
   theme: "dark",
+  minimizeToTray: false,
 };
 
 const FILE = "preferences.json";

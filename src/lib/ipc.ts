@@ -6,6 +6,7 @@ import {
   type NewServer,
   type Protocol,
   type Server,
+  type TrayStatus,
 } from "@/lib/bindings";
 import * as fixtures from "@/lib/fixtures";
 
@@ -17,12 +18,12 @@ export type {
   CommandError,
   DnsSource,
   Endpoint,
-  HelperStatus,
   LatencyResult,
   NewServer,
   Protocol,
   Server,
   ServerSource,
+  TrayStatus,
 } from "@/lib/bindings";
 
 /**
@@ -81,6 +82,10 @@ async function fixture<T>(value: T): Promise<T> {
 export const ipc = {
   appInfo: () =>
     useFixtures ? fixture(fixtures.appInfo) : unwrap(commands.appInfo()),
+  setMinimizeToTray: (enabled: boolean) =>
+    useFixtures ? fixture(null) : unwrap(commands.setMinimizeToTray(enabled)),
+  setTrayStatus: (status: TrayStatus) =>
+    useFixtures ? fixture(null) : unwrap(commands.setTrayStatus(status)),
   listAdapters: () =>
     useFixtures ? fixture(fixtures.adapters) : unwrap(commands.listAdapters()),
   listServers: () =>
@@ -101,10 +106,6 @@ export const ipc = {
   removeCustomServer: (id: string) =>
     useFixtures ? fixture(null) : unwrap(commands.removeCustomServer(id)),
 
-  helperStatus: () =>
-    useFixtures
-      ? fixture({ connected: false, version: null, pid: null })
-      : unwrap(commands.helperStatus()),
   setDns: (luid: string, servers: string[]) =>
     useFixtures
       ? Promise.reject(new Error("changing DNS needs the desktop app"))
@@ -113,7 +114,15 @@ export const ipc = {
     useFixtures
       ? Promise.reject(new Error("changing DNS needs the desktop app"))
       : unwrap(commands.clearDns(luid)),
+  flushDnsCache: () =>
+    useFixtures
+      ? Promise.reject(new Error("flushing the cache needs the desktop app"))
+      : unwrap(commands.flushDnsCache()),
 
   probeServers: (protocol: Protocol) =>
     useFixtures ? fixture([]) : unwrap(commands.probeServers(protocol)),
+  probeServer: (serverId: string, protocol: Protocol) =>
+    useFixtures
+      ? fixture(fixtures.latency(serverId, protocol))
+      : unwrap(commands.probeServer(serverId, protocol)),
 };

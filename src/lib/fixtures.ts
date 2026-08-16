@@ -1,4 +1,10 @@
-import type { Adapter, AppInfo, Protocol, Server } from "@/lib/bindings";
+import type {
+  Adapter,
+  AppInfo,
+  LatencyResult,
+  Protocol,
+  Server,
+} from "@/lib/bindings";
 
 /**
  * Sample data used only when the UI runs outside Tauri.
@@ -19,7 +25,8 @@ import type { Adapter, AppInfo, Protocol, Server } from "@/lib/bindings";
 export const appInfo: AppInfo = {
   version: "2.0.0",
   os: "windows x86_64",
-  elevated: false,
+  elevated: true,
+  pid: 4242,
 };
 
 export const adapters: Adapter[] = [
@@ -229,3 +236,24 @@ export const servers: Server[] = [
 ];
 
 export const protocols: Protocol[] = ["udp", "dot", "doh", "doq", "doh3"];
+
+/**
+ * A plausible probe result, derived from the server id so a given server
+ * always reads the same in the browser — a latency that jumped every render
+ * would make the refresh control impossible to evaluate by eye.
+ */
+export function latency(serverId: string, protocol: Protocol): LatencyResult {
+  const hash = [...serverId].reduce((acc, c) => acc * 31 + c.charCodeAt(0), 7);
+  const median = 12 + (hash % 190);
+
+  return {
+    serverId,
+    protocol,
+    verdict: "good",
+    medianMs: median,
+    handshakeMs: protocol === "udp" ? null : median * 1.8,
+    jitterMs: (hash % 7) + 1,
+    answered: 4,
+    rounds: 4,
+  };
+}
