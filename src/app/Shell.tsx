@@ -48,7 +48,7 @@ export function Shell() {
         className={cn(
           "bg-surface-subtle border-border-subtle flex shrink-0 gap-1",
           docked
-            ? "order-2 flex-row items-center justify-center border-t px-3 py-2"
+            ? "order-2 flex-row items-center justify-center rounded-full border-t px-3 py-2 max-w-96 mx-auto mb-5"
             : "flex-col items-center border-r px-2 py-3",
         )}
       >
