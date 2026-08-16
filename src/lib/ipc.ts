@@ -1,5 +1,18 @@
 import { commands, type CommandError } from "@/lib/bindings";
 
+export type {
+  Adapter,
+  AdapterKind,
+  AdapterStatus,
+  AppInfo,
+  CommandError,
+  DnsSource,
+  Endpoint,
+  Protocol,
+  Server,
+  ServerSource,
+} from "@/lib/bindings";
+
 /**
  * A failure returned by a Rust command.
  *
@@ -37,4 +50,7 @@ export async function unwrap<T>(call: Promise<CommandResult<T>>): Promise<T> {
 /** Typed, unwrapped wrappers over the generated command surface. */
 export const ipc = {
   appInfo: () => unwrap(commands.appInfo()),
+  listAdapters: () => unwrap(commands.listAdapters()),
+  listServers: () => unwrap(commands.listServers()),
+  listProtocols: () => unwrap(commands.listProtocols()),
 };

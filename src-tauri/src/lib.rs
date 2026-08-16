@@ -11,11 +11,22 @@ use tauri_specta::{Builder, collect_commands};
 /// which means a renamed command or a changed argument breaks the frontend
 /// build rather than failing at runtime.
 fn specta_builder() -> Builder<tauri::Wry> {
-    Builder::<tauri::Wry>::new().commands(collect_commands![commands::app_info])
+    Builder::<tauri::Wry>::new().commands(collect_commands![
+        commands::app::app_info,
+        commands::adapters::list_adapters,
+        commands::servers::list_servers,
+        commands::servers::list_protocols,
+    ])
 }
 
-/// Where the generated bindings live, relative to `src-tauri`.
-pub const BINDINGS_PATH: &str = "../src/lib/bindings.ts";
+/// Where the generated bindings live.
+///
+/// Absolute, resolved from the manifest directory at compile time. A path
+/// relative to the working directory would land somewhere different depending
+/// on whether the exporter was run from `src-tauri` or from the repository
+/// root — and would silently create the file outside the project in the second
+/// case.
+pub const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib/bindings.ts");
 
 /// Write the TypeScript bindings without starting the app.
 ///

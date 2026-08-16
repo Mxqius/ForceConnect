@@ -1,25 +1,6 @@
-//! The `#[tauri::command]` surface.
-//!
-//! Commands stay thin: they validate, delegate, and map errors. Logic belongs
-//! in the crates under `crates/`, which are testable without a running app.
-
 use serde::{Deserialize, Serialize};
 
-/// Anything a command can fail with, in a shape the UI can branch on.
-#[derive(Debug, Clone, Serialize, Deserialize, specta::Type, thiserror::Error)]
-#[serde(tag = "kind", content = "message", rename_all = "camelCase")]
-pub enum CommandError {
-    #[error("{0}")]
-    Network(String),
-
-    #[error("{0}")]
-    Elevation(String),
-
-    #[error("{0}")]
-    Internal(String),
-}
-
-pub type CommandResult<T> = Result<T, CommandError>;
+use crate::commands::CommandResult;
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]

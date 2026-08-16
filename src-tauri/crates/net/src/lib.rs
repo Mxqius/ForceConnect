@@ -17,6 +17,11 @@
 //! app; the `DNS_INTERFACE_SETTINGS` struct itself dates to 18362, but the
 //! functions that consume it do not.
 
+#[cfg(windows)]
+pub mod adapters;
+#[cfg(windows)]
+pub mod route;
+
 use std::net::IpAddr;
 
 use serde::{Deserialize, Serialize};

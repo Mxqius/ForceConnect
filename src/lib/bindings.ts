@@ -5,9 +5,77 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 /** Commands */
 export const commands = {
 	appInfo: () => typedError<AppInfo, CommandError>(__TAURI_INVOKE("app_info")),
+	/**
+	 *  Every adapter the system reports, best-first among the eligible ones.
+	 * 
+	 *  Everything here is an unprivileged read, so this never triggers a UAC
+	 *  prompt — browsing the app costs the user nothing.
+	 */
+	listAdapters: () => typedError<Adapter[], CommandError>(__TAURI_INVOKE("list_adapters")),
+	/**
+	 *  Every built-in server.
+	 * 
+	 *  Custom servers are merged in once persistence lands; the shape of the
+	 *  response does not change when they do.
+	 */
+	listServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_servers")),
+	/**
+	 *  Protocols represented anywhere in the catalog, in display order.
+	 * 
+	 *  Drives the server browser's tabs, so a protocol nobody offers never gets a
+	 *  tab that would always be empty.
+	 */
+	listProtocols: () => typedError<Protocol[], CommandError>(__TAURI_INVOKE("list_protocols")),
 };
 
 /* Types */
+export type Adapter = {
+	/**
+	 *  Interface LUID as a decimal string.
+	 * 
+	 *  A string rather than a number on purpose: a LUID is a genuine `u64` and
+	 *  can exceed 2^53, where JavaScript would silently round it. Rounding an
+	 *  adapter identifier means writing DNS to the wrong adapter.
+	 */
+	luid: string,
+	guid: string,
+	/**  Not persistent across disable/enable — display and diagnostics only. */
+	index: number,
+	name: string,
+	description: string,
+	kind: AdapterKind,
+	status: AdapterStatus,
+	mac: string | null,
+	/**
+	 *  Link speed in Mbps.
+	 * 
+	 *  `TransmitLinkSpeed` is in bits per second. The previous implementation
+	 *  ran it through a bytes-to-Mbps conversion and displayed a figure eight
+	 *  times too high.
+	 */
+	linkSpeedMbps: number,
+	addresses: string[],
+	gateways: string[],
+	dnsV4: string[],
+	dnsV6: string[],
+	metricV4: number,
+	metricV6: number,
+	/**  Whether this adapter is a plausible target for a DNS change. */
+	eligible: boolean,
+	/**  Whether the routing table says traffic actually leaves by this adapter. */
+	isActive: boolean,
+	dnsSource: DnsSource,
+};
+
+export type AdapterKind = "ethernet" | "wifi" | 
+/**
+ *  VPN tunnels and virtual point-to-point adapters. Grouped separately
+ *  because they routinely outrank the physical adapter carrying them.
+ */
+"tunnel" | "loopback" | "other";
+
+export type AdapterStatus = "up" | "down" | "other";
+
 export type AppInfo = {
 	version: string,
 	os: string,
@@ -21,7 +89,51 @@ export type AppInfo = {
 };
 
 /**  Anything a command can fail with, in a shape the UI can branch on. */
-export type CommandError = { kind: "network"; message: string } | { kind: "elevation"; message: string } | { kind: "internal"; message: string };
+export type CommandError = { kind: "network"; message: string } | { kind: "elevation"; message: string } | { kind: "catalog"; message: string } | { kind: "internal"; message: string };
+
+export type DnsSource = 
+/**  Servers come from DHCP. */
+"dhcp" | 
+/**  Servers were configured explicitly — possibly by us. */
+"static" | 
+/**  The setting could not be read. */
+"unknown";
+
+export type Endpoint = {
+	protocol: Protocol,
+	/**  Plain IPs for `udp`/`tcp`, a URL for `doh`/`doh3`, a hostname otherwise. */
+	addrs: string[],
+	/**
+	 *  IPs used to resolve the endpoint's hostname, queried directly rather
+	 *  than through our own resolver.
+	 */
+	bootstrap: string[],
+	/**  Short label for the protocol badge, e.g. `DoH3`. */
+	label: string,
+	encrypted: boolean,
+	/**  Whether selecting this endpoint requires the local forwarder. */
+	requiresForwarder: boolean,
+};
+
+export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";
+
+export type Server = {
+	id: string,
+	name: string,
+	variant: string | null,
+	/**  Name and variant joined, so the UI does not reimplement the rule. */
+	displayName: string,
+	/**  Icon key, resolved to a bundled asset by the UI. */
+	provider: string,
+	tags: string[],
+	homepage: string | null,
+	endpoints: Endpoint[],
+	/**  Protocols this server offers, for filtering without walking endpoints. */
+	protocols: Protocol[],
+	source: ServerSource,
+};
+
+export type ServerSource = "builtin" | "custom";
 
 /* Tauri Specta runtime */
 async function typedError<T, E>(result: Promise<T>): Promise<{ status: "ok"; data: T } | { status: "error"; error: E }> {
