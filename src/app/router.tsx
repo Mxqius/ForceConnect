@@ -2,9 +2,10 @@ import { createHashRouter, type RouteObject } from "react-router";
 
 import { Shell } from "@/app/Shell";
 import { HomeScreen } from "@/features/connection/HomeScreen";
+import { AboutScreen } from "@/features/about/AboutScreen";
 import { InterfacesScreen } from "@/features/interfaces/InterfacesScreen";
 import { ServersScreen } from "@/features/servers/ServersScreen";
-import { Placeholder } from "@/features/shared/Placeholder";
+import { SettingsScreen } from "@/features/settings/SettingsScreen";
 
 // The kitchen sink is a development tool, not a feature. Gating it on the
 // build mode keeps it out of the production bundle entirely — Vite drops the
@@ -32,14 +33,8 @@ export const router = createHashRouter([
       { index: true, Component: HomeScreen },
       { path: "interfaces", Component: InterfacesScreen },
       { path: "servers", Component: ServersScreen },
-      {
-        path: "settings",
-        element: <Placeholder title="Settings" />,
-      },
-      {
-        path: "about",
-        element: <Placeholder title="About" />,
-      },
+      { path: "settings", Component: SettingsScreen },
+      { path: "about", Component: AboutScreen },
       ...devRoutes,
     ],
   },
