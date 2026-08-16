@@ -20,3 +20,11 @@ serde_json.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 specta = { workspace = true, optional = true, features = ["derive"] }
+
+hickory-proto.workspace = true
+hickory-resolver.workspace = true
+tokio = { workspace = true, features = ["rt", "time", "net", "sync", "macros"] }
+futures-util = "0.3"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

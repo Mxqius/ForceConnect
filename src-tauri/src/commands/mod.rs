@@ -11,6 +11,7 @@
 pub mod adapters;
 pub mod app;
 pub mod dns;
+pub mod probe;
 pub mod servers;
 
 use serde::{Deserialize, Serialize};

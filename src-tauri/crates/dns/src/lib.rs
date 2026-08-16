@@ -5,7 +5,9 @@
 //! `cargo test -p forceconnect-dns` and reasoned about without a running app.
 
 pub mod catalog;
+pub mod probe;
 pub mod server;
+pub mod upstream;
 
 pub use catalog::{Catalog, CatalogError};
 pub use server::{DnsServer, Endpoint, Protocol, Source, ValidationError};

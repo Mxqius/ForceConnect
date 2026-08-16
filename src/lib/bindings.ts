@@ -37,6 +37,15 @@ export const commands = {
 	setDns: (luid: string, servers: string[]) => typedError<null, CommandError>(__TAURI_INVOKE("set_dns", { luid, servers })),
 	/**  Return an adapter to DHCP-assigned DNS for both families. */
 	clearDns: (luid: string) => typedError<null, CommandError>(__TAURI_INVOKE("clear_dns", { luid })),
+	/**
+	 *  Probe every server that offers a protocol.
+	 * 
+	 *  Concurrency is bounded: firing 20+ TLS and QUIC handshakes at once is both
+	 *  slow and a distinctive network signature. Rounds within one server stay
+	 *  sequential, since concurrent rounds would measure connection multiplexing
+	 *  rather than round-trip time.
+	 */
+	probeServers: (protocol: Protocol) => typedError<LatencyResult[], CommandError>(__TAURI_INVOKE("probe_servers", { protocol })),
 };
 
 /* Types */
@@ -146,6 +155,25 @@ export type HelperStatus = {
 	 *  exactly which process is running with administrator rights.
 	 */
 	pid: number | null,
+};
+
+export type LatencyResult = {
+	serverId: string,
+	protocol: Protocol,
+	/**  `good` | `degraded` | `unreachable`. */
+	verdict: string,
+	medianMs: number | null,
+	/**
+	 *  One-time connection setup cost, separate from steady-state latency.
+	 * 
+	 *  Surfaced rather than folded in because it is paid once per connection.
+	 *  Hiding it makes encrypted protocols look permanently slow when they are
+	 *  only slow on the first exchange.
+	 */
+	handshakeMs: number | null,
+	jitterMs: number | null,
+	answered: number,
+	rounds: number,
 };
 
 export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";

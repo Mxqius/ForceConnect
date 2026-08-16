@@ -60,7 +60,7 @@ export function InterfacesScreen() {
       {isPending ? (
         <div className="flex flex-col gap-2">
           {[0, 1, 2].map((i) => (
-            <Skeleton key={i} className="h-[76px] w-full" />
+            <Skeleton key={i} className="h-19 w-full" />
           ))}
         </div>
       ) : null}

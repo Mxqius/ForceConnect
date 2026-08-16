@@ -22,6 +22,7 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::dns::helper_status,
         commands::dns::set_dns,
         commands::dns::clear_dns,
+        commands::probe::probe_servers,
     ])
 }
 

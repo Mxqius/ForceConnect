@@ -22,6 +22,29 @@ tokio = "1.53"
 specta = "=2.0.0-rc.25"
 windows = "0.62"
 
+# The DNS engine. `hickory-net` carries the transports in 0.26 — they moved out
+# of hickory-proto — and its features are what the resolver forwards.
+#
+# `default-features = false` on the resolver is important: its default pulls in
+# `system-config`, which reads the machine's configured DNS. We are the thing
+# setting that, and once connected it points at 127.0.0.1, so consulting it
+# would be circular.
+hickory-proto = "0.26.1"
+hickory-net = "0.26.1"
+hickory-resolver = { version = "0.26.1", default-features = false, features = [
+    "tokio",
+    "tls-ring",
+    "https-ring",
+    "quic-ring",
+    "h3-ring",
+    # Uses the Windows trust store, so corporate TLS-inspection proxies and
+    # enterprise roots work, and root updates arrive via Windows Update rather
+    # than needing a release from us. Do not also enable `webpki-roots`: this
+    # short-circuits it, and the frozen Mozilla list would be dead weight that
+    # hard-fails behind any inspecting proxy.
+    "rustls-platform-verifier",
+] }
+
 [package]
 name = "forceconnect"
 description = "A fast, modern DNS manager for Windows"
@@ -66,6 +89,7 @@ tracing.workspace = true
 # tauri-plugin-log's level filter is expressed in `log` types.
 log = "0.4"
 tokio = { workspace = true, features = ["net", "io-util", "sync", "time", "rt"] }
+futures-util = "0.3"
 
 # The Tauri 2 line of specta is still tagged rc upstream but is the standard
 # type-generation stack for Tauri 2. Pinned exactly so a contributor's build
