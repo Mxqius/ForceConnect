@@ -56,6 +56,12 @@ pub struct Adapter {
     /// ran it through a bytes-to-Mbps conversion and displayed a figure eight
     /// times too high.
     pub link_speed_mbps: u32,
+    /// Unicast addresses, most useful first.
+    ///
+    /// The OS returns IPv6 before IPv4, and link-local (`fe80::`, `169.254.`)
+    /// addresses before routable ones — so the raw first entry is typically the
+    /// least informative thing on the adapter. Sorted here rather than in the
+    /// UI so every consumer gets a meaningful `addresses[0]`.
     pub addresses: Vec<String>,
     pub gateways: Vec<String>,
     pub dns_v4: Vec<String>,
@@ -115,7 +121,11 @@ fn collect() -> Result<Vec<Adapter>, CommandError> {
                 },
                 mac: a.mac.clone(),
                 link_speed_mbps: u32::try_from(a.link_speed_bps / 1_000_000).unwrap_or(u32::MAX),
-                addresses: a.unicast.iter().map(ToString::to_string).collect(),
+                addresses: a
+                    .display_addresses()
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect(),
                 gateways: a.gateways.iter().map(ToString::to_string).collect(),
                 dns_v4: a.dns_v4.iter().map(ToString::to_string).collect(),
                 dns_v6: a.dns_v6.iter().map(ToString::to_string).collect(),

@@ -1,4 +1,7 @@
+import { isTauri } from "@tauri-apps/api/core";
+
 import { commands, type CommandError } from "@/lib/bindings";
+import * as fixtures from "@/lib/fixtures";
 
 export type {
   Adapter,
@@ -47,10 +50,34 @@ export async function unwrap<T>(call: Promise<CommandResult<T>>): Promise<T> {
   return result.data;
 }
 
+/**
+ * Outside Tauri there is no IPC, so every command would reject.
+ *
+ * In development that is worth working around: serving the UI in a normal
+ * browser gives fast refresh and real devtools without rebuilding Rust, which
+ * makes iterating on layout and empty/loading states much quicker. The branch
+ * is compiled out of production builds, and the fixtures are typed as the real
+ * command return types so a contract change breaks them at build time rather
+ * than letting them drift.
+ */
+const useFixtures = import.meta.env.DEV && !isTauri();
+
+async function fixture<T>(value: T): Promise<T> {
+  // A little latency so loading states are actually visible while developing.
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  return value;
+}
+
 /** Typed, unwrapped wrappers over the generated command surface. */
 export const ipc = {
-  appInfo: () => unwrap(commands.appInfo()),
-  listAdapters: () => unwrap(commands.listAdapters()),
-  listServers: () => unwrap(commands.listServers()),
-  listProtocols: () => unwrap(commands.listProtocols()),
+  appInfo: () =>
+    useFixtures ? fixture(fixtures.appInfo) : unwrap(commands.appInfo()),
+  listAdapters: () =>
+    useFixtures ? fixture(fixtures.adapters) : unwrap(commands.listAdapters()),
+  listServers: () =>
+    useFixtures ? fixture(fixtures.servers) : unwrap(commands.listServers()),
+  listProtocols: () =>
+    useFixtures
+      ? fixture(fixtures.protocols)
+      : unwrap(commands.listProtocols()),
 };

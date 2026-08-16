@@ -114,7 +114,33 @@ impl Adapter {
     pub fn is_eligible(&self) -> bool {
         self.status == OperStatus::Up
             && self.kind != AdapterKind::Loopback
-            && !self.gateways.is_empty()
+            && (!self.gateways.is_empty() || self.kind == AdapterKind::Tunnel)
+    }
+
+    /// Unicast addresses ordered by how useful they are to show a person.
+    ///
+    /// The OS reports IPv6 before IPv4 and does not sort by scope, so the raw
+    /// first entry is usually a link-local address — `fe80::…` tells a user
+    /// nothing about which network they are on.
+    pub fn display_addresses(&self) -> Vec<IpAddr> {
+        let mut sorted = self.unicast.clone();
+        sorted.sort_by_key(address_rank);
+        sorted
+    }
+}
+
+/// Lower sorts first: routable IPv4, routable IPv6, then link-local of either.
+fn address_rank(ip: &IpAddr) -> u8 {
+    let link_local = match ip {
+        IpAddr::V4(v4) => v4.is_link_local(),
+        IpAddr::V6(v6) => (v6.segments()[0] & 0xffc0) == 0xfe80,
+    };
+
+    match (link_local, ip.is_ipv4()) {
+        (false, true) => 0,
+        (false, false) => 1,
+        (true, true) => 2,
+        (true, false) => 3,
     }
 }
 
@@ -188,5 +214,65 @@ mod tests {
             ..base
         };
         assert!(!down.is_eligible());
+    }
+
+    #[test]
+    fn display_addresses_puts_the_useful_one_first() {
+        // Real ordering as returned by GetAdaptersAddresses: IPv6 link-local
+        // ahead of the routable IPv4 address. Showing `fe80::…` as an
+        // adapter's address tells a user nothing.
+        let adapter = Adapter {
+            luid: InterfaceLuid(1),
+            guid: String::new(),
+            index: 1,
+            friendly_name: "Wi-Fi".into(),
+            description: String::new(),
+            kind: AdapterKind::WiFi,
+            status: OperStatus::Up,
+            mac: None,
+            link_speed_bps: 0,
+            unicast: vec![
+                "fe80::b543:5d0b:f125:18d3".parse().unwrap(),
+                "192.168.16.241".parse().unwrap(),
+            ],
+            gateways: vec![],
+            dns_v4: vec![],
+            dns_v6: vec![],
+            metric_v4: 0,
+            metric_v6: 0,
+        };
+
+        let sorted = adapter.display_addresses();
+        assert_eq!(sorted[0].to_string(), "192.168.16.241");
+        assert_eq!(sorted[1].to_string(), "fe80::b543:5d0b:f125:18d3");
+    }
+
+    #[test]
+    fn routable_ipv6_outranks_link_local_ipv4() {
+        let adapter = Adapter {
+            luid: InterfaceLuid(1),
+            guid: String::new(),
+            index: 1,
+            friendly_name: String::new(),
+            description: String::new(),
+            kind: AdapterKind::Ethernet,
+            status: OperStatus::Up,
+            mac: None,
+            link_speed_bps: 0,
+            unicast: vec![
+                "169.254.11.136".parse().unwrap(),
+                "2606:4700::1111".parse().unwrap(),
+            ],
+            gateways: vec![],
+            dns_v4: vec![],
+            dns_v6: vec![],
+            metric_v4: 0,
+            metric_v6: 0,
+        };
+
+        assert_eq!(
+            adapter.display_addresses()[0].to_string(),
+            "2606:4700::1111"
+        );
     }
 }

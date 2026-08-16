@@ -3,6 +3,7 @@ import { createHashRouter, type RouteObject } from "react-router";
 import { Shell } from "@/app/Shell";
 import { HomeScreen } from "@/features/connection/HomeScreen";
 import { InterfacesScreen } from "@/features/interfaces/InterfacesScreen";
+import { ServersScreen } from "@/features/servers/ServersScreen";
 import { Placeholder } from "@/features/shared/Placeholder";
 
 // The kitchen sink is a development tool, not a feature. Gating it on the
@@ -30,15 +31,7 @@ export const router = createHashRouter([
     children: [
       { index: true, Component: HomeScreen },
       { path: "interfaces", Component: InterfacesScreen },
-      {
-        path: "servers",
-        element: (
-          <Placeholder
-            title="Servers"
-            description="The catalog browser lands next, with protocol filtering and live latency."
-          />
-        ),
-      },
+      { path: "servers", Component: ServersScreen },
       {
         path: "settings",
         element: <Placeholder title="Settings" />,

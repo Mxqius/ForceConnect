@@ -11,6 +11,7 @@ export const queryKeys = {
   adapters: ["adapters"] as const,
   adapter: (luid: string) => ["adapters", luid] as const,
   servers: ["servers"] as const,
+  protocols: ["protocols"] as const,
   latency: (serverId: string) => ["latency", serverId] as const,
   connection: ["connection"] as const,
 } as const;

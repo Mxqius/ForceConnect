@@ -54,6 +54,14 @@ export type Adapter = {
 	 *  times too high.
 	 */
 	linkSpeedMbps: number,
+	/**
+	 *  Unicast addresses, most useful first.
+	 * 
+	 *  The OS returns IPv6 before IPv4, and link-local (`fe80::`, `169.254.`)
+	 *  addresses before routable ones — so the raw first entry is typically the
+	 *  least informative thing on the adapter. Sorted here rather than in the
+	 *  UI so every consumer gets a meaningful `addresses[0]`.
+	 */
 	addresses: string[],
 	gateways: string[],
 	dnsV4: string[],
