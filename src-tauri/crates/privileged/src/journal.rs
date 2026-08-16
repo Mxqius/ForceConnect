@@ -1,19 +1,18 @@
 //! Crash-safe record of DNS changes awaiting revert.
 //!
-//! The helper reverts on parent death, and the app reverts on a clean exit. If
-//! both are killed at once — a hard crash, a forced shutdown, a power loss —
-//! the adapter is left pointing at a resolver that is no longer running, and
-//! the machine has no working DNS until the user finds the setting themselves.
+//! The app reverts what it changed on a clean exit. If it is killed instead —
+//! a hard crash, a forced shutdown, a power loss — the adapter is left pointing
+//! at a resolver that is no longer running, and the machine has no working DNS
+//! until the user finds the setting themselves.
 //!
 //! So before applying anything, the pending revert is written to disk and
-//! flushed. On the next launch the app looks for that file: if it exists, a
-//! revert is owed.
+//! flushed. On the next launch [`crate::recover`] looks for that file: if it
+//! exists, a revert is owed and is performed before anything else runs.
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-use forceconnect_ipc::Family;
-use forceconnect_net::DnsConfig;
+use forceconnect_net::{DnsConfig, Family};
 use serde::{Deserialize, Serialize};
 
 /// One adapter/family pair we changed, and what it looked like before.
@@ -53,11 +52,6 @@ impl Journal {
             previous,
             applied_at: now_unix(),
         });
-    }
-
-    pub fn forget(&mut self, guid: &str, family: Family) {
-        self.entries
-            .retain(|e| !(e.guid == guid && e.family == family));
     }
 
     pub fn is_empty(&self) -> bool {
@@ -147,14 +141,12 @@ mod tests {
 
     #[test]
     fn families_are_tracked_separately() {
+        // One adapter can be mid-change on IPv4 and untouched on IPv6, so the
+        // pair — not the adapter — is the unit a revert is owed for.
         let mut journal = Journal::default();
         journal.record("{a}", Family::V4, DnsConfig::Dhcp);
         journal.record("{a}", Family::V6, DnsConfig::Dhcp);
         assert_eq!(journal.entries.len(), 2);
-
-        journal.forget("{a}", Family::V4);
-        assert_eq!(journal.entries.len(), 1);
-        assert_eq!(journal.entries[0].family, Family::V6);
     }
 
     #[test]
@@ -184,8 +176,7 @@ mod tests {
         save(&path, &journal).expect("saves");
         assert!(path.exists());
 
-        journal.forget("{c}", Family::V4);
-        save(&path, &journal).expect("saves empty");
+        save(&path, &Journal::default()).expect("saves empty");
         assert!(!path.exists());
     }
 

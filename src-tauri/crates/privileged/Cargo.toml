@@ -1,6 +1,6 @@
 [package]
-name = "forceconnect-helper"
-description = "Elevated helper process for ForceConnect"
+name = "forceconnect-privileged"
+description = "The operations ForceConnect needs administrator rights for"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -8,48 +8,28 @@ license.workspace = true
 repository.workspace = true
 authors.workspace = true
 
-[[bin]]
-name = "forceconnect-helper"
-path = "src/main.rs"
-# The embedded manifest requests requireAdministrator, so Windows refuses to
-# launch anything built from this target without elevation — including a test
-# harness, which would fail with ERROR_ELEVATION_REQUIRED (740) on every
-# `cargo test`. Testable logic lives in forceconnect-ipc and forceconnect-net.
-test = false
+# A library, not a binary. Every privileged operation the application performs
+# lives in this crate and nowhere else, so "what does ForceConnect do with
+# administrator rights" is answered by reading four files.
+#
+# It stays a separate crate rather than a module of the Tauri app because a test
+# harness linked against the app crate does not load on Windows (see the note at
+# the foot of `src-tauri/src/lib.rs`). Here `cargo test` works normally.
 
 [dependencies]
-forceconnect-ipc.workspace = true
 forceconnect-net.workspace = true
 
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# Current-thread runtime: the helper serves exactly one client, sequentially.
-# A smaller, more predictable process is worth more here than throughput.
-tokio = { version = "1.53", default-features = false, features = [
-    "rt",
-    "net",
-    "time",
-    "sync",
-    "macros",
-    "io-util",
-] }
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [
     "Win32_Foundation",
     "Win32_NetworkManagement_IpHelper",
-    "Win32_NetworkManagement_Ndis",
     "Win32_Networking_WinSock",
     "Win32_Security",
-    "Win32_Security_Authorization",
-    "Win32_System_Memory",
-    "Win32_System_Pipes",
+    "Win32_System_LibraryLoader",
     "Win32_System_Threading",
 ] }
-
-[build-dependencies]
-embed-resource = "3.0.11"

@@ -1,9 +1,16 @@
 //! Writing an adapter's DNS servers.
 //!
-//! This lives in the helper crate, not in `forceconnect-net`, so that the UI
-//! process has no code path to it at all — it does not depend on this crate.
-//! These calls write under `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip` and
-//! fail with access denied from an unelevated process.
+//! This lives here rather than in `forceconnect-net` so that the read side of
+//! the application has no code path to it: `forceconnect-net` cannot change
+//! anything, and everything that can is in this crate. These calls write under
+//! `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip` and fail with access denied
+//! from an unelevated process.
+//!
+//! An earlier version gated the writes behind a `privileged` feature on
+//! `forceconnect-net` instead. That does not work: Cargo unifies features
+//! across workspace members sharing a dependency, so a `--workspace` build
+//! enabled the feature everywhere and the gate compiled away. Crate boundaries
+//! hold where feature flags do not.
 //!
 //! # Why `SetInterfaceDnsSettings` and not the alternatives
 //!

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <!--
+    The developer tool, not the app.
+
+    It exists only so this file and `forceconnect.manifest` can differ in one
+    line: `export-bindings` runs `asInvoker`, because CI and a plain terminal
+    have no way to answer a UAC prompt and generating TypeScript needs no rights
+    at all.
+
+    Everything else here has to match, and the Common-Controls dependency in
+    particular is not decoration. This binary links the whole application
+    library, which imports comctl32 v6 entry points (`TaskDialogIndirect`,
+    `SetWindowSubclass`) by way of the dialog plugin. Without the dependency
+    below, Windows binds the process to comctl32 v5, those exports are missing,
+    and the executable dies at load time with STATUS_ENTRYPOINT_NOT_FOUND
+    before `main` runs.
+  -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity
+        type="win32"
+        name="Microsoft.Windows.Common-Controls"
+        version="6.0.0.0"
+        processorArchitecture="*"
+        publicKeyToken="6595b64144ccf1df"
+        language="*"
+      />
+    </dependentAssembly>
+  </dependency>
+
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
+      <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}" />
+    </application>
+  </compatibility>
+
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
+    </windowsSettings>
+  </application>
+</assembly>

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/dns", "crates/ipc", "crates/net", "crates/helper"]
+members = ["crates/dns", "crates/net", "crates/privileged"]
 
 [workspace.package]
 version = "2.0.0"
@@ -11,8 +11,8 @@ authors = ["Mxqius"]
 
 [workspace.dependencies]
 forceconnect-dns = { path = "crates/dns" }
-forceconnect-ipc = { path = "crates/ipc" }
 forceconnect-net = { path = "crates/net" }
+forceconnect-privileged = { path = "crates/privileged" }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -74,8 +74,11 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-forceconnect-ipc.workspace = true
 forceconnect-net.workspace = true
+# The only crate in the workspace that changes system state. Depending on it
+# from here is what makes this one application instead of two; the boundary it
+# used to be enforced by is now a crate boundary and a short, enumerated API.
+forceconnect-privileged.workspace = true
 # Without the `specta` feature: the frontend contract is defined by the DTOs in
 # `commands/`, not by the internal catalog types. Exporting those directly would
 # leak serde's optional-field handling into TypeScript as a pair of
@@ -94,7 +97,8 @@ thiserror.workspace = true
 tracing.workspace = true
 # tauri-plugin-log's level filter is expressed in `log` types.
 log = "0.4"
-tokio = { workspace = true, features = ["net", "io-util", "sync", "time", "rt"] }
+# Bounded concurrency for the latency prober. Tauri owns the runtime, so there
+# is no direct tokio dependency here — only the stream combinators.
 futures-util = "0.3"
 
 # The Tauri 2 line of specta is still tagged rc upstream but is the standard
@@ -104,19 +108,10 @@ specta.workspace = true
 specta-typescript = "0.0.12"
 tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 
-[target.'cfg(windows)'.dependencies]
-windows = { workspace = true, features = [
-    "Win32_Foundation",
-    "Win32_Security",
-    "Win32_Security_Cryptography",
-    "Win32_System_Com",
-    # ShellExecuteExW is gated on this: SHELLEXECUTEINFOW carries an HKEY field,
-    # so the whole API lands behind the registry feature.
-    "Win32_System_Registry",
-    "Win32_System_Threading",
-    "Win32_UI_Shell",
-    "Win32_UI_WindowsAndMessaging",
-] }
+# No direct `windows` dependency. This crate is the Tauri shell: it wires
+# commands to the frontend and owns no Win32 calls of its own. Everything that
+# touches the platform lives in `crates/`, which is what keeps "what does this
+# app do with administrator rights" answerable by reading one small crate.
 
 # Single-instance and window-state are desktop-only.
 [target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]

@@ -1,54 +1,69 @@
-use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 
-use tokio::sync::Mutex;
-
-use crate::elevate::client::HelperSession;
+use forceconnect_privileged::DnsWriter;
 
 /// Application state shared across commands.
-#[derive(Default)]
+///
+/// One writer for the whole process. It is the only thing in the application
+/// that changes system DNS settings, and serialising access through a single
+/// mutex is what keeps two commands — a connect racing a disconnect, say — from
+/// interleaving reads and writes and recording the wrong "previous"
+/// configuration to restore later.
 pub struct AppState {
-    /// The elevated helper, established lazily.
+    dns: Arc<Mutex<DnsWriter>>,
+    /// Whether closing the main window should hide it to the tray instead of
+    /// exiting the process.
     ///
-    /// `None` until the first privileged action, which is what keeps browsing
-    /// the app free of UAC prompts. The mutex is held across the whole
-    /// establish sequence so two commands racing to connect cannot each show
-    /// the user a prompt.
-    helper: Mutex<Option<Arc<HelperSession>>>,
+    /// The setting itself lives in the frontend's preferences store (so it
+    /// persists across launches); this is just the copy the window-close
+    /// handler can read synchronously, kept in sync by
+    /// `set_minimize_to_tray` on hydrate and on every toggle.
+    minimize_to_tray: AtomicBool,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            dns: Arc::new(Mutex::new(DnsWriter::default())),
+            minimize_to_tray: AtomicBool::new(false),
+        }
+    }
 }
 
 impl AppState {
-    /// Return the live session, or start one — prompting for elevation.
-    pub async fn helper(
-        &self,
-        helper_path: std::path::PathBuf,
-        parent_hwnd: isize,
-    ) -> Result<Arc<HelperSession>, crate::elevate::ElevationError> {
-        let mut guard = self.helper.lock().await;
-
-        if let Some(existing) = guard.as_ref() {
-            return Ok(Arc::clone(existing));
-        }
-
-        let session = HelperSession::establish(helper_path, parent_hwnd).await?;
-        *guard = Some(Arc::clone(&session));
-        Ok(session)
-    }
-
-    /// Version and process id of the live helper, if there is one.
-    pub async fn helper_info(&self) -> Option<(String, u32)> {
-        self.helper
-            .lock()
-            .await
-            .as_ref()
-            .map(|session| (session.helper_version.clone(), session.pid))
-    }
-
-    /// Drop the session, so the next privileged call re-establishes it.
+    /// A handle to the writer, cloneable into a blocking task.
     ///
-    /// Used when the pipe breaks — the helper exiting is normal on parent
-    /// death, but a mid-session disconnect means the cached handle is dead and
-    /// keeping it would fail every subsequent call.
-    pub async fn drop_helper(&self) {
-        self.helper.lock().await.take();
+    /// The Win32 calls behind it are synchronous, so commands move the locked
+    /// section onto a blocking thread rather than holding a lock across an
+    /// await point.
+    pub fn dns(&self) -> Arc<Mutex<DnsWriter>> {
+        Arc::clone(&self.dns)
     }
+
+    /// Put every adapter back the way it was, on the way out of the process.
+    pub fn restore_all(&self) {
+        lock(&self.dns).restore_all();
+    }
+
+    pub fn has_pending_changes(&self) -> bool {
+        lock(&self.dns).has_pending()
+    }
+
+    pub fn minimize_to_tray(&self) -> bool {
+        self.minimize_to_tray.load(Ordering::Relaxed)
+    }
+
+    pub fn set_minimize_to_tray(&self, enabled: bool) {
+        self.minimize_to_tray.store(enabled, Ordering::Relaxed);
+    }
+}
+
+/// Take the lock, ignoring poisoning.
+///
+/// A panic in one command must not turn every later DNS operation into an
+/// error — the adapter would then be stuck pointing at our resolver with no
+/// way to put it back, which is the exact failure the journal exists to avoid.
+pub fn lock(dns: &Mutex<DnsWriter>) -> std::sync::MutexGuard<'_, DnsWriter> {
+    dns.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
 }
