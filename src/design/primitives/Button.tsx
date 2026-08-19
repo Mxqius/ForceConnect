@@ -16,7 +16,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
   ghost:
     "bg-transparent text-text-secondary border border-transparent hover:bg-surface-hover hover:text-text-primary active:bg-surface-active",
   danger:
-    "bg-danger text-white border border-transparent hover:bg-danger-hover",
+    "bg-danger-strong text-white border border-transparent hover:bg-danger-hover",
   link: "bg-transparent text-accent-bright border border-transparent underline-offset-2 hover:underline p-0 h-auto",
 };
 

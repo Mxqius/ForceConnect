@@ -21,9 +21,21 @@
  * So: the surfaces are neutral, top to bottom, in both themes. Colour is
  * information here — the accent means "this is actionable", green means
  * connected, red means it failed — and it carries that meaning better when it
- * is the only colour on screen. The dark theme starts at very nearly black and
- * lifts in even steps; text stops short of pure white, because #fff on #000 at
+ * is the only colour on screen. Text stops short of pure white, because #fff at
  * 13px produces the smeary halo that makes people turn dark mode off.
+ *
+ * # The dark theme is dark grey, not black
+ *
+ * It used to start at #050506 — near enough to black that the ladder above it
+ * had nowhere to go, so every surface landed within a few points of every other
+ * one and the whole app read as one flat black sheet with hairlines drawn on it.
+ * Depth needs room. The ladder now starts at #141417 and each rung is a step you
+ * can actually see, which is what lets borders stay quiet and shadows stay rare.
+ *
+ * Everything else moved with it. Lifting the ground without lifting the ink is
+ * how a "brighter" theme ends up less readable than the one it replaced, so the
+ * text tiers, the accent ink, and the status colours were all re-derived against
+ * the new surfaces rather than carried over.
  */
 
 :root {
@@ -34,20 +46,23 @@
    * without a single shadow: the window is the darkest thing, chrome sits just
    * above it, cards above that, popups highest.
    */
-  --surface-base: #050506;
-  --surface-subtle: #0a0a0c;
-  --surface: #121214;
-  --surface-elevated: #1a1a1e;
+  --surface-base: #141417;
+  --surface-subtle: #1b1b1f;
+  --surface: #26262c;
+  --surface-elevated: #2e2e35;
   /* Fields read as recessed *into* a card, so this sits below `--surface`
      rather than above it. Still above `--surface-base`, or an input floating on
      the window background would vanish. */
-  --surface-inset: #0d0d0f;
-  --surface-hover: #232327;
-  --surface-active: #2c2c31;
+  --surface-inset: #1e1e23;
+  --surface-hover: #37373f;
+  --surface-active: #43434c;
 
-  --border-subtle: #1a1a1e;
-  --border-default: #26262b;
-  --border-strong: #3a3a41;
+  /* Borders lifted with the surfaces. A border that no longer out-contrasts the
+     card it encloses is just noise, and at the old values these would have
+     vanished into `--surface`. */
+  --border-subtle: #33333b;
+  --border-default: #43434d;
+  --border-strong: #5c5c67;
 
   /*
    * Four tiers, and the bottom one is not for reading.
@@ -58,10 +73,10 @@
    * text that carries no information the user needs: separators, the "—" that
    * stands in for an absent value, decorative section markers.
    */
-  --text-primary: #ececee;
-  --text-secondary: #a3a3a9;
-  --text-muted: #87878f;
-  --text-faint: #74747d;
+  --text-primary: #f0f0f3;
+  --text-secondary: #b8b8c0;
+  --text-muted: #9a9aa3;
+  --text-faint: #8a8a94;
   --text-on-accent: #ffffff;
 
   /*
@@ -83,7 +98,7 @@
    * on a card.
    */
   --accent: #1b6bf2;
-  --accent-bright: #4d8dff;
+  --accent-bright: #6ba0ff;
   --accent-hover: color-mix(in oklab, var(--accent) 84%, white);
   --accent-active: color-mix(in oklab, var(--accent) 86%, black);
   --accent-muted: color-mix(in oklab, var(--accent) 42%, var(--surface-base));
@@ -118,13 +133,22 @@
     var(--warning) 16%,
     var(--surface-base)
   );
-  /* Red-magenta rather than a red near blue's hue, which would be muddy.
-     "Delete" must never look like "primary action". */
-  --danger: #f2555a;
-  --danger-hover: color-mix(in oklab, var(--danger) 85%, white);
+  /*
+   * Red-magenta rather than a red near blue's hue, which would be muddy.
+   * "Delete" must never look like "primary action".
+   *
+   * Split for the same reason the accent is: one red cannot both carry white
+   * button text at 4.5:1 and read as text on a dark card at 4.5:1. `--danger`
+   * is the ink — badges, the invalid-field border, the elevation warning —
+   * and clears 5:1 on every surface in the ladder. `--danger-strong` is the
+   * ground under `Button variant="danger"`, dark enough for white on it.
+   */
+  --danger: #ff7076;
+  --danger-strong: #cf3b44;
+  --danger-hover: color-mix(in oklab, var(--danger-strong) 85%, white);
   --danger-surface: color-mix(in oklab, var(--danger) 16%, var(--surface-base));
 
-  --protocol-plain: #8a8a92;
+  --protocol-plain: #9a9aa4;
   --protocol-encrypted: #3fd6b0;
 
   --focus-ring: var(--accent);
@@ -193,6 +217,9 @@
   --warning: #8a6100;
   --warning-surface: color-mix(in oklab, var(--warning) 11%, white);
   --danger: #c9333c;
+  /* Light needs no split: a red dark enough to read on white (5.6:1) already
+     carries white text on it (5.2:1). */
+  --danger-strong: var(--danger);
   --danger-hover: color-mix(in oklab, var(--danger) 84%, black);
   --danger-surface: color-mix(in oklab, var(--danger) 8%, white);
 
@@ -245,6 +272,7 @@
   --color-warning: var(--warning);
   --color-warning-surface: var(--warning-surface);
   --color-danger: var(--danger);
+  --color-danger-strong: var(--danger-strong);
   --color-danger-hover: var(--danger-hover);
   --color-danger-surface: var(--danger-surface);
 
