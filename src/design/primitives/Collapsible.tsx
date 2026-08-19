@@ -12,8 +12,9 @@ export function Collapsible({
   return <BaseCollapsible.Root className={cn(className)} {...props} />;
 }
 
-interface CollapsibleTriggerProps
-  extends ComponentPropsWithoutRef<typeof BaseCollapsible.Trigger> {
+interface CollapsibleTriggerProps extends ComponentPropsWithoutRef<
+  typeof BaseCollapsible.Trigger
+> {
   /** Rendered before the label, e.g. a section glyph. */
   startIcon?: ReactNode;
 }
@@ -55,7 +56,7 @@ export function CollapsiblePanel({
     <BaseCollapsible.Panel
       className={cn(
         "h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out",
-        "data-[starting-style]:h-0 data-[ending-style]:h-0",
+        "data-[ending-style]:h-0 data-[starting-style]:h-0",
         className,
       )}
       {...props}

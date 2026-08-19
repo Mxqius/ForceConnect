@@ -36,8 +36,7 @@ struct TrayHandles {
 pub fn setup(app: &AppHandle) -> tauri::Result<()> {
     let status_item = MenuItem::with_id(app, "status", "Not connected", false, None::<&str>)?;
     let show_item = MenuItem::with_id(app, "show", "Show ForceConnect", true, None::<&str>)?;
-    let disconnect_item =
-        MenuItem::with_id(app, "disconnect", "Disconnect", false, None::<&str>)?;
+    let disconnect_item = MenuItem::with_id(app, "disconnect", "Disconnect", false, None::<&str>)?;
     let quit_item = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
 
     let menu = Menu::with_items(

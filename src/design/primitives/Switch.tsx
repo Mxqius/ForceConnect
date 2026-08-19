@@ -13,7 +13,7 @@ export function Switch({
   return (
     <BaseSwitch.Root
       className={cn(
-        "bg-surface-active border-border-default relative flex items-center h-7 w-12 shrink-0 cursor-pointer rounded-full border transition-colors",
+        "bg-surface-active border-border-default relative flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border transition-colors",
         "data-checked:bg-accent data-checked:border-accent",
         "disabled:cursor-not-allowed disabled:opacity-50",
         focusRing,
