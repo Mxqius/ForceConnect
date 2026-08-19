@@ -7,6 +7,7 @@ import {
   RefreshCw,
   RotateCcw,
   ShieldCheck,
+  TriangleAlert,
   Unlock,
   Wrench,
 } from "lucide-react";
@@ -69,6 +70,7 @@ export function HomeScreen() {
   const {
     active,
     adapter,
+    target,
     connect,
     disconnect,
     isConnecting,
@@ -280,8 +282,21 @@ export function HomeScreen() {
             </Stat>
 
             <Stat label="Adapter">
-              <span className="truncate text-xs">
-                {adapter?.name ?? "Looking for an adapter…"}
+              <span className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate text-xs">
+                  {adapter?.name ?? "Looking for an adapter…"}
+                </span>
+                {target.unavailableReason ? (
+                  <Tooltip
+                    content={
+                      target.unavailableReason === "missing"
+                        ? "The interface you picked on the Interfaces tab is gone, so DNS is going here instead."
+                        : "The interface you picked on the Interfaces tab is not usable right now, so DNS is going here instead."
+                    }
+                  >
+                    <TriangleAlert className="text-warning size-3.5 shrink-0" />
+                  </Tooltip>
+                ) : null}
               </span>
             </Stat>
           </div>

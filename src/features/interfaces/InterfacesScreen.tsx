@@ -1,21 +1,25 @@
 import {
   Cable,
+  Check,
   CircuitBoard,
   Repeat,
   ShieldCheck,
+  TriangleAlert,
+  Wand2,
   Wifi,
   type LucideIcon,
 } from "lucide-react";
 
 import {
   Badge,
+  Button,
   CopyableValue,
   EmptyState,
   Skeleton,
   StatusDot,
   Tooltip,
 } from "@/design/primitives";
-import { useAdapters } from "@/features/interfaces/useAdapters";
+import { useAdapters, useDnsTarget } from "@/features/interfaces/useAdapters";
 import { cn } from "@/lib/cn";
 import type { Adapter, AdapterKind } from "@/lib/ipc";
 
@@ -37,6 +41,7 @@ const KIND_LABELS: Record<AdapterKind, string> = {
 
 export function InterfacesScreen() {
   const { data, isPending, error } = useAdapters();
+  const target = useDnsTarget();
 
   const eligible = data?.filter((a) => a.eligible) ?? [];
   const rest = data?.filter((a) => !a.eligible) ?? [];
@@ -46,14 +51,31 @@ export function InterfacesScreen() {
       <header>
         <h1 className="text-xl font-semibold tracking-tight">Interfaces</h1>
         <p className="text-text-muted mt-1 text-sm">
-          DNS is applied per adapter. The active one is where traffic actually
-          leaves — which is not always the one you would expect.
+          DNS is applied to one adapter. Pick the one you want it written to, or
+          leave it automatic and it follows whichever adapter traffic is
+          actually leaving by.
         </p>
       </header>
 
       {error ? (
         <p className="border-danger/30 bg-danger-surface text-danger rounded-xl border px-4 py-3 text-sm">
           {error instanceof Error ? error.message : String(error)}
+        </p>
+      ) : null}
+
+      {target.unavailableReason ? (
+        <p className="border-warning/30 bg-warning-surface text-warning flex items-start gap-2.5 rounded-xl border px-4 py-3 text-xs">
+          <TriangleAlert className="mt-px size-4 shrink-0" />
+          <span>
+            {target.unavailableReason === "missing"
+              ? "The interface you picked is no longer present."
+              : "The interface you picked is not usable right now."}{" "}
+            DNS is going to{" "}
+            <strong className="font-semibold">
+              {target.adapter?.name ?? "no adapter"}
+            </strong>{" "}
+            instead.
+          </span>
         </p>
       ) : null}
 
@@ -79,8 +101,21 @@ export function InterfacesScreen() {
             title="Available"
             hint="Ordered by interface metric — lower wins"
           />
+
+          <AutomaticCard
+            selected={target.pinnedLuid === null}
+            adapter={target.pinnedLuid === null ? target.adapter : undefined}
+            onSelect={() => target.select(null)}
+          />
+
           {eligible.map((adapter) => (
-            <AdapterCard key={adapter.luid} adapter={adapter} />
+            <AdapterCard
+              key={adapter.luid}
+              adapter={adapter}
+              receivesDns={target.adapter?.luid === adapter.luid}
+              pinned={target.pinnedLuid === adapter.luid}
+              onSelect={() => target.select(adapter.luid)}
+            />
           ))}
         </section>
       ) : null}
@@ -111,24 +146,97 @@ function SectionLabel({ title, hint }: { title: string; hint: string }) {
   );
 }
 
+/** Shared frame so the automatic option reads as one of the choices. */
+function cardFrame(selected: boolean, muted?: boolean) {
+  return cn(
+    "border-border-subtle bg-surface rounded-xl border p-4 text-left transition-colors",
+    selected && "border-accent-muted bg-accent-surface/40",
+    muted && "opacity-60",
+  );
+}
+
+function SelectedMark({ selected }: { selected: boolean }) {
+  return (
+    <span
+      className={cn(
+        "flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+        selected
+          ? "border-accent bg-accent text-text-on-accent"
+          : "border-border-strong",
+      )}
+      aria-hidden
+    >
+      {selected ? <Check className="size-3" strokeWidth={3.5} /> : null}
+    </span>
+  );
+}
+
+function AutomaticCard({
+  selected,
+  adapter,
+  onSelect,
+}: {
+  selected: boolean;
+  adapter: Adapter | undefined;
+  onSelect: () => void;
+}) {
+  return (
+    <article className={cardFrame(selected)}>
+      <div className="flex items-start gap-4">
+        <div className="bg-surface-inset text-text-muted mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg">
+          <Wand2 className="size-5" />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <h3 className="text-sm font-semibold">Automatic</h3>
+          <p className="text-text-muted mt-1 text-xs">
+            {selected && adapter
+              ? `Following the routing table — currently ${adapter.name}`
+              : "Follow whichever adapter traffic is leaving by"}
+          </p>
+        </div>
+
+        <SelectedMark selected={selected} />
+      </div>
+
+      <div className="mt-3 flex justify-end">
+        <Button
+          size="sm"
+          variant={selected ? "ghost" : "secondary"}
+          disabled={selected}
+          onClick={onSelect}
+        >
+          {selected ? "Selected" : "Use automatic"}
+        </Button>
+      </div>
+    </article>
+  );
+}
+
 function AdapterCard({
   adapter,
   muted,
+  receivesDns = false,
+  pinned = false,
+  onSelect,
 }: {
   adapter: Adapter;
   muted?: boolean;
+  /** DNS currently goes here, whether by explicit choice or by falling back. */
+  receivesDns?: boolean;
+  /** The user pinned this one specifically. */
+  pinned?: boolean;
+  onSelect?: () => void;
 }) {
   const Icon = KIND_ICONS[adapter.kind];
   const isUp = adapter.status === "up";
 
+  // Unusable adapters are shown for diagnosis, not for choosing: writing DNS to
+  // one with no route off-link would apply cleanly and change nothing.
+  const selectable = Boolean(onSelect);
+
   return (
-    <article
-      className={cn(
-        "border-border-subtle bg-surface rounded-xl border p-4 transition-colors",
-        adapter.isActive && "border-accent-muted bg-accent-surface/30",
-        muted && "opacity-60",
-      )}
-    >
+    <article className={cardFrame(receivesDns, muted)}>
       <div className="flex items-start gap-4">
         <div className="bg-surface-inset text-text-muted mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-lg">
           <Icon className="size-5" />
@@ -155,6 +263,14 @@ function AdapterCard({
               <Tooltip content="DNS servers are configured explicitly, not supplied by DHCP">
                 <span>
                   <Badge tone="accent">Static DNS</Badge>
+                </span>
+              </Tooltip>
+            ) : null}
+
+            {receivesDns ? (
+              <Tooltip content="DNS changes are written to this adapter">
+                <span>
+                  <Badge tone="accent">Receives DNS</Badge>
                 </span>
               </Tooltip>
             ) : null}
@@ -194,7 +310,24 @@ function AdapterCard({
             ) : null}
           </dl>
         </div>
+
+        {selectable ? <SelectedMark selected={receivesDns} /> : null}
       </div>
+
+      {selectable ? (
+        <div className="mt-3 flex justify-end">
+          {/* The card itself is not the control: the addresses inside it are
+              copy buttons, and a button cannot contain a button. */}
+          <Button
+            size="sm"
+            variant={pinned ? "ghost" : "secondary"}
+            disabled={pinned}
+            onClick={onSelect}
+          >
+            {pinned ? "Selected" : "Use this interface"}
+          </Button>
+        </div>
+      ) : null}
     </article>
   );
 }

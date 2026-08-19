@@ -17,6 +17,14 @@ export interface Prefs {
   navLayout: NavLayout;
   theme: "dark" | "light";
   minimizeToTray: boolean;
+  /**
+   * The adapter DNS is applied to, or `null` for "whichever one is active".
+   *
+   * A LUID rather than a name or index: names are user-editable and indices
+   * are reassigned when adapters come and go, so either would silently point
+   * at a different interface after a reboot.
+   */
+  interfaceLuid: string | null;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -24,6 +32,7 @@ export const DEFAULT_PREFS: Prefs = {
   navLayout: "rail",
   theme: "dark",
   minimizeToTray: false,
+  interfaceLuid: null,
 };
 
 const FILE = "preferences.json";
@@ -43,12 +52,15 @@ export async function readPref<K extends keyof Prefs>(
   const backing = store();
 
   if (!backing) {
-    return (memory.get(key) as Prefs[K]) ?? DEFAULT_PREFS[key];
+    return memory.has(key) ? (memory.get(key) as Prefs[K]) : DEFAULT_PREFS[key];
   }
 
   try {
     const value = await (await backing).get<Prefs[K]>(key);
-    return value ?? DEFAULT_PREFS[key];
+    // `undefined` means "never written"; `null` is a real stored value for
+    // `interfaceLuid`, so `??` alone would overwrite an explicit "automatic"
+    // with the default on every read.
+    return value === undefined ? DEFAULT_PREFS[key] : value;
   } catch {
     // A corrupt or unreadable store should degrade to defaults rather than
     // leave the app unusable.

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create } from "zustand";
 
-import { useActiveAdapter } from "@/features/interfaces/useAdapters";
+import { useDnsTarget } from "@/features/interfaces/useAdapters";
 import { ipc, type Protocol, type Server } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -67,7 +67,8 @@ export function useServerSelection() {
 
 export function useConnection() {
   const client = useQueryClient();
-  const adapter = useActiveAdapter();
+  const target = useDnsTarget();
+  const adapter = target.adapter;
   const active = useConnectionStore((state) => state.active);
   const setActive = useConnectionStore((state) => state.setActive);
   const selectServer = useConnectionStore((state) => state.selectServer);
@@ -81,7 +82,7 @@ export function useConnection() {
       protocol: Protocol;
     }) => {
       if (!adapter) {
-        throw new Error("No active network adapter to configure.");
+        throw new Error("No network adapter to configure.");
       }
 
       const endpoint = server.endpoints.find((e) => e.protocol === protocol);
@@ -145,6 +146,7 @@ export function useConnection() {
   return {
     active,
     adapter,
+    target,
     connect: connect.mutate,
     disconnect: disconnect.mutate,
     isConnecting: connect.isPending,

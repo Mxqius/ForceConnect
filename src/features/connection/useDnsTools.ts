@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useActiveAdapter } from "@/features/interfaces/useAdapters";
+import { useDnsTarget } from "@/features/interfaces/useAdapters";
 import { ipc } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -14,7 +14,9 @@ import { queryKeys } from "@/lib/query-keys";
  */
 export function useDnsTools() {
   const client = useQueryClient();
-  const adapter = useActiveAdapter();
+  // The same adapter a connect would write to, so "reset" and "re-apply"
+  // cannot act on a different interface than the one the user chose.
+  const { adapter } = useDnsTarget();
 
   function refreshAdapters() {
     void client.invalidateQueries({ queryKey: queryKeys.adapters });
@@ -29,7 +31,7 @@ export function useDnsTools() {
   /** Hand the adapter back to DHCP-assigned DNS. */
   const reset = useMutation({
     mutationFn: () => {
-      if (!adapter) throw new Error("No active network adapter to reset.");
+      if (!adapter) throw new Error("No network adapter to reset.");
       return ipc.clearDns(adapter.luid);
     },
     onSuccess: refreshAdapters,
@@ -44,7 +46,7 @@ export function useDnsTools() {
    */
   const reapply = useMutation({
     mutationFn: (servers: string[]) => {
-      if (!adapter) throw new Error("No active network adapter to configure.");
+      if (!adapter) throw new Error("No network adapter to configure.");
       if (servers.length === 0) throw new Error("Nothing to re-apply.");
       return ipc.setDns(adapter.luid, servers);
     },
