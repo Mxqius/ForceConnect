@@ -3,7 +3,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
-import { focusRing, overlaySurface } from "@/design/styles";
+import { focusRing, overlayPositioner, overlaySurface } from "@/design/styles";
 
 export interface SelectOption<T extends string> {
   value: T;
@@ -75,44 +75,56 @@ export function Select<T extends string>({
       </BaseSelect.Trigger>
 
       <BaseSelect.Portal>
-        <BaseSelect.Positioner sideOffset={4} alignItemWithTrigger={false}>
+        <BaseSelect.Positioner
+          className={overlayPositioner}
+          sideOffset={4}
+          alignItemWithTrigger={false}
+        >
           <BaseSelect.Popup
             className={cn(
               overlaySurface,
               "fc-scroll max-h-80 min-w-[var(--anchor-width)] overflow-y-auto p-1.5",
             )}
           >
-            {options.map((option) => (
-              <BaseSelect.Item
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-                className={cn(
-                  "group flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm outline-none",
-                  "data-[highlighted]:bg-surface-hover",
-                  "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
-                )}
-              >
-                {/* Fixed-width slot: the indicator unmounts when the item is
-                    not selected, and without reserved space every other row
-                    would shift left. */}
-                <span className="flex w-4 shrink-0 justify-center">
-                  <BaseSelect.ItemIndicator className="text-accent-bright flex">
-                    <Check className="size-4" strokeWidth={3} />
-                  </BaseSelect.ItemIndicator>
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col group-data-[selected]:font-medium">
-                  <BaseSelect.ItemText className="truncate">
-                    {option.label}
-                  </BaseSelect.ItemText>
-                  {option.hint ? (
-                    <span className="text-text-muted truncate text-xs">
-                      {option.hint}
-                    </span>
-                  ) : null}
-                </span>
-              </BaseSelect.Item>
-            ))}
+            {/* `List` is not optional decoration: it owns the composite
+                roving-focus context, so keyboard navigation and typeahead only
+                work for items inside it. Scrolling stays on the popup rather
+                than moving to the list, because the popup is the element with
+                the border and the padding — clipping inside it would cut the
+                first and last rows off mid-highlight. */}
+            <BaseSelect.List>
+              {options.map((option) => (
+                <BaseSelect.Item
+                  key={option.value}
+                  value={option.value}
+                  disabled={option.disabled}
+                  className={cn(
+                    "group flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm outline-none",
+                    "data-[highlighted]:bg-surface-hover",
+                    "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
+                  )}
+                >
+                  {/* Fixed-width slot: the indicator unmounts when the item is
+                      not selected, and without reserved space every other row
+                      would shift left. */}
+                  <span className="flex w-4 shrink-0 justify-center">
+                    <BaseSelect.ItemIndicator className="text-accent-bright flex">
+                      <Check className="size-4" strokeWidth={3} />
+                    </BaseSelect.ItemIndicator>
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col group-data-[selected]:font-medium">
+                    <BaseSelect.ItemText className="truncate">
+                      {option.label}
+                    </BaseSelect.ItemText>
+                    {option.hint ? (
+                      <span className="text-text-muted truncate text-xs">
+                        {option.hint}
+                      </span>
+                    ) : null}
+                  </span>
+                </BaseSelect.Item>
+              ))}
+            </BaseSelect.List>
           </BaseSelect.Popup>
         </BaseSelect.Positioner>
       </BaseSelect.Portal>

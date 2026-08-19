@@ -98,6 +98,44 @@ fn make_id(name: &str, existing: &[DnsServer]) -> String {
     candidate
 }
 
+/// Fill in the parts of an address the user should not have to type.
+///
+/// The form used to demand a complete `https://host/path` for DoH and DoH3,
+/// which is more than most people have: a provider hands out a hostname — a DNS
+/// record — and the `/dns-query` path is the RFC 8484 well-known default that
+/// nearly every resolver actually serves. Requiring the ceremony made a valid
+/// server look invalid.
+///
+/// So the URL is completed rather than required. Anything already complete is
+/// passed through untouched, and anything that is still not a valid address
+/// after this falls through to `DnsServer::validate`, which rejects it with the
+/// same message a bad catalog entry would get. Only the two URL protocols are
+/// touched; DoT and DoQ already take a bare hostname, and plain DNS takes an IP
+/// and nothing else.
+fn normalize_addr(protocol: Protocol, addr: &str) -> String {
+    if !matches!(protocol, Protocol::Doh | Protocol::Doh3) {
+        return addr.to_owned();
+    }
+
+    // A scheme we do not speak is left alone so validation can reject it by
+    // name, rather than being silently rewritten into something that works.
+    if addr.contains("://") && !addr.starts_with("https://") {
+        return addr.to_owned();
+    }
+
+    let rest = addr.strip_prefix("https://").unwrap_or(addr);
+    let rest = rest.trim_end_matches('/');
+    if rest.is_empty() {
+        return addr.to_owned();
+    }
+
+    if rest.contains('/') {
+        format!("https://{rest}")
+    } else {
+        format!("https://{rest}/dns-query")
+    }
+}
+
 fn to_catalog_protocol(protocol: Protocol) -> CatalogProtocol {
     match protocol {
         Protocol::Udp => CatalogProtocol::Udp,
@@ -133,8 +171,9 @@ pub fn add_custom_server(app: AppHandle, server: NewServer) -> CommandResult<Ser
     let addrs: Vec<String> = server
         .addrs
         .iter()
-        .map(|a| a.trim().to_owned())
+        .map(|a| a.trim())
         .filter(|a| !a.is_empty())
+        .map(|a| normalize_addr(server.protocol, a))
         .collect();
 
     if addrs.is_empty() {
@@ -229,6 +268,52 @@ mod tests {
             endpoints: vec![],
             source: Source::Custom,
         }
+    }
+
+    #[test]
+    fn bare_hostnames_become_doh_urls() {
+        // What a provider actually gives you is a name, not a URL.
+        assert_eq!(
+            normalize_addr(Protocol::Doh, "dns.example.com"),
+            "https://dns.example.com/dns-query"
+        );
+        assert_eq!(
+            normalize_addr(Protocol::Doh3, "dns.example.com"),
+            "https://dns.example.com/dns-query"
+        );
+        // A trailing slash is not a path.
+        assert_eq!(
+            normalize_addr(Protocol::Doh, "https://dns.example.com/"),
+            "https://dns.example.com/dns-query"
+        );
+    }
+
+    #[test]
+    fn complete_addresses_are_left_alone() {
+        assert_eq!(
+            normalize_addr(Protocol::Doh, "https://dns.example.com/query"),
+            "https://dns.example.com/query"
+        );
+        assert_eq!(
+            normalize_addr(Protocol::Doh, "dns.example.com/query"),
+            "https://dns.example.com/query"
+        );
+        // Other protocols take what they take; a hostname here is not a URL.
+        assert_eq!(
+            normalize_addr(Protocol::Dot, "dns.example.com"),
+            "dns.example.com"
+        );
+        assert_eq!(normalize_addr(Protocol::Udp, "1.1.1.1"), "1.1.1.1");
+    }
+
+    #[test]
+    fn a_wrong_scheme_is_not_rewritten() {
+        // Better to fail validation by name than to be quietly upgraded into
+        // something the user did not ask for.
+        assert_eq!(
+            normalize_addr(Protocol::Doh, "http://dns.example.com/dns-query"),
+            "http://dns.example.com/dns-query"
+        );
     }
 
     #[test]

@@ -3,7 +3,7 @@ import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import type { ReactElement, ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
-import { overlaySurface } from "@/design/styles";
+import { overlayPositioner, overlaySurface } from "@/design/styles";
 
 /**
  * Wraps the app once so tooltips share a delay group — moving between adjacent
@@ -29,7 +29,11 @@ export function Tooltip({ content, side = "top", children }: TooltipProps) {
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
-        <BaseTooltip.Positioner side={side} sideOffset={6}>
+        <BaseTooltip.Positioner
+          className={overlayPositioner}
+          side={side}
+          sideOffset={6}
+        >
           <BaseTooltip.Popup
             className={cn(
               overlaySurface,
@@ -64,7 +68,12 @@ export function Popover({
     <BasePopover.Root>
       <BasePopover.Trigger render={trigger} />
       <BasePopover.Portal>
-        <BasePopover.Positioner side={side} align={align} sideOffset={6}>
+        <BasePopover.Positioner
+          className={overlayPositioner}
+          side={side}
+          align={align}
+          sideOffset={6}
+        >
           <BasePopover.Popup className={cn(overlaySurface, "p-4", className)}>
             {children}
           </BasePopover.Popup>

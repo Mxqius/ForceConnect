@@ -35,9 +35,24 @@ export const controlBase = cn(
   focusRing,
 );
 
+/**
+ * The positioning wrapper every floating part sits in.
+ *
+ * The z-index belongs *here*, not on the popup. Base UI's `Popup` is a static
+ * child of its `Positioner`, and `z-index` on a statically positioned element
+ * is ignored — so a popup that appeared to be at `z-50` was really painting at
+ * the document's base layer and ended up *behind* any open dialog. That is what
+ * made the protocol select in the add-server dialog look like it never opened:
+ * it opened, correctly positioned, underneath the dialog.
+ *
+ * The value is above `--z-dialog` on purpose. These are opened *from* dialogs,
+ * so they have to clear them; the toast viewport stays above everything.
+ */
+export const overlayPositioner = "z-60 outline-none";
+
 /** Floating surfaces: popovers, tooltips, menus, select popups. */
 export const overlaySurface = cn(
-  "z-50 rounded-xl border border-border-default bg-surface-elevated shadow-popup",
+  "rounded-xl border border-border-default bg-surface-elevated shadow-popup",
   "transition-[opacity,transform] duration-100",
   "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
   "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",

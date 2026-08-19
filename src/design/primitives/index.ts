@@ -41,5 +41,6 @@ export {
   controlBase,
   focusRing,
   interactiveBase,
+  overlayPositioner,
   overlaySurface,
 } from "@/design/styles";
