@@ -25,6 +25,8 @@ export interface Prefs {
    * at a different interface after a reboot.
    */
   interfaceLuid: string | null;
+  /** Check for a new release on launch. */
+  autoUpdate: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -33,6 +35,7 @@ export const DEFAULT_PREFS: Prefs = {
   theme: "dark",
   minimizeToTray: false,
   interfaceLuid: null,
+  autoUpdate: true,
 };
 
 const FILE = "preferences.json";

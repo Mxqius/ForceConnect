@@ -8,6 +8,7 @@
  */
 export const queryKeys = {
   appInfo: ["app-info"] as const,
+  updaterStatus: ["updater-status"] as const,
   adapters: ["adapters"] as const,
   adapter: (luid: string) => ["adapters", luid] as const,
   servers: ["servers"] as const,

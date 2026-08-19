@@ -14,6 +14,7 @@ export const commands = {
 	 */
 	setMinimizeToTray: (enabled: boolean) => typedError<null, CommandError>(__TAURI_INVOKE("set_minimize_to_tray", { enabled })),
 	setTrayStatus: (status: TrayStatus) => typedError<null, CommandError>(__TAURI_INVOKE("set_tray_status", { status })),
+	updaterStatus: () => typedError<UpdaterStatus, CommandError>(__TAURI_INVOKE("updater_status")),
 	/**
 	 *  Every adapter the system reports, best-first among the eligible ones.
 	 * 
@@ -255,6 +256,24 @@ export type TrayStatus = {
 	connected: boolean,
 	serverName: string | null,
 	protocolLabel: string | null,
+};
+
+/**
+ *  Whether this build can actually install an update.
+ * 
+ *  The updater plugin is always registered, but it can only *verify* a download
+ *  if `plugins.updater.pubkey` was filled in at build time — and an update that
+ *  cannot be verified is one an attacker can write, so the plugin rightly
+ *  refuses it. Without this, the only way for a user to discover an unsigned
+ *  build is to download an update and watch it fail at the last step.
+ * 
+ *  Reported up front instead, so the Settings screen can say "this build cannot
+ *  install updates" rather than offering a button that is guaranteed to fail.
+ */
+export type UpdaterStatus = {
+	/**  A signing key and at least one endpoint are both present. */
+	configured: boolean,
+	endpoints: string[],
 };
 
 /* Tauri Specta runtime */

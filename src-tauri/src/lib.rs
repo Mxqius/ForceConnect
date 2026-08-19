@@ -25,6 +25,7 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::app::app_info,
         commands::app::set_minimize_to_tray,
         commands::app::set_tray_status,
+        commands::app::updater_status,
         commands::adapters::list_adapters,
         commands::servers::list_servers,
         commands::servers::list_protocols,
@@ -124,15 +125,27 @@ pub fn run() {
             .plugin(tauri_plugin_autostart::init(
                 tauri_plugin_autostart::MacosLauncher::LaunchAgent,
                 None,
-            ));
+            ))
+            //
+            // Updates.
+            //
+            // The endpoint and install mode are in `tauri.conf.json`. The
+            // signing key is not, and cannot be: `plugins.updater.pubkey` is
+            // empty in the repository because its private half belongs in the
+            // release pipeline's secrets. That is a deliberate half-state, and
+            // the two halves have to be filled in together —
+            //
+            //   pnpm tauri signer generate -w %USERPROFILE%\.tauri\forceconnect.key
+            //
+            // then paste the printed public key into `pubkey`, set
+            // `bundle.createUpdaterArtifacts` to true, and give the build
+            // `TAURI_SIGNING_PRIVATE_KEY`. Until then this plugin initializes,
+            // `check()` reaches the endpoint, and a download that finds a real
+            // release is refused at signature verification. The Settings screen
+            // reports that state as "not configured" rather than as a failure,
+            // because an unsigned update is one an attacker can write.
+            .plugin(tauri_plugin_updater::Builder::new().build());
     }
-
-    // The updater is deliberately not registered yet. It refuses to initialize
-    // without a `plugins.updater.pubkey`, and that keypair has to be generated
-    // by whoever owns the release process — the private key belongs in CI
-    // secrets, never in this repository. It gets wired up alongside the release
-    // pipeline. A placeholder key would be worse than none: the plugin would
-    // look configured while silently rejecting every update.
 
     let app = app
         .invoke_handler(builder.invoke_handler())

@@ -66,6 +66,56 @@ pub fn set_tray_status(app: tauri::AppHandle, status: TrayStatus) -> CommandResu
     Ok(())
 }
 
+/// Whether this build can actually install an update.
+///
+/// The updater plugin is always registered, but it can only *verify* a download
+/// if `plugins.updater.pubkey` was filled in at build time — and an update that
+/// cannot be verified is one an attacker can write, so the plugin rightly
+/// refuses it. Without this, the only way for a user to discover an unsigned
+/// build is to download an update and watch it fail at the last step.
+///
+/// Reported up front instead, so the Settings screen can say "this build cannot
+/// install updates" rather than offering a button that is guaranteed to fail.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdaterStatus {
+    /// A signing key and at least one endpoint are both present.
+    pub configured: bool,
+    pub endpoints: Vec<String>,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn updater_status(app: tauri::AppHandle) -> CommandResult<UpdaterStatus> {
+    let config = app.config();
+
+    let updater = config
+        .plugins
+        .0
+        .get("updater")
+        .and_then(|value| value.as_object());
+
+    let pubkey = updater
+        .and_then(|u| u.get("pubkey"))
+        .and_then(|v| v.as_str())
+        .unwrap_or_default();
+
+    let endpoints: Vec<String> = updater
+        .and_then(|u| u.get("endpoints"))
+        .and_then(|v| v.as_array())
+        .map(|list| {
+            list.iter()
+                .filter_map(|v| v.as_str().map(str::to_owned))
+                .collect()
+        })
+        .unwrap_or_default();
+
+    Ok(UpdaterStatus {
+        configured: !pubkey.trim().is_empty() && !endpoints.is_empty(),
+        endpoints,
+    })
+}
+
 fn os_description() -> String {
     format!("{} {}", std::env::consts::OS, std::env::consts::ARCH)
 }

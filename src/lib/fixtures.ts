@@ -1,6 +1,7 @@
 import type {
   Adapter,
   AppInfo,
+  UpdaterStatus,
   LatencyResult,
   Protocol,
   Server,
@@ -27,6 +28,16 @@ export const appInfo: AppInfo = {
   os: "windows x86_64",
   elevated: true,
   pid: 4242,
+};
+
+/** Unsigned, like a local build: the update UI's "cannot install" branch is the
+    one worth seeing while developing, since it is the one users of an unsigned
+    build will get. */
+export const updaterStatus: UpdaterStatus = {
+  configured: false,
+  endpoints: [
+    "https://github.com/mxqius/forceconnect/releases/latest/download/latest.json",
+  ],
 };
 
 export const adapters: Adapter[] = [

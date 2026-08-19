@@ -13,6 +13,7 @@
     "opener:default",
     "log:default",
     "window-state:default",
-    "autostart:default"
+    "autostart:default",
+    "updater:default"
   ]
 }

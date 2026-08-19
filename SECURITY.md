@@ -69,4 +69,12 @@ signed. There is exactly one executable and exactly one UAC prompt: if you see a
 prompt for anything other than `ForceConnect`, or one from an unknown publisher,
 something is wrong — please report it.
 
-You can always build from source; see the [README](README.md).
+Automatic updates are checked over HTTPS and verified against a minisign public
+key compiled into the build before anything is installed; an update that does not
+verify is discarded. The app never installs one on its own — checking is
+automatic, installing is a deliberate click. A build whose signing key was not
+configured says so on the Settings screen rather than silently failing at the
+last step.
+
+You can always build from source; see the [README](README.md). The signing
+setup and release checklist live in [RELEASING.md](RELEASING.md).

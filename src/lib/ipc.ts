@@ -24,6 +24,7 @@ export type {
   Server,
   ServerSource,
   TrayStatus,
+  UpdaterStatus,
 } from "@/lib/bindings";
 
 /**
@@ -86,6 +87,10 @@ export const ipc = {
     useFixtures ? fixture(null) : unwrap(commands.setMinimizeToTray(enabled)),
   setTrayStatus: (status: TrayStatus) =>
     useFixtures ? fixture(null) : unwrap(commands.setTrayStatus(status)),
+  updaterStatus: () =>
+    useFixtures
+      ? fixture(fixtures.updaterStatus)
+      : unwrap(commands.updaterStatus()),
   listAdapters: () =>
     useFixtures ? fixture(fixtures.adapters) : unwrap(commands.listAdapters()),
   listServers: () =>

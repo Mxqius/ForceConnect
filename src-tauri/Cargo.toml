@@ -117,6 +117,13 @@ tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 [target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]
 tauri-plugin-autostart = "2"
 tauri-plugin-single-instance = "2"
+# Signed, self-contained updates. `rustls-tls` rather than the default
+# native-tls: the rest of the app already validates TLS through rustls with the
+# Windows trust store, and linking a second TLS stack into the binary to fetch
+# one JSON file is not worth the size.
+tauri-plugin-updater = { version = "2", default-features = false, features = [
+    "rustls-tls",
+] }
 tauri-plugin-window-state = "2"
 
 [profile.release]

@@ -5,10 +5,19 @@ import {
   isEnabled as autostartEnabled,
 } from "@tauri-apps/plugin-autostart";
 import { isTauri } from "@tauri-apps/api/core";
+import {
+  CheckCircle2,
+  Download,
+  Loader2,
+  RefreshCw,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import {
   Badge,
+  Button,
+  Progress,
   Select,
   StatusDot,
   Switch,
@@ -16,6 +25,8 @@ import {
   type SelectOption,
 } from "@/design/primitives";
 import { useLayoutPrefs } from "@/app/useLayoutPrefs";
+import { useUpdater, useUpdaterStatus } from "@/features/settings/useUpdater";
+import { cn } from "@/lib/cn";
 import { ipc } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
 
@@ -118,6 +129,10 @@ export function SettingsScreen() {
         </Row>
       </Section>
 
+      <Section title="Updates">
+        <UpdateRows />
+      </Section>
+
       <Section title="Privileges">
         <Row
           label="Administrator rights"
@@ -144,6 +159,169 @@ export function SettingsScreen() {
       </p>
     </div>
   );
+}
+
+/**
+ * The update controls.
+ *
+ * Two separate decisions, kept separate: whether ForceConnect *looks* for a new
+ * version on its own, and whether it installs one. It never does the second
+ * without being asked — the app runs elevated and the update replaces the
+ * running binary, so the install is a deliberate click every time.
+ */
+function UpdateRows() {
+  const { stage, autoUpdate, setAutoUpdate, check, install, isBusy } =
+    useUpdater();
+  const { data: status } = useUpdaterStatus();
+
+  // An unsigned build reaches the endpoint fine and then refuses the download
+  // at verification. Better to say so here than to offer a button that is
+  // guaranteed to fail at the last step.
+  const canInstall = status?.configured ?? true;
+
+  return (
+    <>
+      <Row
+        label="Check for updates on launch"
+        hint="Looks for a newer release when ForceConnect starts. It never downloads or installs anything on its own."
+      >
+        <Switch
+          checked={autoUpdate}
+          onCheckedChange={(checked) => setAutoUpdate(checked)}
+        />
+      </Row>
+
+      <div className="flex flex-col gap-3 px-5 py-4">
+        <div className="flex items-center justify-between gap-8">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Status</p>
+            <UpdateStatusLine
+              stage={stage}
+              canInstall={canInstall}
+              endpoint={status?.endpoints[0]}
+            />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            {stage.kind === "available" && canInstall ? (
+              <Button
+                size="sm"
+                variant="primary"
+                startIcon={<Download />}
+                onClick={() => void install()}
+              >
+                Install {stage.version}
+              </Button>
+            ) : null}
+
+            <Button
+              size="sm"
+              startIcon={
+                <RefreshCw
+                  className={cn(stage.kind === "checking" && "animate-spin")}
+                />
+              }
+              disabled={isBusy}
+              onClick={() => void check()}
+            >
+              {stage.kind === "checking" ? "Checking…" : "Check now"}
+            </Button>
+          </div>
+        </div>
+
+        {stage.kind === "downloading" ? (
+          <Progress
+            label={`Downloading ${stage.version}`}
+            value={stage.percent}
+            max={100}
+          />
+        ) : null}
+
+        {stage.kind === "available" && stage.notes ? (
+          <p className="border-border-subtle bg-surface-inset text-text-muted fc-scroll max-h-32 overflow-y-auto rounded-lg border px-3 py-2 text-xs leading-relaxed whitespace-pre-line">
+            {stage.notes}
+          </p>
+        ) : null}
+      </div>
+    </>
+  );
+}
+
+function UpdateStatusLine({
+  stage,
+  canInstall,
+  endpoint,
+}: {
+  stage: ReturnType<typeof useUpdater>["stage"];
+  canInstall: boolean;
+  endpoint: string | undefined;
+}) {
+  const line = "text-text-muted mt-1 flex items-center gap-1.5 text-xs";
+
+  if (!canInstall && stage.kind !== "error") {
+    return (
+      <p className={cn(line, "text-warning")}>
+        <TriangleAlert className="size-3.5 shrink-0" />
+        This build has no update signing key, so it cannot install updates.
+        {endpoint ? " Releases are published on GitHub." : ""}
+      </p>
+    );
+  }
+
+  switch (stage.kind) {
+    case "idle":
+      return <p className={line}>Not checked yet this session.</p>;
+
+    case "checking":
+      return (
+        <p className={line}>
+          <Loader2 className="size-3.5 shrink-0 animate-spin" />
+          Looking for a newer release…
+        </p>
+      );
+
+    case "current":
+      return (
+        <p className={cn(line, "text-success")}>
+          <CheckCircle2 className="size-3.5 shrink-0" />
+          You are on the latest version.
+        </p>
+      );
+
+    case "available":
+      return (
+        <p className={cn(line, "text-accent-bright")}>
+          Version {stage.version} is available
+          {stage.date ? ` (${stage.date.slice(0, 10)})` : ""}.
+        </p>
+      );
+
+    case "downloading":
+      return (
+        <p className={line}>
+          <Loader2 className="size-3.5 shrink-0 animate-spin" />
+          Downloading {stage.version}
+          {stage.percent === null ? "…" : ` — ${stage.percent}%`}
+        </p>
+      );
+
+    case "installing":
+      return (
+        <p className={line}>
+          <Loader2 className="size-3.5 shrink-0 animate-spin" />
+          Installing {stage.version}. ForceConnect will close and reopen on the
+          new version.
+        </p>
+      );
+
+    case "error":
+      return (
+        <p className={cn(line, "text-danger")}>
+          <TriangleAlert className="size-3.5 shrink-0" />
+          {stage.message}
+        </p>
+      );
+  }
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {

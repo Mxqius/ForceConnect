@@ -20,6 +20,7 @@ import { TitleBar } from "@/app/TitleBar";
 import { useHydrateLayoutPrefs, useLayoutPrefs } from "@/app/useLayoutPrefs";
 import { useConnection } from "@/features/connection/useConnection";
 import { useHydrateTargetAdapter } from "@/features/interfaces/useAdapters";
+import { useLaunchUpdateCheck } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
 import { ipc } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
@@ -42,6 +43,7 @@ const NAV: NavItem[] = [
 export function Shell() {
   useHydrateLayoutPrefs();
   useHydrateTargetAdapter();
+  useLaunchUpdateCheck();
   useTrayDisconnect();
   const navLayout = useLayoutPrefs((state) => state.navLayout);
   const setNavLayout = useLayoutPrefs((state) => state.setNavLayout);

@@ -144,6 +144,32 @@ second one are load-bearing:
   to merge two snippets that disagree:
   `manifest authoring error c1010001: Values of attribute "level" not equal`.
 
+## Updates
+
+`tauri-plugin-updater`, pointed at a `latest.json` published with each GitHub
+release. The flow has two halves that are deliberately not symmetrical:
+
+- **Checking** is automatic, if the user leaves "Check for updates on launch"
+  on. It is a single HTTPS GET at startup and nothing else.
+- **Installing** is never automatic. The app runs elevated and an update
+  replaces the running binary, so it is a click every time. On Windows the
+  plugin hands the downloaded package to the NSIS installer and exits the
+  process; the installer restarts the app.
+
+The update is verified against a minisign public key before anything is written
+to disk. **That key is not in this repository** — `plugins.updater.pubkey` in
+`tauri.conf.json` is deliberately empty, because its private half belongs in the
+release pipeline's secrets and nowhere else. A build made from the repository as
+it stands can therefore check for updates and will refuse to install one.
+
+That is a real state a user can be in, so the app reports it rather than hiding
+it: `updater_status` reads the configured key and endpoints back out, and the
+Settings screen says "this build has no update signing key" instead of offering
+a button that is guaranteed to fail at the last step.
+
+Filling that in is a one-time setup plus a per-release checklist — see
+[RELEASING.md](RELEASING.md) rather than duplicating the steps here.
+
 ## Things that are easy to get wrong
 
 These are recorded because each one produces a bug that is hard to diagnose from
