@@ -10,7 +10,7 @@ import {
   Unlock,
   Wrench,
 } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 import {
   Badge,
@@ -27,7 +27,10 @@ import {
   toast,
   type SelectOption,
 } from "@/design/primitives";
-import { useConnection } from "@/features/connection/useConnection";
+import {
+  useConnection,
+  useServerSelection,
+} from "@/features/connection/useConnection";
 import { useDnsTools } from "@/features/connection/useDnsTools";
 import { usePing } from "@/features/connection/usePing";
 import { ProviderMark } from "@/features/servers/ProviderMark";
@@ -72,8 +75,11 @@ export function HomeScreen() {
     isDisconnecting,
   } = useConnection();
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [protocol, setProtocol] = useState<Protocol | null>(null);
+  // Held in a store rather than in this component: the router unmounts the
+  // screen on every tab change, and component state took the whole selection
+  // with it — the picker came back empty and every field showed an em dash.
+  const { selectedId, protocol, selectServer, selectProtocol } =
+    useServerSelection();
 
   // Favourites float to the top of the picker for the same reason they do in
   // the browser: they are the entries this user actually returns to.
@@ -171,11 +177,7 @@ export function HomeScreen() {
             <Select
               label="DNS server"
               value={selectedId}
-              onValueChange={(value) => {
-                setSelectedId(value);
-                // The previous protocol may not exist on the new server.
-                setProtocol(null);
-              }}
+              onValueChange={selectServer}
               options={options}
               placeholder="Choose a DNS server…"
               disabled={connected || busy}
@@ -229,7 +231,9 @@ export function HomeScreen() {
               <Select
                 label="Protocol"
                 value={chosenProtocol}
-                onValueChange={(value) => setProtocol(value as Protocol | null)}
+                onValueChange={(value) =>
+                  selectProtocol(value as Protocol | null)
+                }
                 options={protocolOptions}
                 disabled={connected || busy}
                 className="h-auto w-28 shrink-0"
