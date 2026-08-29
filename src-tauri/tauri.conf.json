@@ -43,6 +43,7 @@
   "bundle": {
     "active": true,
     "targets": ["nsis"],
+    "createUpdaterArtifacts": false,
     "publisher": "Mxqius",
     "copyright": "Copyright (c) Mxqius",
     "category": "Utility",
@@ -59,6 +60,17 @@
     "windows": {
       "nsis": {
         "installMode": "perMachine"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "endpoints": [
+        "https://github.com/mxqius/forceconnect/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
       }
     }
   }

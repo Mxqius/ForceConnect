@@ -1,0 +1,554 @@
+/**
+ * The About screen's pixel phoenix. One 26s timeline, shared by every moving
+ * part, so the poses stay in step without a single line of JavaScript:
+ *
+ *   0–18%    perched at the left      32–52%  perched at the right
+ *   18–32%   fly right                52–66%  fly back, facing left
+ *                                     66–100% perched at the left again
+ *
+ * Click it and it goes up instead of across: a flare of white heat, a burst of
+ * embers, the climb, and a landing back on the same perch. That runs on top of
+ * the routine rather than instead of it — `.is-rising` *pauses* the timeline,
+ * so it resumes its patrol from wherever it was standing rather than
+ * restarting from the beginning. It is also the one thing here that needs
+ * JavaScript, and only for a class.
+ *
+ * Everything animated below is `transform` or `opacity`: both composited, so
+ * nothing here triggers layout or paint.
+ */
+
+.phx-stage {
+  /* `cqw` inside this container is what lets the flight span the parent's
+     width without measuring it in JS. */
+  container-type: inline-size;
+  position: relative;
+  height: 38px;
+  /* Only the bird is clickable, not the full-width strip it flies along. */
+  pointer-events: none;
+
+  --phx-cycle: 26s;
+  --phx-beat: 0.3s;
+  --phx-size: 52px;
+  --phx-travel: calc(100cqw - var(--phx-size));
+
+  /* Fire, banked from ember to gold. The outline is a dark ember rather than
+     black: at this size the silhouette is carried by the glow, not the edge. */
+  --phx-o: #33110b;
+  --phx-r: #b02d16;
+  --phx-f: #ef6a1a;
+  --phx-a: #fbab2c;
+  --phx-y: #ffd75e;
+  --phx-h: #fff4d6;
+  --phx-flare: #fff4d6;
+}
+
+/* Light: the same fire, banked down. Gold bright enough to glow against
+   #141417 is invisible on a white card, and a white-hot flare more so. */
+[data-theme="light"] .phx-stage {
+  --phx-o: #33110b;
+  --phx-r: #8f2410;
+  --phx-f: #cf5209;
+  --phx-a: #dd8a0e;
+  --phx-y: #eda81c;
+  --phx-h: #fff0c8;
+  --phx-flare: #ffdf7a;
+}
+
+/* --- the rig ------------------------------------------------------------ *
+ * Five nested wrappers, outermost first, each owning exactly one transform so
+ * they compose instead of fighting:
+ *
+ *   .phx-walker  where along the ledge it is        (ambient)
+ *   .phx-arc     how high the crossing carries it   (ambient)
+ *   .phx-facing  which way it is pointing           (ambient)
+ *   .phx-rise    the click flight                   (on demand)
+ *   .phx-hop     the little jumps while perched     (ambient)
+ *
+ * `.phx-facing` sits *outside* `.phx-rise` on purpose: the rise tilts the bird
+ * nose-up, and a tilt applied outside the mirror would pitch it nose-down on
+ * the return leg. */
+
+.phx-walker {
+  width: var(--phx-size);
+  animation: phx-travel var(--phx-cycle) ease-in-out infinite;
+}
+
+.phx-arc {
+  animation: phx-arc var(--phx-cycle) ease-in-out infinite;
+}
+
+.phx-hit {
+  display: block;
+  position: relative;
+  width: var(--phx-size);
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.phx-facing {
+  display: block;
+  animation: phx-face var(--phx-cycle) steps(1, end) infinite;
+}
+
+.phx-rise {
+  transform-origin: 50% 100%;
+}
+
+.phx-sprite {
+  display: block;
+}
+
+/* The ember burst, pinned to the perch it left from. Sits outside the rise
+   wrapper's coordinate space so the embers stay put. */
+.phx-dust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* --- the routine -------------------------------------------------------- */
+
+@keyframes phx-travel {
+  0%,
+  18% {
+    transform: translate3d(0, 0, 0);
+  }
+  32%,
+  52% {
+    transform: translate3d(var(--phx-travel), 0, 0);
+  }
+  66%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes phx-arc {
+  0%,
+  18% {
+    transform: translate3d(0, 0, 0);
+  }
+  23% {
+    transform: translate3d(0, -15px, 0);
+  }
+  28% {
+    transform: translate3d(0, -16px, 0);
+  }
+  32%,
+  52% {
+    transform: translate3d(0, 0, 0);
+  }
+  57% {
+    transform: translate3d(0, -15px, 0);
+  }
+  62% {
+    transform: translate3d(0, -16px, 0);
+  }
+  66%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Head towards the direction of travel. The turn back at 88% happens while it
+   is perched, so it reads as the bird looking around rather than as a flip. */
+@keyframes phx-face {
+  0% {
+    transform: scaleX(1);
+  }
+  52% {
+    transform: scaleX(-1);
+  }
+  88%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* --- pose swapping ------------------------------------------------------ *
+ * Two poses share the same body, crest and tail: perched is a folded wing plus
+ * legs down, airborne is open wings plus talons tucked. Only the difference is
+ * swapped. */
+
+.phx-pose--perch {
+  animation: phx-perch var(--phx-cycle) steps(1, end) infinite;
+}
+
+.phx-pose--air {
+  /* The base value matters: it is what reduced motion falls back to. */
+  opacity: 0;
+  animation: phx-air var(--phx-cycle) steps(1, end) infinite;
+}
+
+@keyframes phx-perch {
+  0% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0;
+  }
+  32% {
+    opacity: 1;
+  }
+  52% {
+    opacity: 0;
+  }
+  66%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes phx-air {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  32% {
+    opacity: 0;
+  }
+  52% {
+    opacity: 1;
+  }
+  66%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --- the wingbeat ------------------------------------------------------- */
+
+.phx-flap {
+  animation: phx-flap var(--phx-beat) steps(1, end) infinite;
+}
+
+.phx-flap--dn {
+  animation-delay: calc(var(--phx-beat) / -2);
+}
+
+@keyframes phx-flap {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The far wing: one step cooler, back and up by a pixel or two, and a hair off
+   the beat. Without the lag the two wings read as one thick one. */
+.phx-wing--far {
+  transform: translate(-2px, -2px);
+}
+
+.phx-wing--far .phx-flap--up {
+  animation-delay: calc(var(--phx-beat) * -0.09);
+}
+
+.phx-wing--far .phx-flap--dn {
+  animation-delay: calc(var(--phx-beat) * -0.59);
+}
+
+/* --- perched idle ------------------------------------------------------- */
+
+/* Little jumps, spaced out across the perched stretches of the cycle. Timed in
+   percentages of the same 26s clock so they can never land mid-flight. */
+.phx-hop {
+  animation: phx-hop var(--phx-cycle) ease-out infinite;
+}
+
+@keyframes phx-hop {
+  0%,
+  6%,
+  7.8%,
+  10%,
+  11.8%,
+  40%,
+  41.8%,
+  45%,
+  46.8%,
+  74%,
+  75.8%,
+  92%,
+  93.8%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  6.9%,
+  10.9%,
+  40.9%,
+  45.9%,
+  74.9%,
+  92.9% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+/* The streamers trail from the rump, so that is what they pivot around — not
+   the middle of the feathers. */
+.phx-tail {
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  animation: phx-tail 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes phx-tail {
+  from {
+    transform: rotate(4deg);
+  }
+  to {
+    transform: rotate(-5deg);
+  }
+}
+
+/* The crest pivots the other way to the tail, on a different beat, which is
+   what stops the whole bird looking like one rocking shape. */
+.phx-crest {
+  transform-box: fill-box;
+  transform-origin: 100% 100%;
+  animation: phx-crest 1.9s ease-in-out infinite alternate;
+}
+
+@keyframes phx-crest {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+.phx-breath {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: phx-breath 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes phx-breath {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(1.04);
+  }
+}
+
+/* An eyelid over the eye: shut for a frame or two, rarely. */
+.phx-blink {
+  opacity: 0;
+  animation: phx-blink 5.2s steps(1, end) infinite;
+}
+
+@keyframes phx-blink {
+  0%,
+  94% {
+    opacity: 0;
+  }
+  95%,
+  97% {
+    opacity: 1;
+  }
+  98%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Embers coming off it while it stands there. Two, slow, mostly invisible —
+   the point is that you notice it is burning without noticing why. */
+.phx-ember {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: phx-ember 6.8s ease-out infinite;
+}
+
+@keyframes phx-ember {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1);
+  }
+  6% {
+    opacity: 0.9;
+  }
+  28% {
+    opacity: 0;
+    transform: translate(-2px, -7px) scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-2px, -7px) scale(0.6);
+  }
+}
+
+/* --- hover: it stirs ---------------------------------------------------- */
+
+.phx-hit:hover .phx-tail {
+  animation-duration: 1.2s;
+}
+
+.phx-hit:hover .phx-crest {
+  animation-duration: 0.9s;
+}
+
+/* --- click: it rises ------------------------------------------------------
+ *
+ * `animation-play-state: paused` freezes each ambient animation at its current
+ * time, so releasing the flight resumes the patrol exactly where it stopped —
+ * position, facing and pose still in step. Wiping them instead
+ * (`animation: none`) would restart from 0% and drop the bird somewhere it
+ * never took off from.
+ *
+ * The pose overrides have to be `!important` to outrank the paused animations,
+ * which sit above plain declarations in the cascade. */
+
+.phx-stage.is-rising .phx-walker,
+.phx-stage.is-rising .phx-arc,
+.phx-stage.is-rising .phx-facing,
+.phx-stage.is-rising .phx-hop,
+.phx-stage.is-rising .phx-pose {
+  animation-play-state: paused;
+}
+
+.phx-stage.is-rising .phx-pose--perch {
+  opacity: 0 !important;
+}
+
+.phx-stage.is-rising .phx-pose--air {
+  opacity: 1 !important;
+}
+
+/* Harder work than a glide: the beat roughly doubles, and the crest and tail
+   stream. */
+.phx-stage.is-rising .phx-flap {
+  animation-duration: 0.17s;
+}
+
+.phx-stage.is-rising .phx-tail,
+.phx-stage.is-rising .phx-crest {
+  animation-duration: 0.45s;
+}
+
+.phx-stage.is-rising .phx-rise {
+  animation: phx-rise 1.5s linear 1;
+}
+
+/* Linear on purpose. The shape is in the keyframe spacing — most of the climb
+   in the first third, the hang in the middle, all of it back in the last — so
+   an easing curve on top would only round off the moments that carry it. The
+   apex is capped at 34px, which is the gap to the paragraph above. */
+@keyframes phx-rise {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scaleY(1);
+  }
+  6% {
+    transform: translate3d(0, 2px, 0) rotate(0deg) scaleY(0.84);
+  }
+  14% {
+    transform: translate3d(2px, -10px, 0) rotate(-16deg) scaleY(1.08);
+  }
+  32% {
+    transform: translate3d(7px, -28px, 0) rotate(-12deg) scaleY(1);
+  }
+  50% {
+    transform: translate3d(11px, -34px, 0) rotate(-2deg) scaleY(1);
+  }
+  68% {
+    transform: translate3d(8px, -26px, 0) rotate(6deg) scaleY(1);
+  }
+  86% {
+    transform: translate3d(3px, -8px, 0) rotate(8deg) scaleY(1);
+  }
+  95% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scaleY(0.86);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scaleY(1);
+  }
+}
+
+/* The flash it goes up in: the whole silhouette at white heat for about a
+   sixth of a second, gone before you can read it as a shape. */
+.phx-flare {
+  opacity: 0;
+}
+
+.phx-stage.is-rising .phx-flare {
+  animation: phx-flare 0.42s ease-out 1;
+}
+
+@keyframes phx-flare {
+  0% {
+    opacity: 0.95;
+  }
+  30% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Embers thrown off at take-off, left behind on the perch. */
+.phx-spark {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.phx-stage.is-rising .phx-spark {
+  animation: phx-spark 0.95s ease-out 1;
+}
+
+@keyframes phx-spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(1.4);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--spark-x), var(--spark-y)) scale(0.5);
+  }
+}
+
+/* Reduced motion: it perches and stays put. The global rule collapses every
+   duration to 0.01ms, which would otherwise leave the poses stacked on
+   whatever frame they happened to end on. The click is suppressed in the
+   component, not here — with no rise animation there would be no animationend
+   to land it again. */
+@media (prefers-reduced-motion: reduce) {
+  .phx-walker,
+  .phx-arc,
+  .phx-facing,
+  .phx-hop,
+  .phx-pose,
+  .phx-flap,
+  .phx-tail,
+  .phx-crest,
+  .phx-breath,
+  .phx-blink,
+  .phx-ember,
+  .phx-spark,
+  .phx-flare,
+  .phx-rise {
+    animation: none !important;
+  }
+
+  .phx-hit {
+    cursor: default;
+  }
+}

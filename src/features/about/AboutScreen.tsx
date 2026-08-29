@@ -14,6 +14,9 @@ import { Badge, Button } from "@/design/primitives";
 import { ipc } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
 
+import { PixelPhoenix } from "./PixelPhoenix";
+import "./phoenix.css";
+
 const LINKS: { label: string; href: string; icon: LucideIcon; hint: string }[] =
   [
     {
@@ -73,11 +76,16 @@ export function AboutScreen() {
         </p>
       </header>
 
-      <section className="border-border-subtle bg-surface divide-border-subtle grid divide-y rounded-2xl border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        <Fact label="Platform">{data?.os ?? "—"}</Fact>
-        <Fact label="Licence">MIT</Fact>
-        <Fact label="Built by">MXQIUS</Fact>
-      </section>
+      {/* The fact strip doubles as a ledge: the phoenix perches on its top edge,
+          which is why the two are grouped rather than spaced apart. */}
+      <div className="flex flex-col">
+        <PixelPhoenix />
+        <section className="border-border-subtle bg-surface divide-border-subtle grid divide-y rounded-2xl border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <Fact label="Platform">{data?.os ?? "—"}</Fact>
+          <Fact label="Licence">MIT</Fact>
+          <Fact label="Built by">MXQIUS</Fact>
+        </section>
+      </div>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-text-secondary text-xs font-semibold tracking-widest uppercase">
