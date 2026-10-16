@@ -57,3 +57,9 @@ export const overlaySurface = cn(
   "data-[starting-style]:scale-[0.97] data-[starting-style]:opacity-0",
   "data-[ending-style]:scale-[0.97] data-[ending-style]:opacity-0",
 );
+
+/**
+ * Page padding for full-page screens, shared with About: 32px at the sides,
+ * and enough at the foot to scroll the last row clear of the floating dock.
+ */
+export const pagePadding = "px-8 pt-8 pb-(--dock-clearance)";

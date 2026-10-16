@@ -74,3 +74,26 @@ export function sortProtocols(protocols: readonly Protocol[]): Protocol[] {
     (a, b) => PROTOCOL_ORDER.indexOf(a) - PROTOCOL_ORDER.indexOf(b),
   );
 }
+
+/**
+ * The protocol to preselect for a server.
+ *
+ * The first one, in display order, that can be connected today. Encrypted
+ * endpoints need the local resolver, so until it ships they are shown but not
+ * picked by default: preselecting a choice that cannot connect would make the
+ * very first press of the power button fail.
+ */
+export function preferredProtocol(server: Server): Protocol | null {
+  const usable = server.endpoints
+    .filter((endpoint) => !endpoint.requiresForwarder)
+    .map((endpoint) => endpoint.protocol);
+
+  return sortProtocols(usable)[0] ?? sortProtocols(server.protocols)[0] ?? null;
+}
+
+/** `no-logging` to "No logging"; two-letter tags are country codes, so "IR". */
+export function humanTag(tag: string): string {
+  if (tag.length <= 2) return tag.toUpperCase();
+  const text = tag.replace(/-/g, " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

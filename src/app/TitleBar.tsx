@@ -33,14 +33,17 @@ export function TitleBar() {
   return (
     <header
       data-tauri-drag-region
-      className="border-border-subtle bg-surface-subtle flex h-10 shrink-0 items-center border-b select-none"
+      // No fill and no rule: in the bento layout the title bar is part of the
+      // ground the tiles sit on, and a band across the top would be a tile
+      // that holds nothing.
+      className="flex h-10 shrink-0 items-center select-none"
     >
       <div
         data-tauri-drag-region
-        className="text-text-secondary flex flex-1 items-center gap-2.5 self-stretch px-4"
+        className="text-text-muted flex flex-1 items-center gap-2.5 self-stretch px-5"
       >
         <img src={logoIcon} alt="" className="size-[18px] shrink-0" />
-        <span className="text-xs font-medium">ForceConnect</span>
+        <span className="text-[13px] font-medium">ForceConnect</span>
       </div>
 
       <div className="flex h-full shrink-0 items-stretch">

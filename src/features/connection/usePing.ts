@@ -7,10 +7,10 @@ import { queryKeys } from "@/lib/query-keys";
  * Round-trip time for one server over one protocol.
  *
  * A probe is four real DNS exchanges over the server's real transport, not an
- * ICMP ping — so it costs a second or two and is worth caching. It is never
- * refetched on a timer or on window focus: a number that silently changed while
- * the user was reading it would be worse than a slightly old one, and the
- * refresh control is right next to it.
+ * ICMP ping — so it costs a second or two and is worth caching. It is not
+ * refetched on window focus. The one place it is refetched on a timer is the
+ * Connection screen's latency graph, which samples it while that screen is
+ * visible: there the number is expected to move, because it is drawn live.
  */
 export function usePing(serverId: string | null, protocol: Protocol | null) {
   const enabled = Boolean(serverId && protocol);
@@ -36,6 +36,10 @@ export function usePing(serverId: string | null, protocol: Protocol | null) {
     error: query.error,
     /** True while a probe is in flight, including a manual refresh. */
     isProbing: enabled && query.isFetching,
-    refresh: () => void query.refetch(),
+    /** When the current figure was measured, so callers can tell samples apart. */
+    updatedAt: query.dataUpdatedAt,
+    // `cancelRefetch: false` joins a probe already in flight instead of
+    // aborting it, so a click and a timed sample never cost two probes.
+    refresh: () => void query.refetch({ cancelRefetch: false }),
   };
 }

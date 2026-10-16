@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   countByProtocol,
   filterServers,
+  preferredProtocol,
   sortProtocols,
 } from "@/features/servers/filter";
 import type { Endpoint, Protocol, Server } from "@/lib/ipc";
@@ -141,5 +142,39 @@ describe("sortProtocols", () => {
       "doh",
       "doh3",
     ]);
+  });
+});
+
+describe("preferredProtocol", () => {
+  it("picks the first protocol that can connect without the resolver", () => {
+    const s = server(
+      "a",
+      "A",
+      null,
+      [],
+      [
+        endpoint("doh", "https://a.example/dns-query"),
+        endpoint("udp", "1.1.1.1"),
+      ],
+    );
+    expect(preferredProtocol(s)).toBe("udp");
+  });
+
+  it("falls back to the first protocol when every endpoint needs the resolver", () => {
+    const s = server(
+      "b",
+      "B",
+      null,
+      [],
+      [
+        endpoint("doh", "https://b.example/dns-query"),
+        endpoint("dot", "b.example"),
+      ],
+    );
+    expect(preferredProtocol(s)).toBe("dot");
+  });
+
+  it("returns null for a server with no endpoints", () => {
+    expect(preferredProtocol(server("c", "C", null, [], []))).toBeNull();
   });
 });

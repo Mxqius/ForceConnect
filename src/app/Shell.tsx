@@ -4,8 +4,6 @@ import { listen } from "@tauri-apps/api/event";
 import {
   Info,
   Network,
-  PanelBottom,
-  PanelLeft,
   Settings,
   Shield,
   ShieldAlert,
@@ -15,10 +13,14 @@ import {
 import { useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
 
-import { IconButton, Tooltip } from "@/design/primitives";
+import { Tooltip } from "@/design/primitives";
 import { TitleBar } from "@/app/TitleBar";
 import { useHydrateLayoutPrefs, useLayoutPrefs } from "@/app/useLayoutPrefs";
-import { useConnection } from "@/features/connection/useConnection";
+import {
+  useConnection,
+  useConnectionPhase,
+  type ConnectPhase,
+} from "@/features/connection/useConnection";
 import { useHydrateTargetAdapter } from "@/features/interfaces/useAdapters";
 import { useLaunchUpdateCheck } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
@@ -40,13 +42,26 @@ const NAV: NavItem[] = [
   { to: "/about", icon: Info, label: "About" },
 ];
 
+/**
+ * The connection state, carried on the Connection item so it is visible from
+ * every screen — the hero tile is the only other place it shows, and that tile
+ * is gone the moment you open Servers.
+ */
+const PHASE_DOT: Partial<Record<ConnectPhase, string>> = {
+  connected: "bg-success",
+  connecting: "bg-accent-bright animate-pulse",
+  switching: "bg-accent-bright animate-pulse",
+  disconnecting: "bg-text-muted animate-pulse",
+  failed: "bg-danger",
+};
+
 export function Shell() {
   useHydrateLayoutPrefs();
   useHydrateTargetAdapter();
   useLaunchUpdateCheck();
   useTrayDisconnect();
   const navLayout = useLayoutPrefs((state) => state.navLayout);
-  const setNavLayout = useLayoutPrefs((state) => state.setNavLayout);
+  const phase = useConnectionPhase();
 
   const docked = navLayout === "dock";
 
@@ -55,81 +70,109 @@ export function Shell() {
       <TitleBar />
       <ElevationNotice />
 
-      <div
-        className={cn("flex min-h-0 flex-1", docked ? "flex-col" : "flex-row")}
-      >
-        <nav
-          aria-label="Main"
-          className={cn(
-            "bg-surface-subtle border-border-subtle flex shrink-0 gap-1.5",
-            docked
-              ? "order-2 mx-auto mb-6 max-w-[28rem] flex-row items-center justify-center rounded-full border-t px-3 py-2.5"
-              : "flex-col items-center border-r px-2.5 py-4",
-          )}
-        >
-          {NAV.map(({ to, icon: Icon, label, end }) => (
-            <Tooltip key={to} content={label} side={docked ? "top" : "right"}>
-              <NavLink
-                to={to}
-                end={end}
-                aria-label={label}
-                className={({ isActive }) =>
-                  cn(
-                    "relative flex items-center justify-center rounded-xl transition-all duration-200",
-                    "focus-visible:outline-accent outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
-                    docked ? "h-11 gap-2 px-4" : "size-12",
-                    isActive
-                      ? "bg-accent text-text-on-accent shadow-[0_4px_16px_-6px_var(--accent-glow)]"
-                      : "text-text-muted hover:bg-surface-hover hover:text-text-primary",
-                  )
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon className="size-5 shrink-0" />
-                    {/* In the dock the label appears alongside the active icon —
-                        there is horizontal room there that the rail does not
-                        have, and it removes the guesswork from a row of glyphs. */}
-                    {docked && isActive ? (
-                      <span className="text-xs font-medium">{label}</span>
-                    ) : null}
-                  </>
-                )}
-              </NavLink>
-            </Tooltip>
-          ))}
-
-          <div className={cn(docked ? "ml-2" : "mt-auto")}>
-            <Tooltip
-              content={
-                docked ? "Move navigation to the side" : "Dock to bottom"
-              }
-              side={docked ? "top" : "right"}
-            >
-              <IconButton
-                label={
-                  docked ? "Move navigation to the side" : "Dock to bottom"
-                }
-                size="sm"
-                onClick={() => setNavLayout(docked ? "rail" : "dock")}
-                className="text-text-faint hover:text-text-secondary"
-              >
-                {docked ? <PanelLeft /> : <PanelBottom />}
-              </IconButton>
-            </Tooltip>
-          </div>
-        </nav>
+      <div className="relative flex min-h-0 flex-1">
+        {docked ? null : <Rail phase={phase} />}
 
         <main
-          className={cn(
-            "fc-scroll min-w-0 flex-1 overflow-y-auto",
-            docked && "order-1",
-          )}
+          // Screens pad their own bottom edge by this much, so their last row
+          // can scroll clear of the floating dock instead of hiding under it.
+          style={
+            {
+              "--dock-clearance": docked ? "104px" : "32px",
+            } as React.CSSProperties
+          }
+          className="fc-scroll min-w-0 flex-1 overflow-y-auto"
         >
           <Outlet />
         </main>
+
+        {docked ? <Dock phase={phase} /> : null}
       </div>
     </div>
+  );
+}
+
+function Dock({ phase }: { phase: ConnectPhase }) {
+  return (
+    <nav
+      aria-label="Main"
+      className="bg-surface-elevated/90 shadow-dock absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 gap-1 rounded-full p-1.5 backdrop-blur-xl"
+    >
+      {NAV.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          end={item.end}
+          aria-label={item.label}
+          className={({ isActive }) =>
+            cn(
+              "flex h-11 min-w-11 items-center justify-center gap-2 rounded-full px-3.5 text-sm font-semibold transition-[background-color,color,padding] duration-200",
+              "focus-visible:outline-accent outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
+              isActive
+                ? "bg-control-strong text-control-strong-ink px-5"
+                : "text-text-muted hover:bg-surface-hover hover:text-text-primary",
+            )
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <NavIcon item={item} phase={phase} />
+              {isActive ? <span>{item.label}</span> : null}
+            </>
+          )}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
+
+function Rail({ phase }: { phase: ConnectPhase }) {
+  return (
+    <nav
+      aria-label="Main"
+      className="bg-surface rounded-tile shadow-tile border-border-subtle my-6 ml-6 flex shrink-0 flex-col gap-1.5 border p-1.5"
+    >
+      {NAV.map((item) => (
+        <Tooltip key={item.to} content={item.label} side="right">
+          <NavLink
+            to={item.to}
+            end={item.end}
+            aria-label={item.label}
+            className={({ isActive }) =>
+              cn(
+                "flex size-12 items-center justify-center rounded-[18px] transition-colors duration-200",
+                "focus-visible:outline-accent outline-none focus-visible:outline-2 focus-visible:outline-offset-2",
+                isActive
+                  ? "bg-control-strong text-control-strong-ink"
+                  : "text-text-muted hover:bg-surface-hover hover:text-text-primary",
+              )
+            }
+          >
+            <NavIcon item={item} phase={phase} />
+          </NavLink>
+        </Tooltip>
+      ))}
+    </nav>
+  );
+}
+
+function NavIcon({ item, phase }: { item: NavItem; phase: ConnectPhase }) {
+  const Icon = item.icon;
+  const dot = item.to === "/" ? PHASE_DOT[phase] : undefined;
+
+  return (
+    <span className="relative flex">
+      <Icon className="size-5 shrink-0" />
+      {dot ? (
+        <span
+          aria-hidden
+          className={cn(
+            "ring-surface-elevated absolute -top-1 -right-1 size-2 rounded-full ring-2",
+            dot,
+          )}
+        />
+      ) : null}
+    </span>
   );
 }
 
@@ -148,7 +191,7 @@ function useTrayDisconnect() {
   useEffect(() => {
     if (!isTauri()) return;
 
-    const unlisten = listen("tray://disconnect", () => disconnect());
+    const unlisten = listen("tray://disconnect", () => void disconnect());
     return () => void unlisten.then((stop) => stop());
   }, [disconnect]);
 }

@@ -159,7 +159,12 @@ export function AddServerDialog() {
       open={open}
       onOpenChange={handleOpenChange}
       trigger={
-        <Button variant="primary" size="sm" startIcon={<Plus />}>
+        <Button
+          variant="primary"
+          size="sm"
+          startIcon={<Plus />}
+          className="rounded-full"
+        >
           Add server
         </Button>
       }

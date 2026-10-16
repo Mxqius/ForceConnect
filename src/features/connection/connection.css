@@ -1,0 +1,184 @@
+/*
+ * The connection tile's motion.
+ *
+ * Kept as plain CSS beside the component, like the About screen's phoenix,
+ * because every effect here is keyed to a state attribute on the tile rather
+ * than to a React lifecycle: the elements stay mounted across phase changes,
+ * so transitions run between states instead of restarting on each render.
+ *
+ * Only `clip-path`, `transform`, and `opacity` are animated.
+ */
+
+/* Where the colour grows from: the centre of the power button. Measured from
+   the tile's bottom-right so it holds at any tile size. */
+.fc-hero {
+  --fc-origin: calc(100% - 84px) calc(100% - 84px);
+}
+
+/* The "protected" colour, revealed as a circle growing out of the button.
+   Collapsing back is quicker than blooming: arriving deserves a moment,
+   leaving does not. */
+.fc-hero-glow {
+  position: absolute;
+  inset: -1px;
+  background: var(--hero-gradient);
+  clip-path: circle(0px at var(--fc-origin));
+  transition: clip-path 700ms cubic-bezier(0.6, 0, 0.4, 1);
+  pointer-events: none;
+}
+
+.fc-hero[data-lit="true"] .fc-hero-glow {
+  clip-path: circle(160% at var(--fc-origin));
+  transition-duration: 950ms;
+  transition-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.fc-hero-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      380px 280px at 85% 0%,
+      rgb(255 255 255 / 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      300px 260px at 0% 100%,
+      rgb(10 30 90 / 0.35),
+      transparent 60%
+    );
+}
+
+/* A light sweep across the tile while work is in flight. Tinted to the
+   accent on the plain tile, white over the gradient while switching. */
+.fc-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    105deg,
+    transparent 35%,
+    color-mix(in srgb, var(--accent-bright) 16%, transparent) 50%,
+    transparent 65%
+  );
+  background-size: 260% 100%;
+  animation: fc-shimmer 1.7s linear infinite;
+}
+
+.fc-hero[data-lit="true"] .fc-shimmer {
+  background-image: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgb(255 255 255 / 0.2) 50%,
+    transparent 65%
+  );
+}
+
+/* Progress along the bottom edge, driven by the real step index. */
+.fc-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
+  transition: width 600ms cubic-bezier(0.3, 0.1, 0.3, 1);
+}
+
+/* The spinning arc around the power button. */
+.fc-arc {
+  transform-origin: 50% 50%;
+  animation: fc-spin 1s linear infinite;
+}
+
+/* Two rings that leave the button once, the moment a connect lands. */
+.fc-ripple {
+  position: absolute;
+  inset: 11px;
+  border-radius: 9999px;
+  border: 2px solid rgb(255 255 255 / 0.7);
+  opacity: 0;
+  pointer-events: none;
+  animation: fc-ripple 1.3s 0.55s ease-out both;
+}
+
+.fc-ripple + .fc-ripple {
+  animation-delay: 0.8s;
+}
+
+.fc-pop {
+  animation: fc-pop 0.6s cubic-bezier(0.3, 1.7, 0.5, 1) both;
+}
+
+.fc-check {
+  animation: fc-check 0.4s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.fc-rise {
+  animation: fc-rise 0.45s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+}
+
+/* The in-app "Reduced" setting keeps the state changes and drops the
+   ornament. The OS-level setting already zeroes everything in globals.css. */
+[data-motion="reduced"] .fc-shimmer,
+[data-motion="reduced"] .fc-ripple {
+  display: none;
+}
+
+@keyframes fc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fc-shimmer {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -130% 0;
+  }
+}
+
+@keyframes fc-ripple {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fc-pop {
+  from {
+    transform: scale(0.85);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes fc-check {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fc-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

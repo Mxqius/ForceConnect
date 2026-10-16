@@ -9,35 +9,49 @@ import {
   CheckCircle2,
   Download,
   Loader2,
+  Moon,
+  Paintbrush,
+  Power,
   RefreshCw,
+  ShieldAlert,
+  ShieldCheck,
+  Sun,
   TriangleAlert,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import {
-  Badge,
   Button,
+  PageHeader,
+  pagePadding,
   Progress,
-  Select,
-  StatusDot,
+  Segmented,
   Switch,
+  Tile,
+  TileLabel,
   toast,
-  type SelectOption,
+  type SegmentedOption,
 } from "@/design/primitives";
 import { useLayoutPrefs } from "@/app/useLayoutPrefs";
 import { useUpdater, useUpdaterStatus } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
 import { ipc } from "@/lib/ipc";
+import type { MotionPref, NavLayout } from "@/lib/prefs";
 import { queryKeys } from "@/lib/query-keys";
 
-const NAV_OPTIONS: SelectOption<"rail" | "dock">[] = [
-  { value: "rail", label: "Side rail", hint: "Navigation on the left" },
-  { value: "dock", label: "Bottom dock", hint: "Navigation along the bottom" },
+const NAV_OPTIONS: SegmentedOption<NavLayout>[] = [
+  { value: "dock", label: "Dock" },
+  { value: "rail", label: "Sidebar" },
 ];
 
-const THEME_OPTIONS: SelectOption<"dark" | "light">[] = [
-  { value: "dark", label: "Dark" },
-  { value: "light", label: "Light" },
+const THEME_OPTIONS: SegmentedOption<"dark" | "light">[] = [
+  { value: "dark", label: "Dark", icon: <Moon /> },
+  { value: "light", label: "Light", icon: <Sun /> },
+];
+
+const MOTION_OPTIONS: SegmentedOption<MotionPref>[] = [
+  { value: "full", label: "Full" },
+  { value: "reduced", label: "Reduced" },
 ];
 
 export function SettingsScreen() {
@@ -47,6 +61,8 @@ export function SettingsScreen() {
   const setTheme = useLayoutPrefs((state) => state.setTheme);
   const minimizeToTray = useLayoutPrefs((state) => state.minimizeToTray);
   const setMinimizeToTray = useLayoutPrefs((state) => state.setMinimizeToTray);
+  const motion = useLayoutPrefs((state) => state.motion);
+  const setMotion = useLayoutPrefs((state) => state.setMotion);
 
   const { data: info } = useQuery({
     queryKey: queryKeys.appInfo,
@@ -73,90 +89,95 @@ export function SettingsScreen() {
     }
   }
 
+  // `undefined` while loading reads as granted: a shipped build cannot start
+  // without the rights, and flashing a warning on every launch would be wrong
+  // far more often than right.
+  const notElevated = info?.elevated === false;
+
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-9 p-8">
-      <header>
-        <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
-      </header>
+    <div className={cn("flex flex-col", pagePadding)}>
+      <PageHeader
+        title="Settings"
+        description={
+          <>
+            ForceConnect {info?.version ?? "—"}
+            {info?.os ? ` · ${info.os}` : ""}
+          </>
+        }
+      />
 
-      <Section title="Appearance">
-        <Row
-          label="Navigation"
-          hint="Where the main navigation sits. Also switchable from the icon at the end of the bar."
+      <div className="grid grid-cols-2 gap-4">
+        <Section title="Appearance" icon={<Paintbrush />} wide>
+          <Row label="Theme" hint="Both keep colour for what carries meaning">
+            <Segmented
+              label="Theme"
+              value={theme}
+              onValueChange={setTheme}
+              options={THEME_OPTIONS}
+            />
+          </Row>
+          <Row label="Navigation" hint="A floating dock, or a sidebar">
+            <Segmented
+              label="Navigation position"
+              value={navLayout}
+              onValueChange={setNavLayout}
+              options={NAV_OPTIONS}
+            />
+          </Row>
+          <Row
+            label="Motion"
+            hint="Reduced swaps the connect bloom and ripples for simple fades"
+          >
+            <Segmented
+              label="Motion"
+              value={motion}
+              onValueChange={setMotion}
+              options={MOTION_OPTIONS}
+            />
+          </Row>
+        </Section>
+
+        <Section title="Startup" icon={<Power />}>
+          <Row label="Start with Windows" hint="It does not connect by itself">
+            <Switch
+              checked={autostart}
+              onCheckedChange={(checked) => void toggleAutostart(checked)}
+            />
+          </Row>
+          <Row
+            label="Close to tray"
+            hint="Keeps your DNS running; quit from the tray icon"
+          >
+            <Switch
+              checked={minimizeToTray}
+              onCheckedChange={(checked) => setMinimizeToTray(checked)}
+            />
+          </Row>
+        </Section>
+
+        <Section
+          title="Privileges"
+          icon={notElevated ? <ShieldAlert /> : <ShieldCheck />}
         >
-          <Select
-            label="Navigation position"
-            value={navLayout}
-            onValueChange={(value) => setNavLayout(value ?? "rail")}
-            options={NAV_OPTIONS}
-            className="w-48"
-          />
-        </Row>
+          <Row
+            label="Administrator"
+            hint="Needed to change adapter DNS. Windows asks at each launch."
+          >
+            <Pill tone={notElevated ? "danger" : "success"}>
+              {notElevated ? "Not granted" : "Granted"}
+            </Pill>
+          </Row>
+          <Row label="Process" hint="Look for this id in Task Manager">
+            <Pill tone="neutral" mono>
+              pid {info?.pid ?? "—"}
+            </Pill>
+          </Row>
+        </Section>
 
-        <Row
-          label="Theme"
-          hint="Both are neutral greys, so the only colour on screen carries meaning."
-        >
-          <Select
-            label="Theme"
-            value={theme}
-            onValueChange={(value) => setTheme(value ?? "dark")}
-            options={THEME_OPTIONS}
-            className="w-48"
-          />
-        </Row>
-      </Section>
-
-      <Section title="Startup">
-        <Row
-          label="Start with Windows"
-          hint="Launches ForceConnect when you sign in. It does not connect by itself."
-        >
-          <Switch
-            checked={autostart}
-            onCheckedChange={(checked) => void toggleAutostart(checked)}
-          />
-        </Row>
-
-        <Row
-          label="Minimize to tray"
-          hint="Closing the window sends ForceConnect to the system tray instead of quitting. Your connection keeps running — use the tray icon's Quit to actually exit."
-        >
-          <Switch
-            checked={minimizeToTray}
-            onCheckedChange={(checked) => setMinimizeToTray(checked)}
-          />
-        </Row>
-      </Section>
-
-      <Section title="Updates">
-        <UpdateRows />
-      </Section>
-
-      <Section title="Privileges">
-        <Row
-          label="Administrator rights"
-          hint="Changing an adapter's DNS and flushing the resolver cache both need them. ForceConnect asks Windows once, when it starts, and holds them for that session only."
-        >
-          <Badge tone={info?.elevated ? "success" : "danger"}>
-            <StatusDot tone={info?.elevated ? "success" : "danger"} />
-            {info?.elevated ? "granted" : "not granted"}
-          </Badge>
-        </Row>
-
-        <Row
-          label="Process"
-          hint="One process, not two. This is the id to look for in Task Manager if you want to confirm what is running elevated."
-        >
-          <Badge tone="neutral" mono>
-            pid {info?.pid ?? "—"}
-          </Badge>
-        </Row>
-      </Section>
-
-      <p className="text-text-faint text-xs">
-        ForceConnect {info?.version ?? "—"} · {info?.os ?? ""}
-      </p>
+        <Section title="Updates" icon={<Download />} wide>
+          <UpdateRows />
+        </Section>
+      </div>
     </div>
   );
 }
@@ -182,8 +203,8 @@ function UpdateRows() {
   return (
     <>
       <Row
-        label="Check for updates on launch"
-        hint="Looks for a newer release when ForceConnect starts. It never downloads or installs anything on its own."
+        label="Check on launch"
+        hint="Looks for a newer release at startup. It never installs anything on its own."
       >
         <Switch
           checked={autoUpdate}
@@ -191,10 +212,10 @@ function UpdateRows() {
         />
       </Row>
 
-      <div className="flex flex-col gap-3 px-5 py-4">
-        <div className="flex items-center justify-between gap-8">
+      <div className="flex flex-col gap-3 py-3">
+        <div className="flex items-center justify-between gap-6">
           <div className="min-w-0">
-            <p className="text-sm font-medium">Status</p>
+            <p className="text-sm font-semibold">Status</p>
             <UpdateStatusLine
               stage={stage}
               canInstall={canInstall}
@@ -207,6 +228,7 @@ function UpdateRows() {
               <Button
                 size="sm"
                 variant="primary"
+                className="rounded-full"
                 startIcon={<Download />}
                 onClick={() => void install()}
               >
@@ -216,6 +238,7 @@ function UpdateRows() {
 
             <Button
               size="sm"
+              className="rounded-full"
               startIcon={
                 <RefreshCw
                   className={cn(stage.kind === "checking" && "animate-spin")}
@@ -238,7 +261,7 @@ function UpdateRows() {
         ) : null}
 
         {stage.kind === "available" && stage.notes ? (
-          <p className="border-border-subtle bg-surface-inset text-text-muted fc-scroll max-h-32 overflow-y-auto rounded-lg border px-3 py-2 text-xs leading-relaxed whitespace-pre-line">
+          <p className="bg-surface-inset text-text-muted fc-scroll max-h-32 overflow-y-auto rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-line">
             {stage.notes}
           </p>
         ) : null}
@@ -256,7 +279,7 @@ function UpdateStatusLine({
   canInstall: boolean;
   endpoint: string | undefined;
 }) {
-  const line = "text-text-muted mt-1 flex items-center gap-1.5 text-xs";
+  const line = "text-text-muted mt-0.5 flex items-center gap-1.5 text-[13px]";
 
   if (!canInstall && stage.kind !== "error") {
     return (
@@ -324,16 +347,26 @@ function UpdateStatusLine({
   }
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  icon,
+  wide,
+  children,
+}: {
+  title: string;
+  icon: ReactNode;
+  wide?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <section className="flex flex-col gap-1">
-      <h2 className="text-text-secondary mb-3 text-xs font-semibold tracking-widest uppercase">
+    <Tile className={cn("pt-5 pb-2", wide && "col-span-2")}>
+      <TileLabel icon={icon} className="mb-1 font-semibold">
         {title}
-      </h2>
-      <div className="border-border-subtle bg-surface divide-border-subtle divide-y rounded-2xl border">
+      </TileLabel>
+      <div className="[&>*+*]:border-border-subtle flex flex-col [&>*+*]:border-t">
         {children}
       </div>
-    </section>
+    </Tile>
   );
 }
 
@@ -347,12 +380,40 @@ function Row({
   children: ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-8 px-5 py-4">
+    <div className="flex min-h-14 items-center justify-between gap-6 py-3">
       <div className="min-w-0">
-        <p className="text-sm font-medium">{label}</p>
-        {hint ? <p className="text-text-muted mt-1 text-xs">{hint}</p> : null}
+        <p className="text-sm font-semibold">{label}</p>
+        {hint ? (
+          <p className="text-text-muted mt-0.5 text-[13px] leading-snug">
+            {hint}
+          </p>
+        ) : null}
       </div>
       <div className="shrink-0">{children}</div>
     </div>
+  );
+}
+
+function Pill({
+  tone,
+  mono,
+  children,
+}: {
+  tone: "success" | "danger" | "neutral";
+  mono?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "rounded-full px-2.5 py-0.5 text-[11px] font-bold",
+        mono && "font-mono",
+        tone === "success" && "bg-success-surface text-success",
+        tone === "danger" && "bg-danger-surface text-danger",
+        tone === "neutral" && "bg-surface-inset text-text-secondary",
+      )}
+    >
+      {children}
+    </span>
   );
 }

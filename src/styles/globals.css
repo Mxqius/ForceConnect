@@ -91,3 +91,15 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* The in-app Motion setting. Gentler than the OS rule above: state changes
+   still crossfade, because a tile that jumps from grey to blue with no
+   transition at all reads as a glitch rather than as calm. The connection
+   tile opts its own decorative layers out in connection.css. */
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.2s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.2s !important;
+}

@@ -24,18 +24,19 @@
  * is the only colour on screen. Text stops short of pure white, because #fff at
  * 13px produces the smeary halo that makes people turn dark mode off.
  *
- * # The dark theme is dark grey, not black
+ * # The window is the gap, the tiles are the content
  *
- * It used to start at #050506 — near enough to black that the ladder above it
- * had nowhere to go, so every surface landed within a few points of every other
- * one and the whole app read as one flat black sheet with hairlines drawn on it.
- * Depth needs room. The ladder now starts at #141417 and each rung is a step you
- * can actually see, which is what lets borders stay quiet and shadows stay rare.
+ * The layout is a bento grid: every screen is a set of rounded tiles with a
+ * 12px gutter between them. That changes what the ground is for. It used to be
+ * the surface you read from, which is why an earlier near-black ground made the
+ * whole app flat — every surface sat a few points from every other one. Now the
+ * ground is only ever seen as the gutter, so it can go darker, and the step
+ * that matters is ground-to-tile (#0b0c10 to #15161c), which is large enough to
+ * outline every tile without a border doing the work.
  *
- * Everything else moved with it. Lifting the ground without lifting the ink is
- * how a "brighter" theme ends up less readable than the one it replaced, so the
- * text tiers, the accent ink, and the status colours were all re-derived against
- * the new surfaces rather than carried over.
+ * The ladder above the tile — inset, elevated, hover, active — keeps visible
+ * steps for the same reason it always did, and the text tiers were re-derived
+ * against the tile rather than the ground, since that is where all text sits.
  */
 
 :root {
@@ -46,23 +47,23 @@
    * without a single shadow: the window is the darkest thing, chrome sits just
    * above it, cards above that, popups highest.
    */
-  --surface-base: #141417;
-  --surface-subtle: #1b1b1f;
-  --surface: #26262c;
-  --surface-elevated: #2e2e35;
-  /* Fields read as recessed *into* a card, so this sits below `--surface`
-     rather than above it. Still above `--surface-base`, or an input floating on
-     the window background would vanish. */
-  --surface-inset: #1e1e23;
-  --surface-hover: #37373f;
-  --surface-active: #43434c;
+  --surface-base: #0b0c10;
+  --surface-subtle: #111217;
+  --surface: #15161c;
+  --surface-elevated: #1d1e26;
+  /* Segmented controls and fields sit *on* a tile, so they need a step of
+     their own above it rather than below — below would be the gutter colour,
+     and a control the colour of the gap between tiles reads as a hole. */
+  --surface-inset: #1d1e26;
+  --surface-hover: #23242d;
+  --surface-active: #2c2d37;
 
   /* Borders lifted with the surfaces. A border that no longer out-contrasts the
      card it encloses is just noise, and at the old values these would have
      vanished into `--surface`. */
-  --border-subtle: #33333b;
-  --border-default: #43434d;
-  --border-strong: #5c5c67;
+  --border-subtle: #1f2028;
+  --border-default: #2c2d37;
+  --border-strong: #454655;
 
   /*
    * Four tiers, and the bottom one is not for reading.
@@ -73,10 +74,10 @@
    * text that carries no information the user needs: separators, the "—" that
    * stands in for an absent value, decorative section markers.
    */
-  --text-primary: #f0f0f3;
-  --text-secondary: #b8b8c0;
-  --text-muted: #9a9aa3;
-  --text-faint: #8a8a94;
+  --text-primary: #f1f2f6;
+  --text-secondary: #c3c6d1;
+  --text-muted: #9599a8;
+  --text-faint: #7f8392;
   --text-on-accent: #ffffff;
 
   /*
@@ -149,9 +150,31 @@
   --danger-surface: color-mix(in oklab, var(--danger) 16%, var(--surface-base));
 
   --protocol-plain: #9a9aa4;
-  --protocol-encrypted: #3fd6b0;
+  --protocol-encrypted: #4fe0bd;
 
   --focus-ring: var(--accent);
+
+  /*
+   * The connection tile's three looks, and the only place the brand gradient
+   * appears. "Protected" is the one state that gets colour at full strength, so
+   * it reads from across the room; "working" and "failed" are tints, because
+   * neither should compete with it.
+   */
+  --hero-gradient: linear-gradient(
+    150deg,
+    #1b6bf2 0%,
+    #1590e0 55%,
+    #18b9d9 100%
+  );
+  --hero-busy: #0f1626;
+  --hero-busy-border: color-mix(in srgb, var(--accent-bright) 25%, transparent);
+  --hero-failed: #1d1214;
+  --hero-failed-border: color-mix(in srgb, var(--danger) 30%, transparent);
+  /* Inverted fill for the one control per screen that should be found first:
+     the power button, the active dock item, the main header action. */
+  --control-strong: #f1f2f6;
+  --control-strong-ink: #0b0c10;
+  --tile-shadow: none;
 
   /*
    * Elevation. The dark theme separates with steps in the ladder above and uses
@@ -165,6 +188,8 @@
     0 0 0 1px oklch(1 0 0 / 0.07), 0 32px 72px -20px oklch(0 0 0 / 0.95);
   --elevation-glow:
     0 0 0 1px var(--accent-cyan-glow), 0 8px 28px -8px var(--accent-cyan-glow);
+  --elevation-dock:
+    0 0 0 1px oklch(1 0 0 / 0.07), 0 18px 40px -16px oklch(0 0 0 / 0.85);
 }
 
 [data-theme="light"] {
@@ -176,24 +201,24 @@
    * screen. The page background is deliberately not white — a full-window sheet
    * of #fff is the light-mode equivalent of #fff text on #000.
    */
-  --surface-base: #f2f2f3;
-  --surface-subtle: #f7f7f8;
+  --surface-base: #eceef3;
+  --surface-subtle: #f4f5f8;
   --surface: #ffffff;
   --surface-elevated: #ffffff;
-  --surface-inset: #f4f4f5;
-  --surface-hover: #ebebed;
-  --surface-active: #dededf;
+  --surface-inset: #f1f2f6;
+  --surface-hover: #eceef2;
+  --surface-active: #e2e4ea;
 
-  --border-subtle: #e7e7e9;
-  --border-default: #dcdce0;
-  --border-strong: #b8b8be;
+  --border-subtle: #e4e6eb;
+  --border-default: #d7dae1;
+  --border-strong: #b6bac4;
 
   /* Near-black, not black. The difference is small on paper and considerable
      after an hour. */
-  --text-primary: #1b1b1f;
-  --text-secondary: #55555c;
-  --text-muted: #6f6f77;
-  --text-faint: #82828a;
+  --text-primary: #14151b;
+  --text-secondary: #3f4352;
+  --text-muted: #5f6372;
+  --text-faint: #767a88;
   --text-on-accent: #ffffff;
 
   /* Light needs no split: a blue dark enough for white text on it (5.6:1) is
@@ -226,6 +251,15 @@
   --protocol-plain: #6b6b73;
   --protocol-encrypted: #0b7561;
 
+  --hero-busy: #eef4ff;
+  --hero-failed: #fff4f4;
+  --control-strong: #14151b;
+  --control-strong-ink: #ffffff;
+  /* White tiles on a pale grey need a shadow to lift; in the dark the step in
+     the ladder does that job and a shadow would be invisible anyway. */
+  --tile-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04), 0 10px 28px -18px oklch(0 0 0 / 0.22);
+
   /* Light mode has almost no ladder to work with — white on grey is one step —
      so here the shadows do the separating that the steps do in the dark. */
   --elevation-popup:
@@ -235,6 +269,8 @@
     0 0 0 1px oklch(0 0 0 / 0.07), 0 28px 60px -16px oklch(0 0 0 / 0.24);
   --elevation-glow:
     0 0 0 1px var(--accent-glow), 0 8px 28px -8px var(--accent-glow);
+  --elevation-dock:
+    0 0 0 1px oklch(0 0 0 / 0.07), 0 18px 40px -18px oklch(0 0 0 / 0.3);
 }
 
 @theme inline {
@@ -279,6 +315,13 @@
   --color-protocol-plain: var(--protocol-plain);
   --color-protocol-encrypted: var(--protocol-encrypted);
 
+  --color-hero-busy: var(--hero-busy);
+  --color-hero-busy-border: var(--hero-busy-border);
+  --color-hero-failed: var(--hero-failed);
+  --color-hero-failed-border: var(--hero-failed-border);
+  --color-control-strong: var(--control-strong);
+  --color-control-strong-ink: var(--control-strong-ink);
+
   /* Windows-first stacks. Nothing is fetched over the network — the CSP
      forbids it, and a DNS tool that cannot render until DNS works would be a
      poor joke. Segoe UI Variable ships with Windows 11. */
@@ -318,6 +361,8 @@
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
+  /* Bento tiles. Large enough that a tile reads as an object, not a box. */
+  --radius-tile: 1.5rem;
 
   /* Theme-aware, unlike the rest of the shadow scale — see the notes on
      `--elevation-*` above. Used sparingly; the glow is for the connect control
@@ -325,4 +370,6 @@
   --shadow-popup: var(--elevation-popup);
   --shadow-dialog: var(--elevation-dialog);
   --shadow-glow: var(--elevation-glow);
+  --shadow-dock: var(--elevation-dock);
+  --shadow-tile: var(--tile-shadow);
 }

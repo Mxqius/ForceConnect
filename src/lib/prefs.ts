@@ -11,6 +11,7 @@ import { isTauri } from "@tauri-apps/api/core";
  */
 
 export type NavLayout = "rail" | "dock";
+export type MotionPref = "full" | "reduced";
 
 export interface Prefs {
   favourites: string[];
@@ -27,15 +28,22 @@ export interface Prefs {
   interfaceLuid: string | null;
   /** Check for a new release on launch. */
   autoUpdate: boolean;
+  /**
+   * "reduced" swaps the connect bloom, shimmer and ripples for plain fades.
+   * Windows' own "Animation effects" setting is honoured either way; this is
+   * for people who want calm motion here without turning it off everywhere.
+   */
+  motion: MotionPref;
 }
 
 export const DEFAULT_PREFS: Prefs = {
   favourites: [],
-  navLayout: "rail",
+  navLayout: "dock",
   theme: "dark",
   minimizeToTray: false,
   interfaceLuid: null,
   autoUpdate: true,
+  motion: "full",
 };
 
 const FILE = "preferences.json";
