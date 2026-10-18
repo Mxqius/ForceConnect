@@ -43,7 +43,7 @@
   "bundle": {
     "active": true,
     "targets": ["nsis"],
-    "createUpdaterArtifacts": false,
+    "createUpdaterArtifacts": true,
     "publisher": "Mxqius",
     "copyright": "Copyright (c) Mxqius",
     "category": "Utility",
@@ -65,7 +65,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMxNTk4NTVDNTg4RUMxQzEKUldUQndZNVlYSVZad1Q1V0VHZlhjSjJhb3BXL05yQ0VzMFFXYmRPLzJBL3NMaTFFR01xSGttRDUK",
       "endpoints": [
         "https://github.com/mxqius/forceconnect/releases/latest/download/latest.json"
       ],
