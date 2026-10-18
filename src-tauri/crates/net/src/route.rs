@@ -7,8 +7,9 @@
 //!
 //! Two mechanisms, in order of authority:
 //!
-//! 1. Ask the routing table with `GetBestRoute2`, which is what the stack
-//!    itself consults.
+//! 1. Ask the routing table, which is what the stack itself consults:
+//!    `GetBestRoute2` on Windows, `ip route get` on Linux (which also honours
+//!    the policy rules WireGuard uses), `route -n get` on macOS.
 //! 2. Fall back to a deterministic ranking over the enumerated adapters.
 //!
 //! Note that scanning for a `0.0.0.0/0` route is *not* a valid substitute for
@@ -18,90 +19,35 @@
 
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
-use windows::Win32::Foundation::NO_ERROR;
-use windows::Win32::NetworkManagement::IpHelper::{GetBestRoute2, MIB_IPFORWARD_ROW2};
-use windows::Win32::Networking::WinSock::{
-    AF_INET, AF_INET6, IN_ADDR, IN_ADDR_0, IN6_ADDR, IN6_ADDR_0, SOCKADDR_IN, SOCKADDR_IN6,
-    SOCKADDR_INET,
-};
+use crate::{Adapter, AdapterKind, Family, OperStatus};
 
-use crate::{Adapter, AdapterKind, Family, InterfaceLuid, NetError, OperStatus};
+#[cfg(target_os = "linux")]
+mod linux;
+#[cfg(target_os = "macos")]
+mod macos;
+#[cfg(windows)]
+mod windows;
+
+#[cfg(target_os = "linux")]
+pub use linux::best_route_luid;
+#[cfg(target_os = "macos")]
+pub use macos::best_route_luid;
+#[cfg(windows)]
+pub use windows::best_route_luid;
 
 /// Destinations used to ask the stack "if I sent a packet here, which adapter
 /// would it leave by?". They are never contacted — this is a routing table
 /// lookup, not a probe.
-const PROBE_V4: Ipv4Addr = Ipv4Addr::new(1, 1, 1, 1);
-const PROBE_V6: Ipv6Addr = Ipv6Addr::new(0x2606, 0x4700, 0x4700, 0, 0, 0, 0, 0x1111);
-
-/// Ask the routing table which interface would carry traffic to the internet.
-pub fn best_route_luid(family: Family) -> Result<InterfaceLuid, NetError> {
-    let destination = match family {
-        Family::V4 => sockaddr_v4(PROBE_V4),
-        Family::V6 => sockaddr_v6(PROBE_V6),
-    };
-
-    let mut row = MIB_IPFORWARD_ROW2::default();
-    let mut source = SOCKADDR_INET::default();
-
-    // SAFETY: both out-parameters are valid, zeroed structs of the expected
-    // type, and `destination` lives for the duration of the call.
-    //
-    // Passing no interface hint is the documented-adjacent idiom rather than an
-    // explicitly documented one: the reference says at least one of
-    // InterfaceLuid or InterfaceIndex "must be initialized", which a zeroed
-    // LUID arguably satisfies. If a future Windows build disagrees it will
-    // return ERROR_INVALID_PARAMETER, and the caller falls back to ranking.
-    let status = unsafe { GetBestRoute2(None, 0, None, &destination, 0, &mut row, &mut source) };
-
-    if status != NO_ERROR {
-        return Err(NetError::Api(format!(
-            "GetBestRoute2 failed with {}",
-            status.0
-        )));
-    }
-
-    // SAFETY: NET_LUID_LH is a union of a u64 and a bitfield view of the same
-    // storage; reading the integer view is always valid.
-    Ok(InterfaceLuid(unsafe { row.InterfaceLuid.Value }))
-}
-
-fn sockaddr_v4(addr: Ipv4Addr) -> SOCKADDR_INET {
-    let mut out = SOCKADDR_INET::default();
-    out.Ipv4 = SOCKADDR_IN {
-        sin_family: AF_INET,
-        sin_port: 0,
-        sin_addr: IN_ADDR {
-            S_un: IN_ADDR_0 {
-                S_addr: u32::from_ne_bytes(addr.octets()),
-            },
-        },
-        sin_zero: [0; 8],
-    };
-    out
-}
-
-fn sockaddr_v6(addr: Ipv6Addr) -> SOCKADDR_INET {
-    let mut out = SOCKADDR_INET::default();
-    out.Ipv6 = SOCKADDR_IN6 {
-        sin6_family: AF_INET6,
-        sin6_port: 0,
-        sin6_flowinfo: 0,
-        sin6_addr: IN6_ADDR {
-            u: IN6_ADDR_0 {
-                Byte: addr.octets(),
-            },
-        },
-        Anonymous: Default::default(),
-    };
-    out
-}
+pub(crate) const PROBE_V4: Ipv4Addr = Ipv4Addr::new(1, 1, 1, 1);
+pub(crate) const PROBE_V6: Ipv6Addr = Ipv6Addr::new(0x2606, 0x4700, 0x4700, 0, 0, 0, 0, 0x1111);
 
 /// Rank eligible adapters best-first.
 ///
 /// Ordering, in priority order:
 ///
 /// 1. Interface metric ascending — this, not adapter type, is what Windows
-///    itself uses to choose.
+///    itself uses to choose. (On Linux it is the default route's metric, and
+///    on macOS the network service order; see [`Adapter::metric_v4`].)
 /// 2. Physical media ahead of virtual, as a tie-break only.
 /// 3. Link speed descending.
 /// 4. Interface index ascending, purely so the result is stable.
@@ -181,7 +127,7 @@ pub fn best_adapter(adapters: &[Adapter], family: Family) -> Option<&Adapter> {
             ranked.first().copied()
         }
         Err(err) => {
-            tracing::debug!(%err, "GetBestRoute2 unavailable; falling back to ranking");
+            tracing::debug!(%err, "routing table lookup unavailable; falling back to ranking");
             ranked.first().copied()
         }
     }
@@ -190,6 +136,7 @@ pub fn best_adapter(adapters: &[Adapter], family: Family) -> Option<&Adapter> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::InterfaceLuid;
 
     fn adapter(name: &str, kind: AdapterKind, metric: u32, speed: u64, index: u32) -> Adapter {
         Adapter {

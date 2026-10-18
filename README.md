@@ -1,8 +1,8 @@
 # ForceConnect
 
-A fast, modern DNS manager for Windows. Switch DNS servers, manage network
-interfaces, and route queries through encrypted DNS protocols from a clean,
-lightweight interface.
+A fast, modern DNS manager for Windows, macOS and Linux. Switch DNS servers,
+manage network interfaces, and route queries through encrypted DNS protocols
+from a clean, lightweight interface.
 
 > **Status: in development.** This is a ground-up rewrite of ForceConnect 1.x
 > (C#/WinForms) on Tauri. The foundation is in place; features are landing
@@ -27,11 +27,11 @@ Version 2 keeps the job the same and changes how it is done:
   features bolted on.
 - **One prompt, at launch.** ForceConnect asks for administrator rights once,
   when it starts, and holds them for that session. There is no service, no
-  scheduled task, and nothing left running when you close it.
+  scheduled task, no daemon, and nothing left running when you close it.
 
 ## Architecture
 
-One process:
+On Windows, one process:
 
 ```
 forceconnect.exe (requireAdministrator)
@@ -44,34 +44,50 @@ forceconnect.exe (requireAdministrator)
    └─ crash-safe restore journal
 ```
 
+On macOS and Linux the interface runs as you, and the same executable is started
+a second time as root through the system's own password prompt (`osascript` on
+macOS, polkit's `pkexec` on Linux). That second process serves the
+`forceconnect-privileged` verbs above and nothing else, and exits with the app.
+
 Everything that needs administrator rights lives in one small crate that
 exposes three verbs and no general-purpose escape hatch — no `run_command`, no
 arbitrary file or registry write. That, rather than process separation, is the
 actual boundary; ForceConnect cannot do anything you could not already do
-through Windows Settings.
+through your system's network settings.
 
 Earlier versions split this into an unelevated UI and an elevated helper talking
 over a named pipe. [`ARCHITECTURE.md`](ARCHITECTURE.md) explains why that was
-merged, and what it cost.
+merged on Windows, what it cost, and why macOS and Linux still split it.
 
 ### Layout
 
-| Path                           | Contents                                                     |
-| ------------------------------ | ------------------------------------------------------------ |
-| `src/`                         | React frontend — design system, features, generated bindings |
-| `src-tauri/`                   | Tauri application shell and commands                         |
-| `src-tauri/crates/dns/`        | Server catalog, rules, forwarder. No Tauri dependency.       |
-| `src-tauri/crates/net/`        | Adapter enumeration and route lookups. Read-only.            |
-| `src-tauri/crates/privileged/` | Every operation that needs administrator rights              |
+| Path                           | Contents                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `src/`                         | React frontend — design system, features, generated bindings                                     |
+| `src-tauri/`                   | Tauri application shell and commands                                                             |
+| `src-tauri/crates/dns/`        | Server catalog, rules, forwarder. No Tauri dependency.                                           |
+| `src-tauri/crates/net/`        | Adapter enumeration and route lookups. Read-only.                                                |
+| `src-tauri/crates/privileged/` | Every operation that needs administrator rights, and the agent that runs them on macOS and Linux |
 
 ## Building from source
 
 Requires [Rust](https://rustup.rs) 1.85+, [Node](https://nodejs.org) 20+,
-[pnpm](https://pnpm.io) 10+, and the Visual Studio C++ build tools.
+[pnpm](https://pnpm.io) 10+, and the platform toolchain Tauri needs: the Visual
+Studio C++ build tools on Windows, the Xcode command-line tools on macOS, and on
+Linux the WebKitGTK development packages — on Debian and Ubuntu,
 
-Windows 10 build 19041 (2004) is the supported floor. That is not arbitrary:
-`SetInterfaceDnsSettings`, the API used to configure adapter DNS without
-shelling out to `netsh`, was introduced in that build.
+```bash
+sudo apt install libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+```
+
+Supported floors:
+
+- **Windows 10 build 19041 (2004).** Not arbitrary: `SetInterfaceDnsSettings`,
+  the API used to configure adapter DNS without shelling out to `netsh`, was
+  introduced in that build.
+- **macOS 10.15.**
+- **Linux** with NetworkManager or systemd-resolved managing DNS — every
+  mainstream desktop distribution — and polkit for the administrator prompt.
 
 ```bash
 pnpm install
@@ -104,9 +120,12 @@ it, which test normally.
 
 ### Running the app during development
 
-`pnpm tauri dev` triggers a UAC prompt, because the app it builds requests
+`pnpm tauri dev` triggers an administrator prompt — UAC on Windows, the password
+sheet on macOS, polkit on Linux — because the app it builds asks for
 administrator rights. That is the same prompt users get, and it is not
-avoidable: the app cannot write DNS settings without it.
+avoidable: the app cannot write DNS settings without it. On macOS and Linux,
+cancelling it leaves the app running without them, which is a quick way to
+work on everything that does not change DNS.
 
 For frontend work there is a faster path that needs no elevation and no Rust
 rebuild — `pnpm dev` and open <http://localhost:5173> in a browser. Outside

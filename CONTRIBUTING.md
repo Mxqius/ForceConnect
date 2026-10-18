@@ -1,12 +1,16 @@
 # Contributing
 
-Thanks for taking a look. This is a Windows desktop app, so contributing needs a
-Windows machine — most of what it does is Windows networking API calls.
+Thanks for taking a look. ForceConnect runs on Windows, macOS and Linux. Most
+of what it does is platform networking calls, so changes to `crates/net` or
+`crates/privileged` are best tested on the platform they touch; the parsers
+behind the macOS and Linux readers are pure functions whose tests run on any
+platform.
 
 ## Setup
 
 Install [Rust](https://rustup.rs) 1.85+, [Node](https://nodejs.org) 20+,
-[pnpm](https://pnpm.io) 10+, and the Visual Studio C++ build tools.
+[pnpm](https://pnpm.io) 10+, and the platform toolchain listed in the
+[README](README.md#building-from-source).
 
 ```bash
 pnpm install
@@ -91,11 +95,25 @@ are not oversights.
 ## Reporting bugs
 
 DNS problems are extremely environment-specific. A useful report includes your
-Windows version, whether a VPN is active, and the output of:
+OS and version, whether a VPN is active, and the output of — on Windows:
 
 ```bash
 Get-DnsClientServerAddress
 netsh int ipv4 show excludedportrange protocol=tcp
+```
+
+on macOS:
+
+```bash
+networksetup -listnetworkserviceorder
+scutil --dns
+```
+
+on Linux:
+
+```bash
+nmcli device status
+resolvectl status
 ```
 
 For anything involving elevation or `forceconnect-privileged`, please read

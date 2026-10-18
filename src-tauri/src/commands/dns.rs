@@ -5,9 +5,10 @@
 //! which validates again against live system state — the frontend's idea of
 //! which adapter exists is a cache, and a cache can be stale.
 //!
-//! There is no UAC prompt at this layer any more. The application requests
-//! administrator rights once, at launch, so by the time a user reaches these
-//! commands the rights are already held or the app never started.
+//! There is no administrator prompt at this layer. The application asks once,
+//! at launch — the Windows manifest, or the agent's prompt on Linux and macOS —
+//! so by the time a user reaches these commands the rights are already held,
+//! or every one of them refuses with an elevation error the UI explains.
 
 use std::net::IpAddr;
 
@@ -18,7 +19,7 @@ use tauri::State;
 
 use crate::commands::adapters::DnsSource;
 use crate::commands::{CommandError, CommandResult};
-use crate::state::{AppState, lock};
+use crate::state::AppState;
 
 impl From<PrivilegedError> for CommandError {
     fn from(value: PrivilegedError) -> Self {
@@ -34,7 +35,7 @@ impl From<PrivilegedError> for CommandError {
 /// Point an adapter at a list of DNS servers.
 ///
 /// Both address families present in `servers` are applied, because setting IPv4
-/// alone while IPv6 DNS stays on DHCP lets Windows resolve around the change.
+/// alone while IPv6 DNS stays on DHCP lets the OS resolve around the change.
 #[tauri::command]
 #[specta::specta]
 pub async fn set_dns(
@@ -46,7 +47,7 @@ pub async fn set_dns(
     let servers = parse_servers(&servers)?;
     let writer = state.dns();
 
-    blocking(move || lock(&writer).set_dns(luid, &servers)).await
+    blocking(move || writer.set_dns(luid, &servers)).await
 }
 
 /// Return an adapter to DHCP-assigned DNS for both families.
@@ -56,7 +57,7 @@ pub async fn clear_dns(state: State<'_, AppState>, luid: String) -> CommandResul
     let luid = parse_luid(&luid)?;
     let writer = state.dns();
 
-    blocking(move || lock(&writer).clear_dns(luid)).await
+    blocking(move || writer.clear_dns(luid)).await
 }
 
 /// One address family's DNS, as the UI shows it.
@@ -96,9 +97,9 @@ pub struct ReleasedDns {
 #[specta::specta]
 pub async fn release_dns(state: State<'_, AppState>, luid: String) -> CommandResult<ReleasedDns> {
     let luid = parse_luid(&luid)?;
-    let writer = state.dns();
+    let privileged = state.dns();
 
-    let written = tauri::async_runtime::spawn_blocking(move || lock(&writer).release(luid))
+    let written = tauri::async_runtime::spawn_blocking(move || privileged.release(luid))
         .await
         .map_err(|err| CommandError::Internal(err.to_string()))??;
 
@@ -123,7 +124,7 @@ pub async fn release_dns(state: State<'_, AppState>, luid: String) -> CommandRes
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
 #[serde(tag = "mode", rename_all = "camelCase")]
 pub enum ReleasePolicy {
-    /// Put back the DNS Windows had before ForceConnect started.
+    /// Put back the DNS the system had before ForceConnect started.
     Restore,
     /// Hand the adapter to DHCP.
     Automatic,
@@ -131,9 +132,14 @@ pub enum ReleasePolicy {
     Fallback { servers: Vec<String> },
 }
 
+// Async, on a blocking thread: on Linux and macOS this is a round trip to the
+// agent, which waits out the administrator prompt if it is still up.
 #[tauri::command]
 #[specta::specta]
-pub fn set_release_policy(state: State<'_, AppState>, policy: ReleasePolicy) -> CommandResult<()> {
+pub async fn set_release_policy(
+    state: State<'_, AppState>,
+    policy: ReleasePolicy,
+) -> CommandResult<()> {
     let policy = match policy {
         ReleasePolicy::Restore => forceconnect_privileged::ReleasePolicy::Restore,
         ReleasePolicy::Automatic => forceconnect_privileged::ReleasePolicy::Automatic,
@@ -142,9 +148,8 @@ pub fn set_release_policy(state: State<'_, AppState>, policy: ReleasePolicy) -> 
         }
     };
 
-    lock(&state.dns())
-        .set_policy(policy)
-        .map_err(CommandError::from)
+    let privileged = state.dns();
+    blocking(move || privileged.set_policy(policy)).await
 }
 
 /// One adapter's DNS as it stood when ForceConnect started.
@@ -163,20 +168,25 @@ pub struct AdapterBaseline {
 /// configuration rather than anything a previous run left behind.
 #[tauri::command]
 #[specta::specta]
-pub fn dns_baseline(state: State<'_, AppState>) -> CommandResult<Vec<AdapterBaseline>> {
+pub async fn dns_baseline(state: State<'_, AppState>) -> CommandResult<Vec<AdapterBaseline>> {
+    let privileged = state.dns();
+    let entries = tauri::async_runtime::spawn_blocking(move || privileged.baseline())
+        .await
+        .map_err(|err| CommandError::Internal(err.to_string()))??;
     let adapters = forceconnect_net::adapters::list()?;
-    let writer = state.dns();
-    let writer = lock(&writer);
+
+    let find = |guid: &str, family| {
+        entries
+            .iter()
+            .find(|(g, f, _)| g == guid && *f == family)
+            .map(|(_, _, config)| FamilyDns::from(config))
+    };
 
     Ok(adapters
         .iter()
         .filter_map(|adapter| {
-            let v4 = writer
-                .baseline(&adapter.guid, Family::V4)
-                .map(FamilyDns::from);
-            let v6 = writer
-                .baseline(&adapter.guid, Family::V6)
-                .map(FamilyDns::from);
+            let v4 = find(&adapter.guid, Family::V4);
+            let v6 = find(&adapter.guid, Family::V6);
             (v4.is_some() || v6.is_some()).then(|| AdapterBaseline {
                 luid: adapter.luid.0.to_string(),
                 name: adapter.friendly_name.clone(),
@@ -199,14 +209,16 @@ pub fn dns_baseline(state: State<'_, AppState>) -> CommandResult<Vec<AdapterBase
 pub async fn flush_dns_cache(state: State<'_, AppState>) -> CommandResult<()> {
     let writer = state.dns();
 
-    blocking(move || lock(&writer).flush_cache()).await
+    blocking(move || writer.flush_cache()).await
 }
 
 /// Run a privileged operation off the async runtime.
 ///
-/// The Win32 calls underneath are synchronous and can take tens of
-/// milliseconds — enumerating adapters is a full system query — which is long
-/// enough to be felt as a stutter if it runs on a runtime worker.
+/// The calls underneath are synchronous and can take tens of milliseconds —
+/// enumerating adapters is a full system query, and on Linux and macOS each
+/// write spawns a system tool — which is long enough to be felt as a stutter
+/// if it runs on a runtime worker. During launch they can also wait out the
+/// administrator prompt.
 async fn blocking<F>(work: F) -> CommandResult<()>
 where
     F: FnOnce() -> Result<(), PrivilegedError> + Send + 'static,

@@ -2,9 +2,7 @@
 //!
 //! This lives here rather than in `forceconnect-net` so that the read side of
 //! the application has no code path to it: `forceconnect-net` cannot change
-//! anything, and everything that can is in this crate. These calls write under
-//! `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip` and fail with access denied
-//! from an unelevated process.
+//! anything, and everything that can is in this crate.
 //!
 //! An earlier version gated the writes behind a `privileged` feature on
 //! `forceconnect-net` instead. That does not work: Cargo unifies features
@@ -12,122 +10,118 @@
 //! enabled the feature everywhere and the gate compiled away. Crate boundaries
 //! hold where feature flags do not.
 //!
-//! # Why `SetInterfaceDnsSettings` and not the alternatives
-//!
-//! Against `netsh`: a process spawn per call, locale-dependent output that has
-//! to be scraped, no structured error codes, and a pattern increasingly flagged
-//! by endpoint security tooling. It is what this rewrite exists to leave behind.
-//!
-//! Against writing the registry directly: that works further back, but it makes
-//! notifying the DNS Client service our problem. Registry-based tools generally
-//! end up restarting `Dnscache` to force a refresh, which is heavy-handed and
-//! discards NRPT rules and other resolver state that VPN clients and corporate
-//! agents depend on. This API notifies the stack internally.
+//! The contract is the same on every platform — set, clear and restore, one
+//! address family at a time, keyed by the adapter's `guid` — and so is the
+//! meaning of "clear": the adapter goes back to taking DNS from wherever the
+//! system would give it, rather than to an empty static list. How each
+//! platform gets there is in its own module.
+
+#[cfg(any(target_os = "linux", test))]
+mod linux;
+#[cfg(any(target_os = "macos", test))]
+mod macos;
+#[cfg(windows)]
+mod windows;
+
+#[cfg(target_os = "linux")]
+pub use linux::{clear_dns, restore, set_dns};
+#[cfg(target_os = "macos")]
+pub use macos::{clear_dns, restore, set_dns};
+#[cfg(windows)]
+pub use windows::{clear_dns, restore, set_dns, verify_cleared};
 
 use std::net::IpAddr;
 
-use windows::Win32::Foundation::NO_ERROR;
-use windows::Win32::NetworkManagement::IpHelper::{
-    DNS_INTERFACE_SETTINGS, DNS_INTERFACE_SETTINGS_VERSION1, DNS_SETTING_IPV6,
-    DNS_SETTING_NAMESERVER, SetInterfaceDnsSettings,
-};
-use windows::core::PWSTR;
+use forceconnect_net::{Family, NetError};
 
-use forceconnect_net::adapters::{dns_config, parse_guid};
-use forceconnect_net::{DnsConfig, Family, NetError};
-
-/// Point an adapter at a fixed list of servers for one address family.
-///
-/// IPv4 and IPv6 are separate calls: `DNS_SETTING_IPV6` selects which stack the
-/// call applies to, and the server list must match that family. Setting only
-/// IPv4 while IPv6 DNS stays on DHCP is a well-known way to have Windows
-/// quietly resolve around you.
-pub fn set_dns(guid: &str, family: Family, servers: &[IpAddr]) -> Result<(), NetError> {
+/// Refuse a list that does not match the family it is written to.
+#[cfg_attr(not(unix), allow(dead_code))]
+fn check_family(family: Family, servers: &[IpAddr]) -> Result<(), NetError> {
     let wanted_v6 = family == Family::V6;
     if servers.iter().any(|ip| ip.is_ipv6() != wanted_v6) {
         return Err(NetError::Api(format!(
             "server list does not match the {family:?} address family"
         )));
     }
-
-    let list = servers
-        .iter()
-        .map(ToString::to_string)
-        .collect::<Vec<_>>()
-        .join(",");
-
-    // This binding is load-bearing. Writing
-    // `PWSTR(list.encode_utf16().collect::<Vec<_>>().as_mut_ptr())` compiles
-    // and produces a dangling pointer into a dropped temporary — which shows up
-    // as garbage DNS servers on the user's adapter, about the worst outcome
-    // this code has. The buffer must outlive the call.
-    let mut wide: Vec<u16> = list.encode_utf16().chain(std::iter::once(0)).collect();
-
-    apply(guid, family, PWSTR(wide.as_mut_ptr()))
+    Ok(())
 }
 
-/// Return an adapter to DHCP-assigned DNS for one address family.
+/// Combine one family's new servers with the other family's current ones.
 ///
-/// A null `NameServer` with `DNS_SETTING_NAMESERVER` set is the documented-by-
-/// convention way to clear the static list; it is what `netsh … set dns dhcp`
-/// and `Set-DnsClientServerAddress -ResetServerAddresses` do underneath. The
-/// reference states what the flag selects but never spells out null semantics,
-/// so [`verify_cleared`] exists to confirm the effect rather than assume it.
-pub fn clear_dns(guid: &str, family: Family) -> Result<(), NetError> {
-    apply(guid, family, PWSTR::null())
-}
-
-fn apply(guid: &str, family: Family, name_server: PWSTR) -> Result<(), NetError> {
-    let guid = parse_guid(guid)?;
-
-    let mut flags = DNS_SETTING_NAMESERVER as u64;
-    if family == Family::V6 {
-        flags |= DNS_SETTING_IPV6 as u64;
-    }
-
-    // The reference is explicit: set only the fields whose option is present in
-    // `Flags` and zero everything else. `..Default::default()` does that;
-    // hand-filling the remaining fields would not.
-    let settings = DNS_INTERFACE_SETTINGS {
-        Version: DNS_INTERFACE_SETTINGS_VERSION1,
-        Flags: flags,
-        NameServer: name_server,
-        ..Default::default()
+/// Windows keeps a list per family; `networksetup` and `resolvectl` keep one
+/// list for both. Writing "the IPv4 servers" there means writing the whole
+/// list, so the IPv6 half has to be carried over — or the IPv4 write silently
+/// wipes it, and the next IPv6 write wipes the IPv4 one back. IPv4 goes first,
+/// which is the order every resolver here tries them in.
+#[cfg_attr(not(unix), allow(dead_code))]
+fn merge(family: Family, servers: &[IpAddr], other_family: &[IpAddr]) -> Vec<IpAddr> {
+    let (v4, v6) = match family {
+        Family::V4 => (servers, other_family),
+        Family::V6 => (other_family, servers),
     };
 
-    // SAFETY: `settings` is a correctly initialized VERSION1 struct, and any
-    // buffer `name_server` points at is owned by the caller for the duration of
-    // this call.
-    let status = unsafe { SetInterfaceDnsSettings(guid, &settings) };
+    v4.iter()
+        .filter(|ip| ip.is_ipv4())
+        .chain(v6.iter().filter(|ip| ip.is_ipv6()))
+        .copied()
+        .collect()
+}
 
-    if status == NO_ERROR {
-        Ok(())
-    } else {
-        Err(NetError::Api(format!(
-            "SetInterfaceDnsSettings failed with {}",
-            status.0
-        )))
+#[cfg_attr(not(unix), allow(dead_code))]
+const fn other(family: Family) -> Family {
+    match family {
+        Family::V4 => Family::V6,
+        Family::V6 => Family::V4,
     }
 }
 
-/// Restore a previously captured configuration.
-///
-/// The distinction that matters: a `Dhcp` snapshot is restored by *clearing*
-/// the static list, not by writing the servers DHCP happened to be handing out
-/// at the time. Writing them back would convert a DHCP adapter to a static one
-/// pinned to whatever the router said that day, and the user would never know.
-pub fn restore(guid: &str, family: Family, previous: &DnsConfig) -> Result<(), NetError> {
-    match previous {
-        DnsConfig::Dhcp => clear_dns(guid, family),
-        DnsConfig::Static(servers) => set_dns(guid, family, servers),
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-/// Read back what the adapter reports after a change.
-///
-/// Used to confirm a write took effect rather than trusting the return code —
-/// the ordering discipline for connect and disconnect depends on knowing the
-/// change actually landed.
-pub fn verify_cleared(guid: &str, family: Family) -> Result<bool, NetError> {
-    Ok(dns_config(guid, family)?.is_dhcp())
+    fn ips(values: &[&str]) -> Vec<IpAddr> {
+        values.iter().map(|v| v.parse().unwrap()).collect()
+    }
+
+    #[test]
+    fn a_write_to_one_family_keeps_the_other() {
+        let v6 = ips(&["2606:4700:4700::1111"]);
+        assert_eq!(
+            merge(Family::V4, &ips(&["1.1.1.1", "1.0.0.1"]), &v6),
+            ips(&["1.1.1.1", "1.0.0.1", "2606:4700:4700::1111"])
+        );
+
+        // The other order produces the same list, IPv4 first.
+        let v4 = ips(&["9.9.9.9"]);
+        assert_eq!(
+            merge(Family::V6, &ips(&["2620:fe::fe"]), &v4),
+            ips(&["9.9.9.9", "2620:fe::fe"])
+        );
+    }
+
+    #[test]
+    fn clearing_a_family_is_merging_nothing_into_it() {
+        assert_eq!(
+            merge(Family::V4, &[], &ips(&["fe80::1"])),
+            ips(&["fe80::1"])
+        );
+        assert!(merge(Family::V6, &[], &[]).is_empty());
+    }
+
+    #[test]
+    fn stray_addresses_of_the_wrong_family_are_dropped() {
+        // A "current IPv6 servers" read that somehow returned an IPv4 address
+        // must not duplicate it into the IPv4 half.
+        assert_eq!(
+            merge(Family::V4, &ips(&["1.1.1.1"]), &ips(&["1.1.1.1", "::1"])),
+            ips(&["1.1.1.1", "::1"])
+        );
+    }
+
+    #[test]
+    fn family_mismatches_are_refused() {
+        assert!(check_family(Family::V4, &ips(&["1.1.1.1"])).is_ok());
+        assert!(check_family(Family::V4, &ips(&["::1"])).is_err());
+        assert!(check_family(Family::V6, &ips(&["1.1.1.1"])).is_err());
+    }
 }

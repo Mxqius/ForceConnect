@@ -1,10 +1,14 @@
 //! ForceConnect — application entry point and Tauri wiring.
 //!
-//! One process, running elevated. The executable embeds a
+//! On Windows, one process, running elevated. The executable embeds a
 //! `requireAdministrator` manifest (see `build.rs`), so Windows asks for
 //! consent once at launch and every privileged operation afterwards is a direct
-//! call into `forceconnect-privileged` rather than a round trip to a second
-//! executable.
+//! call into `forceconnect-privileged`.
+//!
+//! On Linux and macOS the interface runs as the user, and the same executable
+//! started with `--privileged-agent` is the root half — see
+//! `forceconnect_privileged::agent`. That check is the first thing [`run`]
+//! does, so the agent never initialises any of the GUI.
 
 mod commands;
 mod state;
@@ -72,6 +76,11 @@ pub fn export_bindings(path: &str) -> Result<(), Box<dyn std::error::Error>> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    #[cfg(unix)]
+    if let Some(code) = forceconnect_privileged::agent::run_if_requested() {
+        std::process::exit(code);
+    }
+
     let builder = specta_builder();
 
     // Regenerated on every debug run so the bindings can never drift from the
@@ -157,10 +166,7 @@ pub fn run() {
         .manage(state::AppState::default())
         .setup(move |app| {
             builder.mount_events(app);
-            recover_from_a_previous_run();
-            // After recovery, so the snapshot is the user's configuration and
-            // not whatever a crashed run left on the adapter.
-            app.state::<state::AppState>().capture_baseline();
+            recover_from_a_previous_run(&app.state::<state::AppState>());
 
             #[cfg(desktop)]
             window::restore_saved_mode(app.handle());
@@ -188,20 +194,26 @@ pub fn run() {
     });
 }
 
-/// Undo anything a previous run left behind before the UI can ask for more.
+/// Take hold of administrator rights, and undo anything a previous run left
+/// behind, before the UI can ask for more.
 ///
 /// A crash, a forced shutdown, or a power loss leaves the adapter pointing at a
-/// resolver that died with the process. The journal under `%PROGRAMDATA%`
-/// records what to put back; this is the only thing that reads it, and it runs
-/// before the window is shown.
-fn recover_from_a_previous_run() {
-    let journal = forceconnect_privileged::journal::default_path();
-    match forceconnect_privileged::recover(&journal) {
-        0 => {}
-        restored => log::warn!(
-            "restored {restored} DNS setting(s) left behind by a previous run that did not exit cleanly"
-        ),
-    }
+/// resolver that died with the process. The journal records what to put back;
+/// this is the only thing that has it read. On Windows that happens here,
+/// before the window is shown. On Linux and macOS it happens as soon as the
+/// administrator prompt is answered, and any DNS command that arrives first
+/// waits for it.
+///
+/// Runs in `setup`, after the single-instance plugin, so a second launch exits
+/// before it can either prompt or touch the first instance's journal.
+fn recover_from_a_previous_run(state: &state::AppState) {
+    state.dns().start(|restored| {
+        if restored > 0 {
+            log::warn!(
+                "restored {restored} DNS setting(s) left behind by a previous run that did not exit cleanly"
+            );
+        }
+    });
 }
 
 // No `#[cfg(test)]` module here on purpose. A test harness linked against the

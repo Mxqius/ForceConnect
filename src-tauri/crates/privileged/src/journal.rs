@@ -69,13 +69,32 @@ fn now_unix() -> u64 {
         .unwrap_or_default()
 }
 
-/// Default location, under `%PROGRAMDATA%` so it survives a user profile and is
-/// visible to an elevated process on the next run.
+/// Default location: machine-wide, so it survives a user profile and is
+/// visible to the privileged side on the next run, and writable only by it.
+///
+/// - Windows: `%PROGRAMDATA%\ForceConnect`
+/// - Linux: `/var/lib/forceconnect`
+/// - macOS: `/Library/Application Support/ForceConnect`
 pub fn default_path() -> PathBuf {
-    let base = std::env::var_os("PROGRAMDATA")
+    base_dir().join("pending-revert.json")
+}
+
+#[cfg(windows)]
+fn base_dir() -> PathBuf {
+    std::env::var_os("PROGRAMDATA")
         .map(PathBuf::from)
-        .unwrap_or_else(|| PathBuf::from(r"C:\ProgramData"));
-    base.join("ForceConnect").join("pending-revert.json")
+        .unwrap_or_else(|| PathBuf::from(r"C:\ProgramData"))
+        .join("ForceConnect")
+}
+
+#[cfg(target_os = "linux")]
+fn base_dir() -> PathBuf {
+    PathBuf::from("/var/lib/forceconnect")
+}
+
+#[cfg(target_os = "macos")]
+fn base_dir() -> PathBuf {
+    PathBuf::from("/Library/Application Support/ForceConnect")
 }
 
 /// Write the journal, flushing before returning.

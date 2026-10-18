@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { create } from "zustand";
 
 import { toast } from "@/design/primitives";
-import { ipc, type ReleasePolicy } from "@/lib/ipc";
+import { IpcError, ipc, type ReleasePolicy } from "@/lib/ipc";
 import {
   DEFAULT_PREFS,
   readPref,
@@ -46,6 +46,10 @@ function toPolicy(mode: ReleaseMode, dns: DefaultDns | null): ReleasePolicy {
  */
 function push(mode: ReleaseMode, dns: DefaultDns | null) {
   void ipc.setReleasePolicy(toPolicy(mode, dns)).catch((error: unknown) => {
+    // Without administrator rights nothing can be released anyway, and the
+    // app already says so in a banner; a second message about the default
+    // DNS would only misplace the blame.
+    if (error instanceof IpcError && error.detail.kind === "elevation") return;
     toast.error("Could not use that default DNS", {
       description: error instanceof Error ? error.message : String(error),
     });

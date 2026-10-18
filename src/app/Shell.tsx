@@ -215,11 +215,12 @@ function useTrayDisconnect() {
 /**
  * Says so when the app is running without administrator rights.
  *
- * This should be impossible in a shipped build — the executable embeds a
- * `requireAdministrator` manifest, so Windows either grants the rights at launch
- * or the app does not start. It happens in two real cases: a developer build on
- * a toolchain that could not embed the manifest, and a binary someone has
- * stripped it from.
+ * On Windows this should be impossible in a shipped build — the executable
+ * embeds a `requireAdministrator` manifest, so Windows either grants the rights
+ * at launch or the app does not start. It happens there in two real cases: a
+ * developer build on a toolchain that could not embed the manifest, and a
+ * binary someone has stripped it from. On Linux and macOS it is the ordinary
+ * result of cancelling the administrator prompt at launch.
  *
  * Worth a permanent strip rather than a toast, because in that state *every*
  * action on every screen will refuse, and a user who has not been told why will
@@ -244,7 +245,7 @@ function ElevationNotice() {
       <p>
         ForceConnect is running without administrator rights, so it cannot
         change DNS settings. Close it and start it again, then approve the
-        Windows prompt.
+        administrator prompt.
       </p>
     </div>
   );

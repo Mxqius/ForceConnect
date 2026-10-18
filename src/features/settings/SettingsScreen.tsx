@@ -160,7 +160,7 @@ export function SettingsScreen() {
         </Section>
 
         <Section title="Startup" icon={<Power />}>
-          <Row label="Start with Windows" hint="It does not connect by itself">
+          <Row label="Start at login" hint="It does not connect by itself">
             <Switch
               checked={autostart}
               onCheckedChange={(checked) => void toggleAutostart(checked)}
@@ -183,13 +183,13 @@ export function SettingsScreen() {
         >
           <Row
             label="Administrator"
-            hint="Needed to change adapter DNS. Windows asks at each launch."
+            hint="Needed to change adapter DNS. Asked for at each launch."
           >
             <Pill tone={notElevated ? "danger" : "success"}>
               {notElevated ? "Not granted" : "Granted"}
             </Pill>
           </Row>
-          <Row label="Process" hint="Look for this id in Task Manager">
+          <Row label="Process" hint="Look for this id in your task manager">
             <Pill tone="neutral" mono>
               pid {info?.pid ?? "—"}
             </Pill>
@@ -255,7 +255,7 @@ function ReleaseRows() {
       <div>
         <Row
           label="Restore previous DNS"
-          hint="Put back the DNS Windows had before ForceConnect started"
+          hint="Put back the DNS your system had before ForceConnect started"
         >
           <Switch
             checked={mode === "restore"}

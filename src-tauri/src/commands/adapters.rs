@@ -50,7 +50,7 @@ pub struct Adapter {
     pub kind: AdapterKind,
     pub status: AdapterStatus,
     pub mac: Option<String>,
-    /// Link speed in Mbps.
+    /// Link speed in Mbps. Zero when the platform does not report one.
     ///
     /// `TransmitLinkSpeed` is in bits per second. The previous implementation
     /// ran it through a bytes-to-Mbps conversion and displayed a figure eight
@@ -75,7 +75,6 @@ pub struct Adapter {
     pub dns_source: DnsSource,
 }
 
-#[cfg(windows)]
 fn collect() -> Result<Vec<Adapter>, CommandError> {
     use forceconnect_net::{
         AdapterKind as NetKind, DnsConfig, Family, OperStatus, adapters as net_adapters, route,
@@ -139,24 +138,17 @@ fn collect() -> Result<Vec<Adapter>, CommandError> {
         .collect())
 }
 
-#[cfg(not(windows))]
-fn collect() -> Result<Vec<Adapter>, CommandError> {
-    Err(CommandError::Internal(
-        "adapter enumeration is only implemented for Windows".into(),
-    ))
-}
-
 /// Every adapter the system reports, best-first among the eligible ones.
 ///
-/// Everything here is an unprivileged read, so this never triggers a UAC
-/// prompt — browsing the app costs the user nothing.
+/// Everything here is an unprivileged read: it runs in the interface process
+/// on every platform, never through the privileged agent.
 #[tauri::command]
 #[specta::specta]
 pub fn list_adapters() -> CommandResult<Vec<Adapter>> {
     let mut adapters = collect()?;
 
     // Eligible adapters first, then by the metric that decides routing, so the
-    // list reads top-down in the order Windows would choose.
+    // list reads top-down in the order the OS would choose.
     adapters.sort_by(|a, b| {
         b.eligible
             .cmp(&a.eligible)

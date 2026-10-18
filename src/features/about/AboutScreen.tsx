@@ -71,8 +71,9 @@ export function AboutScreen() {
         </div>
 
         <p className="text-text-secondary max-w-prose text-sm leading-relaxed">
-          A DNS manager for Windows. Switch resolvers, see which adapter traffic
-          actually leaves by, and route queries through encrypted DNS.
+          A DNS manager for Windows, macOS and Linux. Switch resolvers, see
+          which adapter traffic actually leaves by, and route queries through
+          encrypted DNS.
         </p>
       </header>
 

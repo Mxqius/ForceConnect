@@ -28,15 +28,15 @@ export const PLATFORMS: readonly Platform[] = [
     id: "macos",
     name: "macOS",
     icon: <Command />,
-    detail: "Apple Silicon & Intel",
-    available: false,
+    detail: "macOS 10.15+ · Apple Silicon & Intel",
+    available: true,
   },
   {
     id: "linux",
     name: "Linux",
     icon: <Terminal />,
     detail: ".deb · .rpm · AppImage",
-    available: false,
+    available: true,
   },
 ];
 

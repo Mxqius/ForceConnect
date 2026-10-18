@@ -10,7 +10,8 @@ authors.workspace = true
 
 # A library, not a binary. Every privileged operation the application performs
 # lives in this crate and nowhere else, so "what does ForceConnect do with
-# administrator rights" is answered by reading four files.
+# administrator rights" is answered by reading one crate. On Linux and macOS it
+# also holds the agent those operations run in; see `src/agent.rs`.
 #
 # It stays a separate crate rather than a module of the Tauri app because a test
 # harness linked against the app crate does not load on Windows (see the note at
@@ -23,6 +24,9 @@ serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 
 [target.'cfg(windows)'.dependencies]
 windows = { workspace = true, features = [

@@ -43,17 +43,18 @@ hickory-resolver = { version = "0.26.1", default-features = false, features = [
     "https-ring",
     "quic-ring",
     "h3-ring",
-    # Uses the Windows trust store, so corporate TLS-inspection proxies and
-    # enterprise roots work, and root updates arrive via Windows Update rather
-    # than needing a release from us. Do not also enable `webpki-roots`: this
-    # short-circuits it, and the frozen Mozilla list would be dead weight that
-    # hard-fails behind any inspecting proxy.
+    # Uses the platform trust store — Windows' certificate store, the macOS
+    # keychain, the distribution's CA bundle on Linux — so corporate
+    # TLS-inspection proxies and enterprise roots work, and root updates arrive
+    # with OS updates rather than needing a release from us. Do not also enable
+    # `webpki-roots`: this short-circuits it, and the frozen Mozilla list would
+    # be dead weight that hard-fails behind any inspecting proxy.
     "rustls-platform-verifier",
 ] }
 
 [package]
 name = "forceconnect"
-description = "A fast, modern DNS manager for Windows"
+description = "A fast, modern DNS manager"
 # Disambiguates `cargo run` now that `export-bindings` is a second binary;
 # without it `tauri dev` cannot decide which one to launch.
 default-run = "forceconnect"
@@ -108,10 +109,11 @@ specta.workspace = true
 specta-typescript = "0.0.12"
 tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 
-# No direct `windows` dependency. This crate is the Tauri shell: it wires
-# commands to the frontend and owns no Win32 calls of its own. Everything that
-# touches the platform lives in `crates/`, which is what keeps "what does this
-# app do with administrator rights" answerable by reading one small crate.
+# No direct `windows` or `libc` dependency. This crate is the Tauri shell: it
+# wires commands to the frontend and owns no platform calls of its own.
+# Everything that touches the platform lives in `crates/`, which is what keeps
+# "what does this app do with administrator rights" answerable by reading one
+# small crate.
 #
 # The single exception is the webview's own memory target in compact mode (see
 # `src/window.rs`): a COM call on this process's WebView2, not on the system.
@@ -127,7 +129,7 @@ tauri-plugin-autostart = "2"
 tauri-plugin-single-instance = "2"
 # Signed, self-contained updates. `rustls-tls` rather than the default
 # native-tls: the rest of the app already validates TLS through rustls with the
-# Windows trust store, and linking a second TLS stack into the binary to fetch
+# platform trust store, and linking a second TLS stack into the binary to fetch
 # one JSON file is not worth the size.
 tauri-plugin-updater = { version = "2", default-features = false, features = [
     "rustls-tls",

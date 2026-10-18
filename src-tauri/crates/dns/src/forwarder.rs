@@ -1,8 +1,13 @@
 //! The local resolver.
 //!
-//! Windows only accepts plain IP addresses as an adapter's DNS servers, so
-//! reaching an encrypted provider means running a resolver here: plain DNS in
-//! from the OS on `127.0.0.1:53`, encrypted DNS out to the provider.
+//! Operating systems only accept plain IP addresses as an adapter's DNS
+//! servers, so reaching an encrypted provider means running a resolver here:
+//! plain DNS in from the OS on `127.0.0.1:53`, encrypted DNS out to the
+//! provider.
+//!
+//! On Linux that is compatible with systemd-resolved's stub listener, which
+//! sits on `127.0.0.53:53`: the two addresses do not collide, and resolved
+//! forwards to `127.0.0.1` like any other configured server.
 
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::sync::Arc;
@@ -20,8 +25,9 @@ use hickory_server::zone_handler::MessageResponseBuilder;
 use crate::server::Endpoint;
 use crate::upstream;
 
-/// Where the forwarder listens. Not configurable: Windows can only be pointed
-/// at port 53, so any other port would be unreachable by the OS anyway.
+/// Where the forwarder listens. Not configurable: Windows, NetworkManager and
+/// `networksetup` can only be pointed at port 53, so any other port would be
+/// unreachable by the OS anyway.
 pub const LISTEN_V4: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 53);
 
 #[derive(Debug, thiserror::Error)]
@@ -163,7 +169,6 @@ fn fallback_info(request: &Request) -> ResponseInfo {
 ///
 /// Called before starting so the failure carries a remedy, rather than
 /// surfacing as an opaque bind error after the UI has said "connecting".
-#[cfg(windows)]
 pub fn check_port_available() -> Result<(), ForwarderError> {
     use forceconnect_net::ports;
 
@@ -173,11 +178,6 @@ pub fn check_port_available() -> Result<(), ForwarderError> {
         }),
         None => Ok(()),
     }
-}
-
-#[cfg(not(windows))]
-pub fn check_port_available() -> Result<(), ForwarderError> {
-    Ok(())
 }
 
 /// Whether a name should be answered with NXDOMAIN rather than forwarded.
