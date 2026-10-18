@@ -1,0 +1,183 @@
+@import "tailwindcss";
+
+/*
+ * The app's own palette, so the site and the product read as one thing:
+ * neutral greys, the brand blue as the only colour that means "act", cyan
+ * reserved for the connected moment.
+ */
+@theme {
+  --color-ground: #0b0c10;
+  --color-subtle: #111217;
+  --color-tile: #15161c;
+  --color-elevated: #1d1e26;
+  --color-hover: #23242d;
+  --color-line: #23242d;
+  --color-line-strong: #2c2d37;
+
+  --color-ink: #f1f2f6;
+  --color-ink-2: #c3c6d1;
+  --color-ink-3: #9599a8;
+
+  --color-accent: #1b6bf2;
+  --color-accent-bright: #6ba0ff;
+  --color-cyan: #22d3ee;
+  --color-ok: #35c46f;
+  --color-warn: #e0a92e;
+
+  --font-sans:
+    "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    "Cascadia Mono", "Cascadia Code", ui-monospace, SFMono-Regular, Consolas,
+    monospace;
+
+  --radius-tile: 22px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background: var(--color-ground);
+  }
+
+  body {
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-bright);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+}
+
+/* The hero glow behind the headline: two soft blooms in the brand colours. */
+.page-glow {
+  background:
+    radial-gradient(
+      600px 380px at 78% 18%,
+      color-mix(in srgb, var(--color-accent) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      420px 300px at 92% 60%,
+      color-mix(in srgb, var(--color-cyan) 10%, transparent),
+      transparent 70%
+    );
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, #6ba0ff 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * The demo tile mirrors the app's connection tile: the "protected" gradient
+ * grows as a circle out of the power button, and collapses quicker than it
+ * blooms.
+ */
+.demo {
+  --origin: calc(100% - 68px) calc(100% - 68px);
+}
+
+.demo-glow {
+  position: absolute;
+  inset: -1px;
+  background:
+    radial-gradient(
+      340px 240px at 85% 0%,
+      rgb(255 255 255 / 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      280px 240px at 0% 100%,
+      rgb(10 30 90 / 0.35),
+      transparent 60%
+    ),
+    linear-gradient(150deg, #1b6bf2 0%, #1590e0 55%, #18b9d9 100%);
+  clip-path: circle(0px at var(--origin));
+  transition: clip-path 600ms cubic-bezier(0.6, 0, 0.4, 1);
+  pointer-events: none;
+}
+
+.demo[data-lit="true"] .demo-glow {
+  clip-path: circle(160% at var(--origin));
+  transition-duration: 950ms;
+  transition-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.demo-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    105deg,
+    transparent 35%,
+    color-mix(in srgb, var(--color-accent-bright) 16%, transparent) 50%,
+    transparent 65%
+  );
+  background-size: 260% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -130% 0;
+  }
+}
+
+/* A slow ring around the power button while it waits to be pressed. */
+.power-ring {
+  animation: ring 2.4s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.rise {
+  animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
