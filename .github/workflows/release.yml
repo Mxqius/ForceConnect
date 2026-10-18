@@ -1,0 +1,81 @@
+name: Release
+
+# Push a `v*` tag and this builds the app and publishes a GitHub release with
+# the installers attached. Free on public repos; needs no secrets beyond the
+# built-in GITHUB_TOKEN.
+#
+#   git tag v2.0.1 && git push origin v2.0.1
+#
+# Only Windows ships today. macOS and Linux are listed below, commented out:
+# the network and privileged crates are still Windows-only and do not compile
+# elsewhere. Once they are ported, uncomment the entry, set `bundle.targets`
+# in tauri.conf.json to cover the new formats, and flip `available` for that
+# platform in website/src/platforms.tsx.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            args: ""
+          # - name: macOS
+          #   os: macos-latest
+          #   args: --target universal-apple-darwin
+          #   rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          # - name: Linux
+          #   os: ubuntu-22.04
+          #   args: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust-targets }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Add these once auto-update signing is set up (see RELEASING.md):
+          # TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: ForceConnect ${{ github.ref_name }}
+          releaseBody: |
+            Download the installer for your platform from the assets below.
+
+            **Windows:** run `ForceConnect_*_x64-setup.exe`. Requires Windows 10 (2004) or later.
+            macOS and Linux builds are coming soon.
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

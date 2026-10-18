@@ -3,12 +3,12 @@
 A checklist, not an explanation — see [ARCHITECTURE.md](ARCHITECTURE.md#updates)
 for why the updater is shaped this way.
 
-**Current state: there is no CI workflow yet.** `SECURITY.md` describes the
-target process (tagged commit → GitHub Actions → signed build); until a
-workflow file exists under `.github/workflows/`, releases are built and signed
-by hand, following this document. Set up CI before publishing anything real —
-a signing key on a laptop is a much bigger liability than one in Actions
-secrets.
+**Current state:** [`.github/workflows/release.yml`](.github/workflows/release.yml)
+builds the Windows installer and publishes the GitHub release whenever a `v*`
+tag is pushed. It does not sign updater artifacts yet — that needs the
+one-time key setup below, after which the two commented secrets in the
+workflow are uncommented. macOS and Linux entries are in the workflow,
+commented out until the network and privileged crates are ported.
 
 ## One-time: generate the signing key
 
