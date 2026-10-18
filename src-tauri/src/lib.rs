@@ -61,7 +61,7 @@ pub const BINDINGS_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../src/lib
 /// Write the TypeScript bindings without starting the app.
 ///
 /// Exposed so CI can generate bindings headlessly and then typecheck the
-/// frontend against them — see `src/bin/export-bindings.rs`. Without this the
+/// frontend against them — see `examples/export-bindings.rs`. Without this the
 /// only way to produce the file would be to launch the GUI.
 pub fn export_bindings(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     use specta_typescript::Typescript;

@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "bindings": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --bin export-bindings",
+    "bindings": "cargo run --quiet --manifest-path src-tauri/Cargo.toml --example export-bindings",
     "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test"
   },
   "dependencies": {

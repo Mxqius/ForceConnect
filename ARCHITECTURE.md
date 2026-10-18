@@ -238,6 +238,12 @@ annoying to diagnose: `export-bindings` is a headless developer tool CI runs, an
 with `requireAdministrator` attached it cannot start at all in a non-interactive
 shell — it fails with `ERROR_ELEVATION_REQUIRED` (740).
 
+The exporter is a Cargo example (`cargo run --example export-bindings`, or
+`pnpm bindings`), not a second `[[bin]]`. The bundler packages every binary a
+package declares, so as a bin it was installed alongside the app, and a
+universal macOS build — which merges only the main binary across
+architectures — failed outright looking for it.
+
 So there are two manifest files, differing in one line. `build.rs` decides
 whether to embed them from `CARGO_CFG_TARGET_OS`, not `cfg(windows)`: a build
 script runs on the build machine, so `cfg` there describes the host, and a cross

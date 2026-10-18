@@ -55,9 +55,6 @@ hickory-resolver = { version = "0.26.1", default-features = false, features = [
 [package]
 name = "forceconnect"
 description = "A fast, modern DNS manager"
-# Disambiguates `cargo run` now that `export-bindings` is a second binary;
-# without it `tauri dev` cannot decide which one to launch.
-default-run = "forceconnect"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

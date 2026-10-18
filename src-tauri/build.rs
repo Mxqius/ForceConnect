@@ -8,9 +8,15 @@ fn main() {
     // time.)
     //
     // That manifest goes on the `forceconnect` binary *specifically*, not on
-    // every binary the package builds. `export-bindings` is a headless
-    // developer tool CI runs; with `requireAdministrator` attached it fails to
-    // start with ERROR_ELEVATION_REQUIRED (740) in any non-interactive shell.
+    // everything the package links. `export-bindings` is a headless developer
+    // tool CI runs; with `requireAdministrator` attached it fails to start
+    // with ERROR_ELEVATION_REQUIRED (740) in any non-interactive shell.
+    //
+    // The exporter is a Cargo *example*, not a second `[[bin]]`, because the
+    // bundler ships every binary in the package: as a bin it was installed
+    // next to the app on every platform, and on a universal macOS build —
+    // where only the main binary is merged across architectures — it broke
+    // bundling outright.
     //
     // Which is why tauri-build is asked for `new_without_app_manifest`: it
     // embeds an `asInvoker` manifest into every binary by default, and two
@@ -28,19 +34,22 @@ fn main() {
         attributes = attributes
             .windows_attributes(tauri_build::WindowsAttributes::new_without_app_manifest());
 
-        embed_manifest("forceconnect", "forceconnect.manifest");
-        embed_manifest("export-bindings", "export-bindings.manifest");
+        embed_manifest("bin=forceconnect", "forceconnect.manifest");
+        // The exporter is the package's only example, so the examples-wide
+        // flag reaches exactly it.
+        embed_manifest("examples", "export-bindings.manifest");
     }
 
     tauri_build::try_build(attributes).expect("failed to run the Tauri build script");
 }
 
-/// Ask the MSVC linker to embed a manifest into one named binary.
+/// Ask the MSVC linker to embed a manifest into one link target.
 ///
-/// `/MANIFEST:EMBED` plus `/MANIFESTINPUT:` is the documented pair; either
-/// alone does nothing useful. `rustc-link-arg-bin` is what scopes it to a
-/// single binary, and is the reason this is done by hand rather than through
-/// tauri-build, which has no per-binary option.
+/// `scope` completes the `cargo:rustc-link-arg-…` directive: `bin=NAME` for one
+/// binary, `examples` for the examples. `/MANIFEST:EMBED` plus
+/// `/MANIFESTINPUT:` is the documented pair; either alone does nothing useful.
+/// Scoping the flags per target is the reason this is done by hand rather than
+/// through tauri-build, which has no per-binary option.
 ///
 /// `/MANIFESTUAC:NO` is not optional. With `/MANIFEST:EMBED` the linker
 /// contributes a `requestedExecutionLevel` of its own — `asInvoker` — and
@@ -51,7 +60,7 @@ fn main() {
 /// ```
 ///
 /// Suppressing the linker's fragment leaves the file's as the only one.
-fn embed_manifest(binary: &str, manifest: &str) {
+fn embed_manifest(scope: &str, manifest: &str) {
     println!("cargo:rerun-if-changed={manifest}");
 
     // The GNU toolchain takes a manifest as a compiled resource, not as a
@@ -67,10 +76,10 @@ fn embed_manifest(binary: &str, manifest: &str) {
 
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(manifest);
 
-    println!("cargo:rustc-link-arg-bin={binary}=/MANIFEST:EMBED");
-    println!("cargo:rustc-link-arg-bin={binary}=/MANIFESTUAC:NO");
+    println!("cargo:rustc-link-arg-{scope}=/MANIFEST:EMBED");
+    println!("cargo:rustc-link-arg-{scope}=/MANIFESTUAC:NO");
     println!(
-        "cargo:rustc-link-arg-bin={binary}=/MANIFESTINPUT:{}",
+        "cargo:rustc-link-arg-{scope}=/MANIFESTINPUT:{}",
         path.display()
     );
 }
