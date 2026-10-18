@@ -1,5 +1,7 @@
 # ForceConnect
 
+<img width="1774" height="887" alt="ForceConnect v2 0 Release Banner-1" src="https://github.com/user-attachments/assets/64c60387-ae52-4e3c-8735-269dee1b35ad" />
+
 A fast, modern DNS manager for Windows, macOS and Linux. Switch DNS servers,
 manage network interfaces, and route queries through encrypted DNS protocols
 from a clean, lightweight interface.
