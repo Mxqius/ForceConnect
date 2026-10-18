@@ -14,6 +14,8 @@ export interface Platform {
   detail: string;
   /** Flip to true once a release ships a build for this platform. */
   available: boolean;
+  /** Shipped, but not yet tested on real machines. */
+  beta?: boolean;
 }
 
 export const PLATFORMS: readonly Platform[] = [
@@ -30,6 +32,7 @@ export const PLATFORMS: readonly Platform[] = [
     icon: <Command />,
     detail: "macOS 10.15+ · Apple Silicon & Intel",
     available: true,
+    beta: true,
   },
   {
     id: "linux",
@@ -37,6 +40,7 @@ export const PLATFORMS: readonly Platform[] = [
     icon: <Terminal />,
     detail: ".deb · .rpm · AppImage",
     available: true,
+    beta: true,
   },
 ];
 

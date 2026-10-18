@@ -282,6 +282,11 @@ function Downloads() {
                         Coming soon
                       </span>
                     )}
+                    {p.available && p.beta && (
+                      <span className="bg-accent/10 text-accent rounded-full px-2 py-0.5 text-[11px] font-medium">
+                        Beta
+                      </span>
+                    )}
                   </span>
                   <span
                     className={`mt-0.5 block text-xs ${
