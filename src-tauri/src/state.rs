@@ -46,6 +46,11 @@ impl AppState {
         lock(&self.dns).restore_all();
     }
 
+    /// Snapshot every adapter's DNS as the "before ForceConnect" state.
+    pub fn capture_baseline(&self) {
+        lock(&self.dns).capture_baseline();
+    }
+
     pub fn has_pending_changes(&self) -> bool {
         lock(&self.dns).has_pending()
     }

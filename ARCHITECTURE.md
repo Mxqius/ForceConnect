@@ -66,8 +66,8 @@ architecture whose subtleties took four screens of this document to explain.
 
 ### The privileged surface is still enumerated
 
-`forceconnect-privileged` exposes three verbs — set DNS, clear DNS, flush the
-resolver cache. There is no `run_command`, no `write_file`, no
+`forceconnect-privileged` exposes four verbs — set DNS, clear DNS, release an
+adapter to the user's chosen fallback, flush the resolver cache. There is no `run_command`, no `write_file`, no
 `write_registry { path, value }`, and adding one is the moment to stop and
 reconsider. Every argument is validated against live system state before it is
 acted on: a LUID must resolve to a currently present adapter, and server lists
@@ -209,6 +209,14 @@ way of quitting. And before applying any change it writes a restore journal to
 `%PROGRAMDATA%\ForceConnect`, which covers the ways it does not get to observe:
 a hard crash, a forced shutdown, a power loss. `recover()` replays that journal
 at startup, before the window is shown and before anything else touches DNS.
+
+**Where "back" is, is the user's choice.** On disconnect, on exit, and in the
+journal, an adapter goes to one destination chosen in Settings: the DNS it had
+when the app launched (captured once at startup, after recovery), DHCP, or a
+plain-DNS default of the user's own. The journal stores that destination rather
+than the raw previous state, so a crash honours the choice too. A default may
+not be a loopback address, because it is used exactly when nothing is
+listening on loopback any more.
 
 The journal is written to a temporary file and renamed rather than written in
 place, so a crash midway through leaves either the old journal or the new one —

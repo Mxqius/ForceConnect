@@ -17,6 +17,10 @@ import {
   type ConnectStep,
 } from "@/features/connection/useConnection";
 import { useDnsTools } from "@/features/connection/useDnsTools";
+import {
+  onDefaultDns,
+  useReleasePolicy,
+} from "@/features/connection/useReleasePolicy";
 import { ProviderMark } from "@/features/servers/ProviderMark";
 import { cn } from "@/lib/cn";
 import type { Endpoint, Server } from "@/lib/ipc";
@@ -93,17 +97,30 @@ export function ConnectionHero({
       : null;
 
   const network = adapter?.dnsV4[0];
+  const releaseMode = useReleasePolicy((state) => state.mode);
+  const defaultDns = useReleasePolicy((state) => state.defaultDns);
+  const onDefault = onDefaultDns(adapter?.dnsV4, releaseMode, defaultDns);
+  const restoring =
+    releaseMode === "fallback" && defaultDns
+      ? `Switching to ${defaultDns.name}`
+      : releaseMode === "restore"
+        ? "Restoring your previous DNS"
+        : "Restoring network DNS";
 
   const chip: { tone: string; text: string; pulse?: boolean } = {
     idle: {
       tone: "bg-text-muted",
-      text: network ? `Network DNS · ${network}` : "Network DNS",
+      text: onDefault
+        ? `Default DNS · ${network}`
+        : network
+          ? `Network DNS · ${network}`
+          : "Network DNS",
     },
     connecting: { tone: "bg-accent-bright", text: "Connecting", pulse: true },
     switching: { tone: "bg-white", text: "Switching", pulse: true },
     disconnecting: {
       tone: "bg-text-muted",
-      text: "Restoring network DNS",
+      text: restoring,
       pulse: true,
     },
     connected: active?.encrypted
@@ -125,7 +142,11 @@ export function ConnectionHero({
   }[phase];
 
   const subtitle = {
-    idle: blocker ?? "Lookups go to the DNS your network hands out.",
+    idle:
+      blocker ??
+      (onDefault && defaultDns
+        ? `Lookups go to your default DNS, ${defaultDns.name}.`
+        : "Lookups go to the DNS your network hands out."),
     connecting: null,
     switching: `Moving to ${attempt?.serverName ?? "the new server"}. Your current DNS stays in place until the new one is set.`,
     connected: active
@@ -133,7 +154,12 @@ export function ConnectionHero({
         ? `Every lookup is encrypted and answered by ${active.serverName}.`
         : `Lookups now go straight to ${active.serverName}.`
       : null,
-    disconnecting: "Handing the adapter back to your network’s DNS.",
+    disconnecting:
+      releaseMode === "fallback" && defaultDns
+        ? `Moving the adapter to your default DNS, ${defaultDns.name}.`
+        : releaseMode === "restore"
+          ? "Putting back the DNS this adapter had before ForceConnect."
+          : "Handing the adapter back to your network’s DNS.",
     failed: null,
   }[phase];
 

@@ -20,6 +20,9 @@ use serde::{Deserialize, Serialize};
 pub struct PendingRevert {
     pub guid: String,
     pub family: Family,
+    /// What to put back on recovery. Named for its original meaning; it now
+    /// holds the release policy's destination, which is the pre-change
+    /// configuration unless the user chose DHCP or a default DNS instead.
     pub previous: DnsConfig,
     /// Unix seconds, for diagnostics when a stale file turns up.
     pub applied_at: u64,

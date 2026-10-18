@@ -11,6 +11,7 @@ export const queryKeys = {
   updaterStatus: ["updater-status"] as const,
   adapters: ["adapters"] as const,
   adapter: (luid: string) => ["adapters", luid] as const,
+  dnsBaseline: ["dns-baseline"] as const,
   servers: ["servers"] as const,
   customServers: ["servers", "custom"] as const,
   favourites: ["favourites"] as const,

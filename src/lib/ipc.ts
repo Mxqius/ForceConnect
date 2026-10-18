@@ -5,6 +5,7 @@ import {
   type CommandError,
   type NewServer,
   type Protocol,
+  type ReleasePolicy,
   type Server,
   type TrayStatus,
 } from "@/lib/bindings";
@@ -12,15 +13,19 @@ import * as fixtures from "@/lib/fixtures";
 
 export type {
   Adapter,
+  AdapterBaseline,
   AdapterKind,
   AdapterStatus,
   AppInfo,
   CommandError,
   DnsSource,
   Endpoint,
+  FamilyDns,
   LatencyResult,
   NewServer,
   Protocol,
+  ReleasedDns,
+  ReleasePolicy,
   Server,
   ServerSource,
   TrayStatus,
@@ -119,6 +124,16 @@ export const ipc = {
     useFixtures
       ? Promise.reject(new Error("changing DNS needs the desktop app"))
       : unwrap(commands.clearDns(luid)),
+  releaseDns: (luid: string) =>
+    useFixtures
+      ? Promise.reject(new Error("changing DNS needs the desktop app"))
+      : unwrap(commands.releaseDns(luid)),
+  setReleasePolicy: (policy: ReleasePolicy) =>
+    useFixtures ? fixture(null) : unwrap(commands.setReleasePolicy(policy)),
+  dnsBaseline: () =>
+    useFixtures
+      ? fixture(fixtures.dnsBaseline)
+      : unwrap(commands.dnsBaseline()),
   flushDnsCache: () =>
     useFixtures
       ? Promise.reject(new Error("flushing the cache needs the desktop app"))

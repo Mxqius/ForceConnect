@@ -46,6 +46,21 @@ export const commands = {
 	/**  Return an adapter to DHCP-assigned DNS for both families. */
 	clearDns: (luid: string) => typedError<null, CommandError>(__TAURI_INVOKE("clear_dns", { luid })),
 	/**
+	 *  Disconnect: hand an adapter back according to the release policy.
+	 * 
+	 *  Distinct from `clear_dns`, which always means DHCP and stays as the "Reset
+	 *  to automatic" tool. This is what the power button does.
+	 */
+	releaseDns: (luid: string) => typedError<ReleasedDns, CommandError>(__TAURI_INVOKE("release_dns", { luid })),
+	setReleasePolicy: (policy: ReleasePolicy) => typedError<null, CommandError>(__TAURI_INVOKE("set_release_policy", { policy })),
+	/**
+	 *  The DNS every adapter had at launch — what "Restore previous DNS" puts back.
+	 * 
+	 *  Captured once at startup, after crash recovery, so it is the user's own
+	 *  configuration rather than anything a previous run left behind.
+	 */
+	dnsBaseline: () => typedError<AdapterBaseline[], CommandError>(__TAURI_INVOKE("dns_baseline")),
+	/**
 	 *  Drop every entry in the system resolver cache.
 	 * 
 	 *  Worth its own action rather than being folded into `set_dns`: records
@@ -135,6 +150,14 @@ export type Adapter = {
 	dnsSource: DnsSource,
 };
 
+/**  One adapter's DNS as it stood when ForceConnect started. */
+export type AdapterBaseline = {
+	luid: string,
+	name: string,
+	v4: FamilyDns | null,
+	v6: FamilyDns | null,
+};
+
 export type AdapterKind = "ethernet" | "wifi" | 
 /**
  *  VPN tunnels and virtual point-to-point adapters. Grouped separately
@@ -191,6 +214,12 @@ export type Endpoint = {
 	requiresForwarder: boolean,
 };
 
+/**  One address family's DNS, as the UI shows it. */
+export type FamilyDns = {
+	source: DnsSource,
+	servers: string[],
+};
+
 export type LatencyResult = {
 	serverId: string,
 	protocol: Protocol,
@@ -225,6 +254,27 @@ export type NewServer = {
 };
 
 export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";
+
+/**
+ *  Where adapters go on disconnect, on exit, and after a crash.
+ * 
+ *  The choice is persisted in the frontend's preferences store, like the tray
+ *  setting; this is the copy the exit handler and the journal can see, pushed
+ *  across on hydrate and on every change.
+ */
+export type ReleasePolicy = 
+/**  Put back the DNS Windows had before ForceConnect started. */
+{ mode: "restore" } | 
+/**  Hand the adapter to DHCP. */
+{ mode: "automatic" } | 
+/**  Switch to the user's own default servers. */
+{ mode: "fallback"; servers: string[] };
+
+/**  Where a released adapter went. */
+export type ReleasedDns = {
+	v4: FamilyDns | null,
+	v6: FamilyDns | null,
+};
 
 export type Server = {
 	id: string,

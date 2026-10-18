@@ -343,7 +343,10 @@ async function runDisconnect(
 
   setState({ phase: "disconnecting" });
   try {
-    await paced(() => ipc.clearDns(luid), DISCONNECT_MIN_MS);
+    // Released rather than cleared: where the adapter goes is the user's
+    // setting — their DNS from before launch, DHCP, or a default of their own
+    // — and the backend applies the same choice on exit and after a crash.
+    await paced(() => ipc.releaseDns(luid), DISCONNECT_MIN_MS);
   } catch (error) {
     setState({ phase: active ? "connected" : "idle" });
     toast.error("Could not disconnect", { description: messageOf(error) });

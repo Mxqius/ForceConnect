@@ -1,5 +1,6 @@
 import type {
   Adapter,
+  AdapterBaseline,
   AppInfo,
   UpdaterStatus,
   LatencyResult,
@@ -139,6 +140,21 @@ function endpoint(
     requiresForwarder: encrypted,
   };
 }
+
+export const dnsBaseline: AdapterBaseline[] = [
+  {
+    luid: "1689399632855040",
+    name: "ExpressVPN WinTUN Adapter",
+    v4: { source: "static", servers: ["100.64.100.1"] },
+    v6: { source: "dhcp", servers: [] },
+  },
+  {
+    luid: "1689399632855041",
+    name: "Wi-Fi",
+    v4: { source: "dhcp", servers: [] },
+    v6: { source: "dhcp", servers: [] },
+  },
+];
 
 export const servers: Server[] = [
   {

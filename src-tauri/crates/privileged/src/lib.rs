@@ -10,8 +10,8 @@
 //! survives from that design is the part that carried the weight: **the
 //! privileged operations are enumerated in one place.** There is no
 //! `run_command`, no `write_registry`, no general-purpose escape hatch — this
-//! crate exposes exactly three verbs (set DNS, clear DNS, flush the resolver
-//! cache) and every argument is validated against live system state before it
+//! crate exposes a short, fixed set of verbs (set DNS, clear DNS, release an
+//! adapter to the user's chosen fallback, flush the resolver cache) and every argument is validated against live system state before it
 //! is acted on.
 //!
 //! The rule for contributors is unchanged: if you find yourself wanting to add
@@ -59,6 +59,27 @@ impl From<forceconnect_net::NetError> for PrivilegedError {
 /// step that keeps a stale or invented adapter id from reaching the OS.
 type Applied = HashMap<(String, Family), DnsConfig>;
 
+/// Where an adapter goes when ForceConnect lets go of it — on disconnect, on
+/// exit, and after a crash.
+///
+/// One policy covers all three on purpose. If disconnecting put the user on
+/// their chosen fallback but a crash put them somewhere else, the setting would
+/// only hold for the exits that did not matter.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub enum ReleasePolicy {
+    /// Back to what Windows had before ForceConnect started.
+    #[default]
+    Restore,
+    /// DHCP-assigned DNS, whatever it was before.
+    Automatic,
+    /// A fixed set of servers the user chose as their everyday DNS.
+    ///
+    /// A family with no servers in the list falls back to [`Self::Restore`]
+    /// for that family. Writing nothing would leave IPv6 on our resolver, and
+    /// inventing an IPv6 server the user never picked would be worse.
+    Fallback(Vec<IpAddr>),
+}
+
 /// The one object in the application that changes system DNS settings.
 ///
 /// It remembers what it changed so it can put everything back, and mirrors that
@@ -68,6 +89,10 @@ type Applied = HashMap<(String, Family), DnsConfig>;
 /// the user has no reason to connect that to this app.
 pub struct DnsWriter {
     applied: Applied,
+    /// Every adapter's DNS as it stood when the app started, before anything
+    /// here touched it. What [`ReleasePolicy::Restore`] puts back.
+    baseline: Applied,
+    policy: ReleasePolicy,
     journal_path: PathBuf,
 }
 
@@ -81,8 +106,60 @@ impl DnsWriter {
     pub fn new(journal_path: PathBuf) -> Self {
         Self {
             applied: Applied::new(),
+            baseline: Applied::new(),
+            policy: ReleasePolicy::default(),
             journal_path,
         }
+    }
+
+    /// Record every adapter's current DNS as the configuration to go back to.
+    ///
+    /// Called once at startup, after [`recover`] — so a run that crashed while
+    /// pointing an adapter at a dead resolver has already been undone, and what
+    /// is captured is the user's real setup rather than our leftovers.
+    ///
+    /// Only a read. Adapters whose settings cannot be read are left out, and
+    /// fall back to whatever was observed when they were first changed.
+    pub fn capture_baseline(&mut self) {
+        let adapters = match adapters::list() {
+            Ok(list) => list,
+            Err(err) => {
+                tracing::warn!("could not capture the launch DNS baseline: {err}");
+                return;
+            }
+        };
+
+        self.baseline.clear();
+        for adapter in adapters.iter().filter(|a| a.is_eligible()) {
+            for family in [Family::V4, Family::V6] {
+                if let Ok(config) = adapters::dns_config(&adapter.guid, family) {
+                    self.baseline.insert((adapter.guid.clone(), family), config);
+                }
+            }
+        }
+    }
+
+    /// The configuration captured at launch for one adapter and family.
+    pub fn baseline(&self, guid: &str, family: Family) -> Option<&DnsConfig> {
+        self.baseline.get(&(guid.to_owned(), family))
+    }
+
+    /// Change where adapters go when they are released.
+    ///
+    /// The journal is rewritten straight away, so a crash after this point
+    /// lands on the new choice rather than the old one.
+    pub fn set_policy(&mut self, policy: ReleasePolicy) -> Result<(), PrivilegedError> {
+        if let ReleasePolicy::Fallback(servers) = &policy {
+            validate_fallback(servers)?;
+        }
+
+        self.policy = policy;
+        self.persist();
+        Ok(())
+    }
+
+    pub fn policy(&self) -> &ReleasePolicy {
+        &self.policy
     }
 
     /// Point an adapter at a list of resolvers.
@@ -133,6 +210,43 @@ impl DnsWriter {
         Ok(())
     }
 
+    /// Let go of an adapter: put it where the release policy says.
+    ///
+    /// This is what disconnecting does. It differs from [`Self::clear_dns`] —
+    /// which always means DHCP — in that the destination is the user's
+    /// choice: their DNS from before launch, DHCP, or a default of their own.
+    ///
+    /// Returns the configuration written per family, so the UI can say where
+    /// the adapter went.
+    pub fn release(
+        &mut self,
+        luid: InterfaceLuid,
+    ) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
+        require_elevation()?;
+
+        let guid = resolve_guid(luid)?;
+        let mut written = Vec::with_capacity(2);
+
+        for family in [Family::V4, Family::V6] {
+            let key = (guid.clone(), family);
+            // An adapter this session never changed — one a previous run left
+            // on a static default, say — has no recorded previous state. DHCP
+            // stands in for it, and `target` still prefers the launch baseline.
+            let previous = self.applied.get(&key).cloned().unwrap_or(DnsConfig::Dhcp);
+            let target = self.target(&guid, family, &previous);
+
+            dns_settings::restore(&guid, family, &target)?;
+            written.push((family, target));
+        }
+
+        // Released: nothing is owed a revert any more, and keeping the entries
+        // would make a later exit overwrite whatever the user does next.
+        self.forget(&guid);
+        tracing::info!(%guid, policy = ?self.policy, "DNS released");
+
+        Ok(written)
+    }
+
     /// Drop every entry in the system resolver cache.
     pub fn flush_cache(&self) -> Result<(), PrivilegedError> {
         require_elevation()?;
@@ -146,7 +260,8 @@ impl DnsWriter {
     /// nobody left to report an error to.
     pub fn restore_all(&mut self) {
         for ((guid, family), previous) in &self.applied {
-            match dns_settings::restore(guid, *family, previous) {
+            let target = self.target(guid, *family, previous);
+            match dns_settings::restore(guid, *family, &target) {
                 Ok(()) => tracing::info!(%guid, ?family, "reverted"),
                 Err(err) => tracing::error!(%guid, ?family, "revert failed: {err}"),
             }
@@ -186,10 +301,25 @@ impl DnsWriter {
         self.persist();
     }
 
+    /// Where one adapter/family goes on release, under the current policy.
+    ///
+    /// `previous` is what it looked like when this session first changed it.
+    fn target(&self, guid: &str, family: Family, previous: &DnsConfig) -> DnsConfig {
+        resolve_target(
+            &self.policy,
+            family,
+            self.baseline.get(&(guid.to_owned(), family)),
+            previous,
+        )
+    }
+
     fn persist(&self) {
+        // The journal stores where each adapter should *end up*, not merely
+        // what it was: recovery after a crash has to honour the release policy
+        // too, and by then there is no policy in memory to consult.
         let mut record = journal::Journal::default();
         for ((guid, family), previous) in &self.applied {
-            record.record(guid, *family, previous.clone());
+            record.record(guid, *family, self.target(guid, *family, previous));
         }
 
         if let Err(err) = journal::save(&self.journal_path, &record) {
@@ -229,6 +359,48 @@ pub fn recover(journal_path: &Path) -> usize {
     }
 
     restored
+}
+
+/// The release destination for one family, as a pure function of its inputs.
+///
+/// The launch baseline wins over the first-touch observation: it is the
+/// configuration the user had before opening the app, which is what "restore"
+/// promises, even if something else changed the adapter in between.
+fn resolve_target(
+    policy: &ReleasePolicy,
+    family: Family,
+    baseline: Option<&DnsConfig>,
+    previous: &DnsConfig,
+) -> DnsConfig {
+    let restored = || baseline.unwrap_or(previous).clone();
+
+    match policy {
+        ReleasePolicy::Restore => restored(),
+        ReleasePolicy::Automatic => DnsConfig::Dhcp,
+        ReleasePolicy::Fallback(servers) => {
+            let [(_, v4), (_, v6)] = split_by_family(servers);
+            let list = if family == Family::V4 { v4 } else { v6 };
+            if list.is_empty() {
+                restored()
+            } else {
+                DnsConfig::Static(list)
+            }
+        }
+    }
+}
+
+/// A default DNS has to work with ForceConnect gone, since that is when it is
+/// used — so on top of the usual checks, nothing on loopback.
+fn validate_fallback(servers: &[IpAddr]) -> Result<(), PrivilegedError> {
+    validate(servers)?;
+
+    if servers.iter().any(IpAddr::is_loopback) {
+        return Err(PrivilegedError::Invalid(
+            "a default DNS cannot be a loopback address: nothing answers there once ForceConnect closes".into(),
+        ));
+    }
+
+    Ok(())
 }
 
 /// Map a LUID to an adapter GUID by consulting live state.
@@ -367,6 +539,64 @@ mod tests {
         assert!(validate(&ips(&["224.0.0.251"])).is_err());
         assert!(validate(&ips(&["::"])).is_err());
         assert!(validate(&ips(&["1.1.1.1", "2606:4700:4700::1111"])).is_ok());
+    }
+
+    #[test]
+    fn restore_prefers_the_launch_baseline() {
+        let launch = DnsConfig::Static(ips(&["192.168.1.1"]));
+        let first_touch = DnsConfig::Static(ips(&["10.0.0.1"]));
+
+        assert_eq!(
+            resolve_target(
+                &ReleasePolicy::Restore,
+                Family::V4,
+                Some(&launch),
+                &first_touch
+            ),
+            launch
+        );
+        assert_eq!(
+            resolve_target(&ReleasePolicy::Restore, Family::V4, None, &first_touch),
+            first_touch
+        );
+    }
+
+    #[test]
+    fn automatic_always_means_dhcp() {
+        let launch = DnsConfig::Static(ips(&["192.168.1.1"]));
+        assert_eq!(
+            resolve_target(
+                &ReleasePolicy::Automatic,
+                Family::V4,
+                Some(&launch),
+                &launch
+            ),
+            DnsConfig::Dhcp
+        );
+    }
+
+    #[test]
+    fn a_fallback_only_covers_the_families_it_lists() {
+        // An IPv4-only default must not leave IPv6 pointing at our resolver,
+        // and must not invent an IPv6 server either: that family is restored.
+        let policy = ReleasePolicy::Fallback(ips(&["1.1.1.1", "1.0.0.1"]));
+        let v6_launch = DnsConfig::Dhcp;
+
+        assert_eq!(
+            resolve_target(&policy, Family::V4, None, &DnsConfig::Dhcp),
+            DnsConfig::Static(ips(&["1.1.1.1", "1.0.0.1"]))
+        );
+        assert_eq!(
+            resolve_target(&policy, Family::V6, Some(&v6_launch), &DnsConfig::Dhcp),
+            v6_launch
+        );
+    }
+
+    #[test]
+    fn a_fallback_cannot_point_at_loopback() {
+        assert!(validate_fallback(&ips(&["127.0.0.1"])).is_err());
+        assert!(validate_fallback(&ips(&["::1"])).is_err());
+        assert!(validate_fallback(&ips(&["9.9.9.9"])).is_ok());
     }
 
     #[test]

@@ -11,10 +11,12 @@
 
 use std::net::IpAddr;
 
-use forceconnect_net::InterfaceLuid;
+use forceconnect_net::{DnsConfig, Family, InterfaceLuid};
 use forceconnect_privileged::PrivilegedError;
+use serde::{Deserialize, Serialize};
 use tauri::State;
 
+use crate::commands::adapters::DnsSource;
 use crate::commands::{CommandError, CommandResult};
 use crate::state::{AppState, lock};
 
@@ -55,6 +57,134 @@ pub async fn clear_dns(state: State<'_, AppState>, luid: String) -> CommandResul
     let writer = state.dns();
 
     blocking(move || lock(&writer).clear_dns(luid)).await
+}
+
+/// One address family's DNS, as the UI shows it.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FamilyDns {
+    pub source: DnsSource,
+    pub servers: Vec<String>,
+}
+
+impl From<&DnsConfig> for FamilyDns {
+    fn from(value: &DnsConfig) -> Self {
+        Self {
+            source: if value.is_dhcp() {
+                DnsSource::Dhcp
+            } else {
+                DnsSource::Static
+            },
+            servers: value.servers().iter().map(ToString::to_string).collect(),
+        }
+    }
+}
+
+/// Where a released adapter went.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ReleasedDns {
+    pub v4: Option<FamilyDns>,
+    pub v6: Option<FamilyDns>,
+}
+
+/// Disconnect: hand an adapter back according to the release policy.
+///
+/// Distinct from `clear_dns`, which always means DHCP and stays as the "Reset
+/// to automatic" tool. This is what the power button does.
+#[tauri::command]
+#[specta::specta]
+pub async fn release_dns(state: State<'_, AppState>, luid: String) -> CommandResult<ReleasedDns> {
+    let luid = parse_luid(&luid)?;
+    let writer = state.dns();
+
+    let written = tauri::async_runtime::spawn_blocking(move || lock(&writer).release(luid))
+        .await
+        .map_err(|err| CommandError::Internal(err.to_string()))??;
+
+    let pick = |family| {
+        written
+            .iter()
+            .find(|(f, _)| *f == family)
+            .map(|(_, config)| FamilyDns::from(config))
+    };
+
+    Ok(ReleasedDns {
+        v4: pick(Family::V4),
+        v6: pick(Family::V6),
+    })
+}
+
+/// Where adapters go on disconnect, on exit, and after a crash.
+///
+/// The choice is persisted in the frontend's preferences store, like the tray
+/// setting; this is the copy the exit handler and the journal can see, pushed
+/// across on hydrate and on every change.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+#[serde(tag = "mode", rename_all = "camelCase")]
+pub enum ReleasePolicy {
+    /// Put back the DNS Windows had before ForceConnect started.
+    Restore,
+    /// Hand the adapter to DHCP.
+    Automatic,
+    /// Switch to the user's own default servers.
+    Fallback { servers: Vec<String> },
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn set_release_policy(state: State<'_, AppState>, policy: ReleasePolicy) -> CommandResult<()> {
+    let policy = match policy {
+        ReleasePolicy::Restore => forceconnect_privileged::ReleasePolicy::Restore,
+        ReleasePolicy::Automatic => forceconnect_privileged::ReleasePolicy::Automatic,
+        ReleasePolicy::Fallback { servers } => {
+            forceconnect_privileged::ReleasePolicy::Fallback(parse_servers(&servers)?)
+        }
+    };
+
+    lock(&state.dns())
+        .set_policy(policy)
+        .map_err(CommandError::from)
+}
+
+/// One adapter's DNS as it stood when ForceConnect started.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AdapterBaseline {
+    pub luid: String,
+    pub name: String,
+    pub v4: Option<FamilyDns>,
+    pub v6: Option<FamilyDns>,
+}
+
+/// The DNS every adapter had at launch — what "Restore previous DNS" puts back.
+///
+/// Captured once at startup, after crash recovery, so it is the user's own
+/// configuration rather than anything a previous run left behind.
+#[tauri::command]
+#[specta::specta]
+pub fn dns_baseline(state: State<'_, AppState>) -> CommandResult<Vec<AdapterBaseline>> {
+    let adapters = forceconnect_net::adapters::list()?;
+    let writer = state.dns();
+    let writer = lock(&writer);
+
+    Ok(adapters
+        .iter()
+        .filter_map(|adapter| {
+            let v4 = writer
+                .baseline(&adapter.guid, Family::V4)
+                .map(FamilyDns::from);
+            let v6 = writer
+                .baseline(&adapter.guid, Family::V6)
+                .map(FamilyDns::from);
+            (v4.is_some() || v6.is_some()).then(|| AdapterBaseline {
+                luid: adapter.luid.0.to_string(),
+                name: adapter.friendly_name.clone(),
+                v4,
+                v6,
+            })
+        })
+        .collect())
 }
 
 /// Drop every entry in the system resolver cache.

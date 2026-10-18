@@ -31,6 +31,9 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::servers::list_protocols,
         commands::dns::set_dns,
         commands::dns::clear_dns,
+        commands::dns::release_dns,
+        commands::dns::set_release_policy,
+        commands::dns::dns_baseline,
         commands::dns::flush_dns_cache,
         commands::probe::probe_servers,
         commands::probe::probe_server,
@@ -153,6 +156,9 @@ pub fn run() {
         .setup(move |app| {
             builder.mount_events(app);
             recover_from_a_previous_run();
+            // After recovery, so the snapshot is the user's configuration and
+            // not whatever a crashed run left on the adapter.
+            app.state::<state::AppState>().capture_baseline();
 
             #[cfg(desktop)]
             tray::setup(app.handle())?;

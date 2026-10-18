@@ -8,6 +8,8 @@ import { isTauri } from "@tauri-apps/api/core";
 import {
   CheckCircle2,
   Download,
+  History,
+  LifeBuoy,
   Loader2,
   Moon,
   Paintbrush,
@@ -26,17 +28,22 @@ import {
   pagePadding,
   Progress,
   Segmented,
+  Select,
   Switch,
   Tile,
   TileLabel,
   toast,
   type SegmentedOption,
+  type SelectOption,
 } from "@/design/primitives";
 import { useLayoutPrefs } from "@/app/useLayoutPrefs";
+import { useReleasePolicy } from "@/features/connection/useReleasePolicy";
+import { useDnsTarget } from "@/features/interfaces/useAdapters";
+import { useServers } from "@/features/servers/useServers";
 import { useUpdater, useUpdaterStatus } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
-import { ipc } from "@/lib/ipc";
-import type { MotionPref, NavLayout } from "@/lib/prefs";
+import { ipc, type FamilyDns, type Server } from "@/lib/ipc";
+import type { DefaultDns, MotionPref, NavLayout } from "@/lib/prefs";
 import { queryKeys } from "@/lib/query-keys";
 
 const NAV_OPTIONS: SegmentedOption<NavLayout>[] = [
@@ -174,12 +181,160 @@ export function SettingsScreen() {
           </Row>
         </Section>
 
+        <Section title="When you disconnect" icon={<LifeBuoy />} wide>
+          <ReleaseRows />
+        </Section>
+
         <Section title="Updates" icon={<Download />} wide>
           <UpdateRows />
         </Section>
       </div>
     </div>
   );
+}
+
+/**
+ * Where the adapter goes when ForceConnect lets go of it.
+ *
+ * Shown as two switches because that is how people think about it — "put my
+ * old DNS back", "fall back to my own DNS" — but they are one three-way
+ * choice underneath, so turning one on turns the other off. With both off the
+ * adapter goes back to DHCP.
+ *
+ * The same choice applies on disconnect, when the app closes, and after a
+ * crash; the backend writes it into the recovery journal for that last case.
+ */
+function ReleaseRows() {
+  const mode = useReleasePolicy((state) => state.mode);
+  const setMode = useReleasePolicy((state) => state.setMode);
+  const defaultDns = useReleasePolicy((state) => state.defaultDns);
+  const setDefaultDns = useReleasePolicy((state) => state.setDefaultDns);
+  const { data: servers } = useServers();
+  const { adapter } = useDnsTarget();
+
+  const { data: baseline } = useQuery({
+    queryKey: queryKeys.dnsBaseline,
+    queryFn: ipc.dnsBaseline,
+    // Captured once at launch and never changes for the life of the process.
+    staleTime: Infinity,
+  });
+  const before =
+    baseline?.find((entry) => entry.luid === adapter?.luid) ?? baseline?.[0];
+
+  const candidates = (servers ?? [])
+    .map((server) => toDefaultDns(server))
+    .filter((dns): dns is DefaultDns => dns !== null);
+  const options: SelectOption<string>[] = candidates.map((dns) => ({
+    value: dns.serverId,
+    label: dns.name,
+    hint: dns.addrs.join(", "),
+  }));
+
+  function toggleFallback(on: boolean) {
+    if (on && !defaultDns && candidates[0]) setDefaultDns(candidates[0]);
+    setMode(on ? "fallback" : "automatic");
+  }
+
+  return (
+    <>
+      <div>
+        <Row
+          label="Restore previous DNS"
+          hint="Put back the DNS Windows had before ForceConnect started"
+        >
+          <Switch
+            checked={mode === "restore"}
+            onCheckedChange={(on) => setMode(on ? "restore" : "automatic")}
+          />
+        </Row>
+        {mode === "restore" ? (
+          <div className="bg-surface-inset text-text-secondary mb-3 flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[13px]">
+            <History className="text-text-muted size-4 shrink-0" />
+            {before ? (
+              <span className="min-w-0 truncate">
+                <span className="text-text-muted">
+                  Saved at launch · {before.name} ·{" "}
+                </span>
+                <span className="font-mono text-xs">
+                  {describeFamily("IPv4", before.v4)}
+                  {before.v6 ? ` · ${describeFamily("IPv6", before.v6)}` : ""}
+                </span>
+              </span>
+            ) : (
+              <span className="text-text-muted">
+                No adapter DNS was captured at launch, so disconnecting falls
+                back to automatic DNS.
+              </span>
+            )}
+          </div>
+        ) : null}
+      </div>
+
+      <div>
+        <Row
+          label="Use a default DNS"
+          hint="Switch to a server you choose on disconnect and when ForceConnect closes"
+        >
+          <Switch
+            checked={mode === "fallback"}
+            disabled={candidates.length === 0}
+            onCheckedChange={toggleFallback}
+          />
+        </Row>
+        {mode === "fallback" ? (
+          <div className="mb-3 flex items-center gap-4">
+            <span className="text-text-muted w-28 shrink-0 text-[13px]">
+              Default server
+            </span>
+            <Select
+              label="Default DNS server"
+              value={defaultDns?.serverId ?? null}
+              options={options}
+              placeholder="Pick a server"
+              onValueChange={(id) => {
+                const next = candidates.find((dns) => dns.serverId === id);
+                if (next) setDefaultDns(next);
+              }}
+            />
+          </div>
+        ) : null}
+      </div>
+
+      {mode === "automatic" ? (
+        <p className="text-text-muted py-3 text-[13px] leading-snug">
+          With both off, disconnecting hands the adapter back to automatic DNS
+          from your network (DHCP).
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * A server as a default DNS: its plain addresses, or nothing.
+ *
+ * Only plain DNS can be a default. It is used once ForceConnect has closed,
+ * and Windows can only point an adapter at bare IP addresses — the encrypted
+ * protocols need the app's own resolver running.
+ */
+function toDefaultDns(server: Server): DefaultDns | null {
+  const plain =
+    server.endpoints.find((e) => e.protocol === "udp") ??
+    server.endpoints.find((e) => e.protocol === "tcp");
+  if (!plain || plain.requiresForwarder || plain.addrs.length === 0)
+    return null;
+  return {
+    serverId: server.id,
+    name: server.displayName,
+    addrs: plain.addrs,
+  };
+}
+
+function describeFamily(label: string, dns: FamilyDns | null): string {
+  if (!dns) return `${label} unknown`;
+  if (dns.source === "dhcp" || dns.servers.length === 0)
+    return `${label} automatic`;
+  return `${label} ${dns.servers.join(", ")}`;
 }
 
 /**

@@ -13,6 +13,27 @@ import { isTauri } from "@tauri-apps/api/core";
 export type NavLayout = "rail" | "dock";
 export type MotionPref = "full" | "reduced";
 
+/**
+ * Where the adapter goes when ForceConnect lets go of it — on disconnect, on
+ * exit, and after a crash. The two settings switches map onto this: "Restore
+ * previous DNS" is `restore`, "Use a default DNS" is `fallback`, and with both
+ * off the adapter goes back to `automatic` (DHCP).
+ */
+export type ReleaseMode = "restore" | "automatic" | "fallback";
+
+/**
+ * The user's everyday DNS, used when `releaseMode` is `fallback`.
+ *
+ * The addresses are stored alongside the server id rather than looked up from
+ * it: the backend needs them at launch, before the catalogue has loaded, and
+ * a custom server deleted later must not silently empty the fallback.
+ */
+export interface DefaultDns {
+  serverId: string;
+  name: string;
+  addrs: string[];
+}
+
 export interface Prefs {
   favourites: string[];
   navLayout: NavLayout;
@@ -34,6 +55,8 @@ export interface Prefs {
    * for people who want calm motion here without turning it off everywhere.
    */
   motion: MotionPref;
+  releaseMode: ReleaseMode;
+  defaultDns: DefaultDns | null;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -44,6 +67,8 @@ export const DEFAULT_PREFS: Prefs = {
   interfaceLuid: null,
   autoUpdate: true,
   motion: "full",
+  releaseMode: "restore",
+  defaultDns: null,
 };
 
 const FILE = "preferences.json";
