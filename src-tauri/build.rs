@@ -1,9 +1,11 @@
 fn main() {
     // ForceConnect writes DNS settings and flushes the resolver cache, both of
-    // which need administrator rights. It asks for them the only way Windows
-    // offers a plain desktop app: a `requireAdministrator` manifest, so the
-    // consent prompt happens once at launch instead of interrupting the user's
-    // first connect.
+    // which need administrator rights. On Windows it asks for them the only way
+    // Windows offers a plain desktop app: a `requireAdministrator` manifest, so
+    // the consent prompt happens once at launch instead of interrupting the
+    // user's first connect. (Linux and macOS have no such thing; there the app
+    // starts a privileged agent at launch instead — nothing to do at build
+    // time.)
     //
     // That manifest goes on the `forceconnect` binary *specifically*, not on
     // every binary the package builds. `export-bindings` is a headless
@@ -15,10 +17,14 @@ fn main() {
     // manifests in one binary is a link error. Replacing it means carrying the
     // parts it provided — Common-Controls v6, per-monitor DPI awareness, the
     // supportedOS entries — into both manifest files here.
+    //
+    // The *target* OS, not `cfg(windows)`: a build script is compiled for the
+    // machine running the build, so `cfg` here describes the host, and a
+    // cross-compile from Windows would otherwise try to embed a Windows
+    // manifest into a macOS binary.
     let mut attributes = tauri_build::Attributes::new();
 
-    #[cfg(windows)]
-    {
+    if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") {
         attributes = attributes
             .windows_attributes(tauri_build::WindowsAttributes::new_without_app_manifest());
 
@@ -45,7 +51,6 @@ fn main() {
 /// ```
 ///
 /// Suppressing the linker's fragment leaves the file's as the only one.
-#[cfg(windows)]
 fn embed_manifest(binary: &str, manifest: &str) {
     println!("cargo:rerun-if-changed={manifest}");
 

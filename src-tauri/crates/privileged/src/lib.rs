@@ -11,16 +11,31 @@
 //! privileged operations are enumerated in one place.** There is no
 //! `run_command`, no `write_registry`, no general-purpose escape hatch — this
 //! crate exposes exactly three verbs (set DNS, clear DNS, flush the resolver
-//! cache) and every argument is validated against live system state before it
-//! is acted on.
+//! cache), plus putting back what they changed, and every argument is
+//! validated against live system state before it is acted on.
 //!
 //! The rule for contributors is unchanged: if you find yourself wanting to add
 //! a general-purpose privileged operation "just for debugging", add a specific
 //! validated one instead.
+//!
+//! # Platforms
+//!
+//! On Windows the whole process is elevated and the verbs run in it. On Linux
+//! and macOS the interface runs as the user and the verbs run in a root
+//! [agent] started at launch — the same binary, serving the same verbs, for
+//! reasons the module explains. [`Privileged`] hides the difference: it is
+//! what the application holds, and it has the same methods everywhere.
 
+pub mod agent;
 pub mod cache;
 pub mod dns_settings;
 pub mod journal;
+mod session;
+
+#[cfg(any(unix, test))]
+mod exec;
+
+pub use session::Privileged;
 
 use std::collections::HashMap;
 use std::net::IpAddr;
@@ -28,10 +43,14 @@ use std::path::{Path, PathBuf};
 
 use forceconnect_net::{DnsConfig, Family, InterfaceLuid, adapters};
 
-/// The most resolvers Windows will usefully take for one address family.
+/// The most resolvers worth configuring for one address family. Windows will
+/// not usefully take more, and glibc reads only the first three.
 const MAX_SERVERS_PER_FAMILY: usize = 4;
 
-#[derive(Debug, thiserror::Error)]
+/// Serializable because it crosses the agent connection on Linux and macOS:
+/// a refusal there reaches the interface as the same variant it would have
+/// been in-process.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error, serde::Serialize, serde::Deserialize)]
 pub enum PrivilegedError {
     #[error("ForceConnect is not running with administrator rights")]
     NotElevated,
@@ -85,10 +104,15 @@ impl DnsWriter {
         }
     }
 
+    /// Where this writer keeps its journal.
+    pub fn journal_path(&self) -> &Path {
+        &self.journal_path
+    }
+
     /// Point an adapter at a list of resolvers.
     ///
     /// Both address families present in `servers` are written, because setting
-    /// IPv4 alone while IPv6 DNS stays on DHCP lets Windows prefer the IPv6
+    /// IPv4 alone while IPv6 DNS stays on DHCP lets the OS prefer the IPv6
     /// resolver and route around the change entirely.
     pub fn set_dns(
         &mut self,
@@ -265,7 +289,7 @@ fn validate(servers: &[IpAddr]) -> Result<(), PrivilegedError> {
     for (family, list) in split_by_family(servers) {
         if list.len() > MAX_SERVERS_PER_FAMILY {
             return Err(PrivilegedError::Invalid(format!(
-                "{} {family:?} servers given; Windows takes at most {MAX_SERVERS_PER_FAMILY}",
+                "{} {family:?} servers given; at most {MAX_SERVERS_PER_FAMILY} are supported",
                 list.len()
             )));
         }
@@ -336,9 +360,14 @@ pub fn is_elevated() -> bool {
     }
 }
 
-#[cfg(not(windows))]
+/// Whether this process is running as root.
+///
+/// True only inside the privileged agent. The interface itself never runs as
+/// root on these platforms; it asks [`Privileged::is_elevated`] instead.
+#[cfg(unix)]
 pub fn is_elevated() -> bool {
-    false
+    // SAFETY: `geteuid` has no preconditions and cannot fail.
+    unsafe { libc::geteuid() == 0 }
 }
 
 #[cfg(test)]

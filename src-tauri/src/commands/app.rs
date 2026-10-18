@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
-use crate::commands::CommandResult;
+use crate::commands::{CommandError, CommandResult};
 use crate::state::AppState;
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
@@ -9,26 +9,35 @@ use crate::state::AppState;
 pub struct AppInfo {
     pub version: String,
     pub os: String,
-    /// Whether this process holds administrator rights.
+    /// Whether the app holds administrator rights.
     ///
-    /// Expected to be `true`: the executable embeds a `requireAdministrator`
-    /// manifest, so Windows asks once at launch and the app has what it needs
-    /// for the rest of the session. A `false` here means a build with the
-    /// manifest stripped, and every DNS action will refuse rather than fail
-    /// halfway.
+    /// On Windows, whether this process is elevated: expected to be `true`,
+    /// since the executable embeds a `requireAdministrator` manifest, and
+    /// `false` only for a build with the manifest stripped. On Linux and macOS,
+    /// whether the privileged agent is running — `false` when the user declined
+    /// the prompt at launch. Either way a `false` means every DNS action will
+    /// refuse rather than fail halfway.
     pub elevated: bool,
-    /// This process's own id, so a user can confirm in Task Manager exactly
-    /// which process is the one running elevated.
+    /// This process's own id, so a user can find it in Task Manager or
+    /// Activity Monitor.
     pub pid: u32,
 }
 
+// Async, and on a blocking thread, because on Linux and macOS the answer is not
+// known until the user has answered the administrator prompt — and a
+// synchronous command would hold the main thread while they type.
 #[tauri::command]
 #[specta::specta]
-pub fn app_info() -> CommandResult<AppInfo> {
+pub async fn app_info(state: State<'_, AppState>) -> CommandResult<AppInfo> {
+    let privileged = state.dns();
+    let elevated = tauri::async_runtime::spawn_blocking(move || privileged.is_elevated())
+        .await
+        .map_err(|err| CommandError::Internal(err.to_string()))?;
+
     Ok(AppInfo {
         version: env!("CARGO_PKG_VERSION").to_owned(),
         os: os_description(),
-        elevated: forceconnect_privileged::is_elevated(),
+        elevated,
         pid: std::process::id(),
     })
 }

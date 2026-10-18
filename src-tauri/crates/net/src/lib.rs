@@ -1,4 +1,4 @@
-//! Windows adapter enumeration and DNS configuration.
+//! Adapter enumeration and DNS configuration reads.
 //!
 //! This crate owns the notion of *adapter identity* for the whole application.
 //! Reads (enumeration, current DNS settings, routes) live here; writes live in
@@ -8,22 +8,35 @@
 //! picked, a bug that surfaces as "I set DNS and nothing happened".
 //!
 //! **This crate is read-only.** Nothing here changes system state, which is
-//! what keeps the privileged surface — now that the app runs elevated as a
-//! whole — down to one small crate a reviewer can read in a sitting.
+//! what keeps the privileged surface down to one small crate a reviewer can
+//! read in a sitting.
 //!
-//! # Platform floor
+//! # Platforms
 //!
-//! `SetInterfaceDnsSettings` / `GetInterfaceDnsSettings` are documented as
-//! Windows 10 build 19041 (2004) or later. That is the supported floor for the
-//! app; the `DNS_INTERFACE_SETTINGS` struct itself dates to 18362, but the
-//! functions that consume it do not.
+//! The public API — [`adapters`], [`ports`], [`route`] — is the same on every
+//! platform. What sits underneath is not:
+//!
+//! - **Windows** uses the IP Helper API. `SetInterfaceDnsSettings` /
+//!   `GetInterfaceDnsSettings` are documented as Windows 10 build 19041 (2004)
+//!   or later, which is the supported floor for the app.
+//! - **Linux** reads `getifaddrs`, sysfs and procfs for the adapters, and asks
+//!   NetworkManager (`nmcli`) or systemd-resolved (`resolvectl`) about DNS.
+//! - **macOS** reads `getifaddrs` for the interfaces and `networksetup` /
+//!   `scutil` for the network services and DNS layered on top of them.
+//!
+//! The text parsers behind the Linux and macOS readers live in `linux` and
+//! `macos`. They are pure, so they are compiled on every platform — the
+//! parsing is the part most likely to break, and this way it is tested
+//! wherever `cargo test` runs, not only on the platform it parses.
 
-#[cfg(windows)]
 pub mod adapters;
-#[cfg(windows)]
 pub mod ports;
-#[cfg(windows)]
 pub mod route;
+
+pub mod linux;
+pub mod macos;
+#[cfg(unix)]
+mod unix;
 
 use std::net::IpAddr;
 
@@ -46,8 +59,30 @@ pub enum Family {
 /// disable/enable, and friendly names are localized, user-renameable, and may
 /// contain spaces — all of which broke the previous `netsh`-based
 /// implementation.
+///
+/// Linux and macOS have no LUID. There the stable identity of an interface is
+/// its kernel name (`wlp3s0`, `en0`) — the index is no more persistent than on
+/// Windows — so the id is derived from the name with [`Self::from_name`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct InterfaceLuid(pub u64);
+
+impl InterfaceLuid {
+    /// A stable id for an interface known by name.
+    ///
+    /// FNV-1a: deterministic across runs and builds, which `std`'s hasher is
+    /// explicitly not. The value is masked to 53 bits so it would survive a
+    /// round trip through a JavaScript number, though it crosses the IPC
+    /// boundary as a string regardless.
+    pub fn from_name(name: &str) -> Self {
+        const OFFSET: u64 = 0xcbf2_9ce4_8422_2325;
+        const PRIME: u64 = 0x0000_0100_0000_01b3;
+
+        let hash = name.bytes().fold(OFFSET, |hash, byte| {
+            (hash ^ u64::from(byte)).wrapping_mul(PRIME)
+        });
+        Self(hash & ((1 << 53) - 1))
+    }
+}
 
 /// How an adapter is currently getting its DNS servers for one address family.
 ///
@@ -110,7 +145,11 @@ pub enum AdapterKind {
 pub struct Adapter {
     /// Stable across disable/enable, unlike the interface index.
     pub luid: InterfaceLuid,
-    /// Adapter GUID string. This is what the DNS settings API is keyed on.
+    /// The key DNS settings are written under.
+    ///
+    /// On Windows, the adapter GUID — what the DNS settings API is keyed on.
+    /// Elsewhere it names whatever owns the adapter's DNS: see
+    /// `linux::DnsTarget` and `macos::DnsTarget`.
     pub guid: String,
     /// Index is *not* persistent; kept only for display and diagnostics.
     pub index: u32,
@@ -125,7 +164,9 @@ pub struct Adapter {
     pub dns_v4: Vec<IpAddr>,
     pub dns_v6: Vec<IpAddr>,
     /// Lower is preferred. This, not adapter type, is what decides which
-    /// adapter Windows actually routes through.
+    /// adapter Windows actually routes through. Linux reports the metric of
+    /// the adapter's default route; macOS has no metric, so the network
+    /// service order stands in for it.
     pub metric_v4: u32,
     pub metric_v6: u32,
 }
@@ -167,7 +208,7 @@ fn address_rank(ip: &IpAddr) -> u8 {
 
 #[derive(Debug, thiserror::Error)]
 pub enum NetError {
-    #[error("windows api call failed: {0}")]
+    #[error("the system network API failed: {0}")]
     Api(String),
 
     #[error("no adapter matches {0:?}")]
@@ -178,11 +219,37 @@ pub enum NetError {
 
     #[error("this operation requires Windows 10 build 19041 or later")]
     Unsupported,
+
+    /// Nothing on this machine manages the adapter's DNS in a way the app
+    /// knows how to drive — no NetworkManager connection and no
+    /// systemd-resolved on Linux, no network service on macOS.
+    #[error("{0}")]
+    Unmanaged(String),
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn name_derived_ids_are_stable_and_distinct() {
+        // Stability across runs is the whole point: the frontend holds on to
+        // this id between calls, and the journal outlives the process.
+        assert_eq!(
+            InterfaceLuid::from_name("en0"),
+            InterfaceLuid::from_name("en0")
+        );
+        assert_ne!(
+            InterfaceLuid::from_name("en0"),
+            InterfaceLuid::from_name("en1")
+        );
+        // The published FNV-1a test vector, masked to 53 bits.
+        assert_eq!(
+            InterfaceLuid::from_name("a").0,
+            0xaf63_dc4c_8601_ec8c & ((1 << 53) - 1)
+        );
+        assert!(InterfaceLuid::from_name("wlp3s0").0 < 1 << 53);
+    }
 
     #[test]
     fn dhcp_and_empty_static_are_distinct() {

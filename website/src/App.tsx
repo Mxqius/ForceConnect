@@ -122,7 +122,7 @@ function Hero() {
         </div>
 
         <p className="text-ink-3 mt-5 text-sm">
-          Free &amp; open source · Windows now · macOS &amp; Linux soon
+          Free &amp; open source · Windows, macOS &amp; Linux
         </p>
       </div>
 

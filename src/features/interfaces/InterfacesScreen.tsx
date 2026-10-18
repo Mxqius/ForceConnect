@@ -114,7 +114,7 @@ export function InterfacesScreen() {
                   <Pill tone="success">Recommended</Pill>
                 </div>
                 <p className="text-text-muted mt-0.5 text-[13px]">
-                  Follows whichever adapter Windows sends internet traffic
+                  Follows whichever adapter the system sends internet traffic
                   through.
                   {target.pinnedLuid === null && target.adapter ? (
                     <>

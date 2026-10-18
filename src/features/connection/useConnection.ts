@@ -280,7 +280,7 @@ async function runConnect(
   } catch (error) {
     return fail(
       "apply",
-      `Windows did not accept the change: ${messageOf(error)}`,
+      `The system did not accept the change: ${messageOf(error)}`,
     );
   }
 

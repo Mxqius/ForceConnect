@@ -5,9 +5,10 @@
 //! which validates again against live system state — the frontend's idea of
 //! which adapter exists is a cache, and a cache can be stale.
 //!
-//! There is no UAC prompt at this layer any more. The application requests
-//! administrator rights once, at launch, so by the time a user reaches these
-//! commands the rights are already held or the app never started.
+//! There is no administrator prompt at this layer. The application asks once,
+//! at launch — the Windows manifest, or the agent's prompt on Linux and macOS —
+//! so by the time a user reaches these commands the rights are already held,
+//! or every one of them refuses with an elevation error the UI explains.
 
 use std::net::IpAddr;
 
@@ -16,7 +17,7 @@ use forceconnect_privileged::PrivilegedError;
 use tauri::State;
 
 use crate::commands::{CommandError, CommandResult};
-use crate::state::{AppState, lock};
+use crate::state::AppState;
 
 impl From<PrivilegedError> for CommandError {
     fn from(value: PrivilegedError) -> Self {
@@ -32,7 +33,7 @@ impl From<PrivilegedError> for CommandError {
 /// Point an adapter at a list of DNS servers.
 ///
 /// Both address families present in `servers` are applied, because setting IPv4
-/// alone while IPv6 DNS stays on DHCP lets Windows resolve around the change.
+/// alone while IPv6 DNS stays on DHCP lets the OS resolve around the change.
 #[tauri::command]
 #[specta::specta]
 pub async fn set_dns(
@@ -44,7 +45,7 @@ pub async fn set_dns(
     let servers = parse_servers(&servers)?;
     let writer = state.dns();
 
-    blocking(move || lock(&writer).set_dns(luid, &servers)).await
+    blocking(move || writer.set_dns(luid, &servers)).await
 }
 
 /// Return an adapter to DHCP-assigned DNS for both families.
@@ -54,7 +55,7 @@ pub async fn clear_dns(state: State<'_, AppState>, luid: String) -> CommandResul
     let luid = parse_luid(&luid)?;
     let writer = state.dns();
 
-    blocking(move || lock(&writer).clear_dns(luid)).await
+    blocking(move || writer.clear_dns(luid)).await
 }
 
 /// Drop every entry in the system resolver cache.
@@ -69,14 +70,16 @@ pub async fn clear_dns(state: State<'_, AppState>, luid: String) -> CommandResul
 pub async fn flush_dns_cache(state: State<'_, AppState>) -> CommandResult<()> {
     let writer = state.dns();
 
-    blocking(move || lock(&writer).flush_cache()).await
+    blocking(move || writer.flush_cache()).await
 }
 
 /// Run a privileged operation off the async runtime.
 ///
-/// The Win32 calls underneath are synchronous and can take tens of
-/// milliseconds — enumerating adapters is a full system query — which is long
-/// enough to be felt as a stutter if it runs on a runtime worker.
+/// The calls underneath are synchronous and can take tens of milliseconds —
+/// enumerating adapters is a full system query, and on Linux and macOS each
+/// write spawns a system tool — which is long enough to be felt as a stutter
+/// if it runs on a runtime worker. During launch they can also wait out the
+/// administrator prompt.
 async fn blocking<F>(work: F) -> CommandResult<()>
 where
     F: FnOnce() -> Result<(), PrivilegedError> + Send + 'static,

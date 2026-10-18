@@ -18,8 +18,8 @@ export const commands = {
 	/**
 	 *  Every adapter the system reports, best-first among the eligible ones.
 	 * 
-	 *  Everything here is an unprivileged read, so this never triggers a UAC
-	 *  prompt — browsing the app costs the user nothing.
+	 *  Everything here is an unprivileged read: it runs in the interface process
+	 *  on every platform, never through the privileged agent.
 	 */
 	listAdapters: () => typedError<Adapter[], CommandError>(__TAURI_INVOKE("list_adapters")),
 	/**
@@ -40,7 +40,7 @@ export const commands = {
 	 *  Point an adapter at a list of DNS servers.
 	 * 
 	 *  Both address families present in `servers` are applied, because setting IPv4
-	 *  alone while IPv6 DNS stays on DHCP lets Windows resolve around the change.
+	 *  alone while IPv6 DNS stays on DHCP lets the OS resolve around the change.
 	 */
 	setDns: (luid: string, servers: string[]) => typedError<null, CommandError>(__TAURI_INVOKE("set_dns", { luid, servers })),
 	/**  Return an adapter to DHCP-assigned DNS for both families. */
@@ -107,7 +107,7 @@ export type Adapter = {
 	status: AdapterStatus,
 	mac: string | null,
 	/**
-	 *  Link speed in Mbps.
+	 *  Link speed in Mbps. Zero when the platform does not report one.
 	 * 
 	 *  `TransmitLinkSpeed` is in bits per second. The previous implementation
 	 *  ran it through a bytes-to-Mbps conversion and displayed a figure eight
@@ -148,18 +148,19 @@ export type AppInfo = {
 	version: string,
 	os: string,
 	/**
-	 *  Whether this process holds administrator rights.
+	 *  Whether the app holds administrator rights.
 	 * 
-	 *  Expected to be `true`: the executable embeds a `requireAdministrator`
-	 *  manifest, so Windows asks once at launch and the app has what it needs
-	 *  for the rest of the session. A `false` here means a build with the
-	 *  manifest stripped, and every DNS action will refuse rather than fail
-	 *  halfway.
+	 *  On Windows, whether this process is elevated: expected to be `true`,
+	 *  since the executable embeds a `requireAdministrator` manifest, and
+	 *  `false` only for a build with the manifest stripped. On Linux and macOS,
+	 *  whether the privileged agent is running — `false` when the user declined
+	 *  the prompt at launch. Either way a `false` means every DNS action will
+	 *  refuse rather than fail halfway.
 	 */
 	elevated: boolean,
 	/**
-	 *  This process's own id, so a user can confirm in Task Manager exactly
-	 *  which process is the one running elevated.
+	 *  This process's own id, so a user can find it in Task Manager or
+	 *  Activity Monitor.
 	 */
 	pid: number,
 };

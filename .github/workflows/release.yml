@@ -6,11 +6,11 @@ name: Release
 #
 #   git tag v2.0.1 && git push origin v2.0.1
 #
-# Only Windows ships today. macOS and Linux are listed below, commented out:
-# the network and privileged crates are still Windows-only and do not compile
-# elsewhere. Once they are ported, uncomment the entry, set `bundle.targets`
-# in tauri.conf.json to cover the new formats, and flip `available` for that
-# platform in website/src/platforms.tsx.
+# Each platform builds the formats listed in its own config: NSIS from
+# tauri.conf.json on Windows, `.app` + `.dmg` from tauri.macos.conf.json, and
+# `.deb` + `.rpm` + AppImage from tauri.linux.conf.json. The macOS build is
+# universal (Apple Silicon and Intel in one binary) and ad-hoc signed, not
+# notarized — see RELEASING.md.
 
 on:
   push:
@@ -30,13 +30,16 @@ jobs:
           - name: Windows
             os: windows-latest
             args: ""
-          # - name: macOS
-          #   os: macos-latest
-          #   args: --target universal-apple-darwin
-          #   rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
-          # - name: Linux
-          #   os: ubuntu-22.04
-          #   args: ""
+          - name: macOS
+            os: macos-latest
+            args: --target universal-apple-darwin
+            rust-targets: aarch64-apple-darwin,x86_64-apple-darwin
+          # 22.04 rather than latest: the AppImage and .deb link against the
+          # runner's glibc and WebKitGTK, so the oldest supported runner gives
+          # the widest range of distributions they install on.
+          - name: Linux
+            os: ubuntu-22.04
+            args: ""
 
     steps:
       - uses: actions/checkout@v4
@@ -75,7 +78,10 @@ jobs:
             Download the installer for your platform from the assets below.
 
             **Windows:** run `ForceConnect_*_x64-setup.exe`. Requires Windows 10 (2004) or later.
-            macOS and Linux builds are coming soon.
+
+            **macOS:** open `ForceConnect_*_universal.dmg` and drag the app to Applications. Requires macOS 10.15 or later. The build is not notarized: on first launch, right-click the app and choose Open (or allow it under System Settings → Privacy & Security).
+
+            **Linux:** install the `.deb` (Debian, Ubuntu) or `.rpm` (Fedora, openSUSE), or run the `.AppImage`. Needs NetworkManager or systemd-resolved, and polkit for the administrator prompt.
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}

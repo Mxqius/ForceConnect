@@ -4,11 +4,18 @@ A checklist, not an explanation — see [ARCHITECTURE.md](ARCHITECTURE.md#update
 for why the updater is shaped this way.
 
 **Current state:** [`.github/workflows/release.yml`](.github/workflows/release.yml)
-builds the Windows installer and publishes the GitHub release whenever a `v*`
-tag is pushed. It does not sign updater artifacts yet — that needs the
+builds the Windows installer, the macOS `.app`/`.dmg` (universal), and the
+Linux `.deb`, `.rpm` and AppImage, and publishes the GitHub release whenever a
+`v*` tag is pushed. It does not sign updater artifacts yet — that needs the
 one-time key setup below, after which the two commented secrets in the
-workflow are uncommented. macOS and Linux entries are in the workflow,
-commented out until the network and privileged crates are ported.
+workflow are uncommented.
+
+The macOS build is ad-hoc signed (`signingIdentity: "-"` in
+[`src-tauri/tauri.macos.conf.json`](src-tauri/tauri.macos.conf.json)), not
+signed with a Developer ID or notarized. That is what lets it open at all on
+Apple Silicon, but Gatekeeper still asks the user to confirm on first launch.
+Notarizing needs an Apple Developer account and the `APPLE_*` secrets
+tauri-action documents.
 
 ## One-time: generate the signing key
 
