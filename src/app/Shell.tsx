@@ -16,11 +16,13 @@ import { NavLink, Outlet } from "react-router";
 import { Tooltip } from "@/design/primitives";
 import { TitleBar } from "@/app/TitleBar";
 import { useHydrateLayoutPrefs, useLayoutPrefs } from "@/app/useLayoutPrefs";
+import { CompactView } from "@/features/compact/CompactView";
 import {
   useConnection,
   useConnectionPhase,
   type ConnectPhase,
 } from "@/features/connection/useConnection";
+import { useHydrateReleasePolicy } from "@/features/connection/useReleasePolicy";
 import { useHydrateTargetAdapter } from "@/features/interfaces/useAdapters";
 import { useLaunchUpdateCheck } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
@@ -58,12 +60,26 @@ const PHASE_DOT: Partial<Record<ConnectPhase, string>> = {
 export function Shell() {
   useHydrateLayoutPrefs();
   useHydrateTargetAdapter();
+  useHydrateReleasePolicy();
   useLaunchUpdateCheck();
   useTrayDisconnect();
   const navLayout = useLayoutPrefs((state) => state.navLayout);
+  const compact = useLayoutPrefs((state) => state.compact);
+  const hydrated = useLayoutPrefs((state) => state.hydrated);
   const phase = useConnectionPhase();
 
   const docked = navLayout === "dock";
+
+  // Nothing until the layout is known. The window may already be compact
+  // (the backend restores that before the first paint), and drawing the full
+  // layout into it for a frame looks like a rendering fault.
+  if (!hydrated) return <div className="bg-surface-base h-full" />;
+
+  // The hooks above stay mounted either way — the tray's Disconnect and the
+  // launch update check have to work in both — but the routed screens do
+  // not, which is what makes compact mode cheap: no live latency graph, no
+  // server-list probing, nothing animating off screen.
+  if (compact) return <CompactView />;
 
   return (
     <div className="bg-surface-base text-text-primary flex h-full flex-col">

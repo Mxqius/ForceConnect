@@ -15,11 +15,15 @@ interface LayoutState {
   theme: "dark" | "light";
   minimizeToTray: boolean;
   motion: MotionPref;
+  compact: boolean;
+  compactOnTop: boolean;
   hydrated: boolean;
   setNavLayout: (layout: NavLayout) => void;
   setTheme: (theme: "dark" | "light") => void;
   setMinimizeToTray: (enabled: boolean) => void;
   setMotion: (motion: MotionPref) => void;
+  setCompact: (compact: boolean) => void;
+  setCompactOnTop: (onTop: boolean) => void;
   hydrate: () => Promise<void>;
 }
 
@@ -30,11 +34,13 @@ interface LayoutState {
  * invalidate or refetch, and treating them as queries would mean a loading
  * state for something that should be applied before first paint.
  */
-export const useLayoutPrefs = create<LayoutState>((set) => ({
+export const useLayoutPrefs = create<LayoutState>((set, get) => ({
   navLayout: DEFAULT_PREFS.navLayout,
   theme: DEFAULT_PREFS.theme,
   minimizeToTray: DEFAULT_PREFS.minimizeToTray,
   motion: DEFAULT_PREFS.motion,
+  compact: DEFAULT_PREFS.compact,
+  compactOnTop: DEFAULT_PREFS.compactOnTop,
   hydrated: false,
 
   setNavLayout: (navLayout) => {
@@ -60,17 +66,50 @@ export const useLayoutPrefs = create<LayoutState>((set) => ({
     void writePref("motion", motion);
   },
 
+  // The window is resized before the layout swaps, so the full layout is
+  // never drawn squeezed into the small window or the reverse. A resize that
+  // fails leaves the layout where it was rather than mismatched with the
+  // window it is in.
+  setCompact: (compact) => {
+    void ipc
+      .setCompactMode(compact, get().compactOnTop)
+      .then(() => {
+        set({ compact });
+        void writePref("compact", compact);
+      })
+      .catch(() => undefined);
+  },
+
+  setCompactOnTop: (compactOnTop) => {
+    set({ compactOnTop });
+    void writePref("compactOnTop", compactOnTop);
+    void ipc.setCompactMode(get().compact, compactOnTop).catch(() => undefined);
+  },
+
   hydrate: async () => {
-    const [navLayout, theme, minimizeToTray, motion] = await Promise.all([
-      readPref("navLayout"),
-      readPref("theme"),
-      readPref("minimizeToTray"),
-      readPref("motion"),
-    ]);
+    const [navLayout, theme, minimizeToTray, motion, compact, compactOnTop] =
+      await Promise.all([
+        readPref("navLayout"),
+        readPref("theme"),
+        readPref("minimizeToTray"),
+        readPref("motion"),
+        readPref("compact"),
+        readPref("compactOnTop"),
+      ]);
 
     document.documentElement.dataset.theme = theme;
     document.documentElement.dataset.motion = motion;
-    set({ navLayout, theme, minimizeToTray, motion, hydrated: true });
+    // No resize here: the backend already applied the saved window mode
+    // before the window was first shown (`window::restore_saved_mode`).
+    set({
+      navLayout,
+      theme,
+      minimizeToTray,
+      motion,
+      compact,
+      compactOnTop,
+      hydrated: true,
+    });
     // The backend's copy of the flag starts false on every launch — the main
     // window-close handler needs it before the user can ever reach the
     // toggle, so hydrate pushes the persisted value across immediately.

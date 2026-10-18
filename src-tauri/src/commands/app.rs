@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
-use crate::commands::CommandResult;
+use crate::commands::{CommandError, CommandResult};
 use crate::state::AppState;
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
@@ -43,6 +43,21 @@ pub fn app_info() -> CommandResult<AppInfo> {
 pub fn set_minimize_to_tray(state: State<'_, AppState>, enabled: bool) -> CommandResult<()> {
     state.set_minimize_to_tray(enabled);
     Ok(())
+}
+
+/// Switch the main window between its full and compact sizes.
+///
+/// Persisted by the frontend; at launch `window::restore_saved_mode` applies it
+/// before the first paint, and this handles every later toggle.
+#[tauri::command]
+#[specta::specta]
+pub fn set_compact_mode(
+    window: tauri::WebviewWindow,
+    compact: bool,
+    always_on_top: bool,
+) -> CommandResult<()> {
+    crate::window::apply_mode(&window, compact, always_on_top)
+        .map_err(|err| CommandError::Internal(err.to_string()))
 }
 
 /// A snapshot of the connection, for the tray to show.

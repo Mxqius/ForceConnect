@@ -57,6 +57,10 @@ export interface Prefs {
   motion: MotionPref;
   releaseMode: ReleaseMode;
   defaultDns: DefaultDns | null;
+  /** The small window: status, power, server and latency, nothing else. */
+  compact: boolean;
+  /** Keep the compact window above other windows. Ignored at full size. */
+  compactOnTop: boolean;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -69,6 +73,8 @@ export const DEFAULT_PREFS: Prefs = {
   motion: "full",
   releaseMode: "restore",
   defaultDns: null,
+  compact: false,
+  compactOnTop: false,
 };
 
 const FILE = "preferences.json";

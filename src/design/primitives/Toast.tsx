@@ -131,7 +131,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <BaseToast.Provider toastManager={manager} limit={4}>
       {children}
       <BaseToast.Portal>
-        <BaseToast.Viewport className="fixed right-4 bottom-4 z-100 flex w-88 outline-none">
+        <BaseToast.Viewport className="fixed right-4 bottom-4 z-100 flex w-[min(22rem,calc(100vw-2rem))] outline-none">
           <ToastList />
         </BaseToast.Viewport>
       </BaseToast.Portal>

@@ -11,6 +11,7 @@ import {
   History,
   LifeBuoy,
   Loader2,
+  Minimize2,
   Moon,
   Paintbrush,
   Power,
@@ -70,6 +71,7 @@ export function SettingsScreen() {
   const setMinimizeToTray = useLayoutPrefs((state) => state.setMinimizeToTray);
   const motion = useLayoutPrefs((state) => state.motion);
   const setMotion = useLayoutPrefs((state) => state.setMotion);
+  const setCompact = useLayoutPrefs((state) => state.setCompact);
 
   const { data: info } = useQuery({
     queryKey: queryKeys.appInfo,
@@ -141,6 +143,19 @@ export function SettingsScreen() {
               onValueChange={setMotion}
               options={MOTION_OPTIONS}
             />
+          </Row>
+          <Row
+            label="Compact window"
+            hint="A small panel with just the connection, latency and server. Lighter on memory and CPU."
+          >
+            <Button
+              size="sm"
+              className="rounded-full"
+              startIcon={<Minimize2 />}
+              onClick={() => setCompact(true)}
+            >
+              Switch to compact
+            </Button>
           </Row>
         </Section>
 

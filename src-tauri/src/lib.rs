@@ -9,6 +9,7 @@
 mod commands;
 mod state;
 mod tray;
+mod window;
 
 use tauri::{Manager as _, RunEvent};
 use tauri_plugin_window_state::StateFlags;
@@ -24,6 +25,7 @@ fn specta_builder() -> Builder<tauri::Wry> {
     Builder::<tauri::Wry>::new().commands(collect_commands![
         commands::app::app_info,
         commands::app::set_minimize_to_tray,
+        commands::app::set_compact_mode,
         commands::app::set_tray_status,
         commands::app::updater_status,
         commands::adapters::list_adapters,
@@ -159,6 +161,9 @@ pub fn run() {
             // After recovery, so the snapshot is the user's configuration and
             // not whatever a crashed run left on the adapter.
             app.state::<state::AppState>().capture_baseline();
+
+            #[cfg(desktop)]
+            window::restore_saved_mode(app.handle());
 
             #[cfg(desktop)]
             tray::setup(app.handle())?;

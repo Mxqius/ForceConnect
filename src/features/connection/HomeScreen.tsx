@@ -22,10 +22,8 @@ import {
 } from "@/design/primitives";
 import { ConnectionHero } from "@/features/connection/ConnectionHero";
 import { ServerSelect } from "@/features/connection/ServerSelect";
-import {
-  useConnection,
-  useServerSelection,
-} from "@/features/connection/useConnection";
+import { useConnectTarget } from "@/features/connection/useConnectTarget";
+import { useConnection } from "@/features/connection/useConnection";
 import { useLatencyHistory } from "@/features/connection/useLatencyHistory";
 import { useServerPicker } from "@/features/connection/useServerPicker";
 import {
@@ -34,7 +32,6 @@ import {
   sortProtocols,
 } from "@/features/servers/filter";
 import { useLatencies } from "@/features/servers/useLatencies";
-import { useFavourites, useServers } from "@/features/servers/useServers";
 import { cn } from "@/lib/cn";
 import {
   classifyLatency,
@@ -44,37 +41,16 @@ import {
 import type { Endpoint, Protocol, Server } from "@/lib/ipc";
 
 export function HomeScreen() {
-  const { data: servers, isPending } = useServers();
-  const { favourites } = useFavourites();
-  const { selectedId, protocol } = useServerSelection();
+  const {
+    servers,
+    isPending,
+    favourites,
+    selected,
+    chosenProtocol,
+    endpoint,
+    blocker,
+  } = useConnectTarget();
   const { adapter, target } = useConnection();
-
-  // With nothing chosen yet, start on the user's first favourite, or the top
-  // of the catalogue — an empty picker on first launch is a question the app
-  // can answer sensibly itself.
-  const selected =
-    servers?.find((s) => s.id === selectedId) ??
-    servers?.find((s) => favourites.includes(s.id)) ??
-    servers?.[0] ??
-    null;
-
-  const chosenProtocol =
-    protocol && selected?.protocols.includes(protocol)
-      ? protocol
-      : selected
-        ? preferredProtocol(selected)
-        : null;
-  const endpoint = selected?.endpoints.find(
-    (e) => e.protocol === chosenProtocol,
-  );
-
-  const blocker = !selected
-    ? "Pick a server to connect to."
-    : !adapter
-      ? "No network adapter is connected, so there is nowhere to set DNS."
-      : endpoint?.requiresForwarder
-        ? `${endpoint.label} needs the local resolver, which is not available yet. Pick plain DNS to connect.`
-        : null;
 
   return (
     <div className="grid h-full min-h-[560px] grid-cols-4 grid-rows-3 gap-4 px-8 pt-8 pb-(--dock-clearance)">

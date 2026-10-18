@@ -90,6 +90,10 @@ export const ipc = {
     useFixtures ? fixture(fixtures.appInfo) : unwrap(commands.appInfo()),
   setMinimizeToTray: (enabled: boolean) =>
     useFixtures ? fixture(null) : unwrap(commands.setMinimizeToTray(enabled)),
+  setCompactMode: (compact: boolean, alwaysOnTop: boolean) =>
+    useFixtures
+      ? fixture(null)
+      : unwrap(commands.setCompactMode(compact, alwaysOnTop)),
   setTrayStatus: (status: TrayStatus) =>
     useFixtures ? fixture(null) : unwrap(commands.setTrayStatus(status)),
   updaterStatus: () =>

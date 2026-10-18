@@ -2,18 +2,25 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { create } from "zustand";
 
+import { useLayoutPrefs } from "@/app/useLayoutPrefs";
 import { ipc, type Adapter } from "@/lib/ipc";
 import { readPref, writePref } from "@/lib/prefs";
 import { queryKeys } from "@/lib/query-keys";
 
 export function useAdapters() {
+  const compact = useLayoutPrefs((state) => state.compact);
+
   return useQuery({
     queryKey: queryKeys.adapters,
     queryFn: ipc.listAdapters,
     // Adapters change when a cable is plugged in or a VPN connects, and there
     // is no push notification wired up yet. Once NotifyIpInterfaceChange lands
     // this drops to event-driven invalidation.
-    refetchInterval: 10_000,
+    //
+    // Each poll is a full system adapter query plus a DNS read per adapter,
+    // so the compact window — which only shows one adapter's name — polls
+    // three times less often.
+    refetchInterval: compact ? 30_000 : 10_000,
   });
 }
 

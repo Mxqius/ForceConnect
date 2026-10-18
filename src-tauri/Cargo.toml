@@ -112,6 +112,14 @@ tauri-specta = { version = "=2.0.0-rc.25", features = ["derive", "typescript"] }
 # commands to the frontend and owns no Win32 calls of its own. Everything that
 # touches the platform lives in `crates/`, which is what keeps "what does this
 # app do with administrator rights" answerable by reading one small crate.
+#
+# The single exception is the webview's own memory target in compact mode (see
+# `src/window.rs`): a COM call on this process's WebView2, not on the system.
+# Both versions are pinned to the ones wry already links, so this adds no new
+# copies of either crate.
+[target.'cfg(windows)'.dependencies]
+webview2-com = "0.38"
+windows-core = "0.61"
 
 # Single-instance and window-state are desktop-only.
 [target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]

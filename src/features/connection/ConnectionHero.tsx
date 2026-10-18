@@ -412,12 +412,13 @@ function StepIcon({ status }: { status: StepStatus }) {
   }
 }
 
-function PowerButton({
+export function PowerButton({
   phase,
   action,
   spinning,
   celebrate,
   cancelLocked,
+  compact,
 }: {
   phase: ConnectPhase;
   action: { label: string; run: () => void } | null;
@@ -425,13 +426,15 @@ function PowerButton({
   /** The connection time to celebrate, which also keys the replay. */
   celebrate: number | null;
   cancelLocked: boolean;
+  /** The smaller button the compact window uses. */
+  compact?: boolean;
 }) {
   const lit = LIT.has(phase);
   const icon =
     phase === "connecting" ? (
-      <X className="size-8" strokeWidth={2.2} />
+      <X className={compact ? "size-6" : "size-8"} strokeWidth={2.2} />
     ) : (
-      <Power className="size-9" strokeWidth={2.3} />
+      <Power className={compact ? "size-7" : "size-9"} strokeWidth={2.3} />
     );
 
   const button = (
@@ -444,7 +447,8 @@ function PowerButton({
       }
       aria-pressed={phase === "connected"}
       className={cn(
-        "absolute inset-[11px] flex items-center justify-center rounded-full transition-[transform,background-color,color,box-shadow] duration-300",
+        "absolute flex items-center justify-center rounded-full transition-[transform,background-color,color,box-shadow] duration-300",
+        compact ? "inset-[8px]" : "inset-[11px]",
         "focus-visible:outline-accent outline-none focus-visible:outline-2 focus-visible:outline-offset-4",
         "enabled:hover:scale-105 enabled:active:scale-95 disabled:cursor-not-allowed",
         phase === "connected"
@@ -466,7 +470,7 @@ function PowerButton({
   );
 
   return (
-    <div className="relative size-28 shrink-0">
+    <div className={cn("relative shrink-0", compact ? "size-21" : "size-28")}>
       <svg viewBox="0 0 96 96" className="absolute inset-0" aria-hidden>
         <circle
           cx="48"
@@ -514,7 +518,13 @@ function PowerButton({
   );
 }
 
-function Uptime({ since }: { since: number | null }) {
+export function Uptime({
+  since,
+  className,
+}: {
+  since: number | null;
+  className?: string;
+}) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -532,7 +542,12 @@ function Uptime({ since }: { since: number | null }) {
     .join(":");
 
   return (
-    <b className="mt-1 block font-mono text-[26px] font-semibold tracking-tight tabular-nums">
+    <b
+      className={cn(
+        "mt-1 block font-mono text-[26px] font-semibold tracking-tight tabular-nums",
+        className,
+      )}
+    >
       {text}
     </b>
   );

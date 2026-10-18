@@ -1,8 +1,9 @@
 import { isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, X } from "lucide-react";
+import { Minimize2, Minus, X } from "lucide-react";
 
 import logoIcon from "@/assets/brand/logo-icon.png";
+import { useLayoutPrefs } from "@/app/useLayoutPrefs";
 import { cn } from "@/lib/cn";
 
 /**
@@ -30,6 +31,8 @@ function withWindow(
  * double-click a drag region would otherwise handle).
  */
 export function TitleBar() {
+  const setCompact = useLayoutPrefs((state) => state.setCompact);
+
   return (
     <header
       data-tauri-drag-region
@@ -47,6 +50,9 @@ export function TitleBar() {
       </div>
 
       <div className="flex h-full shrink-0 items-stretch">
+        <WindowButton label="Compact window" onClick={() => setCompact(true)}>
+          <Minimize2 className="size-3.5" />
+        </WindowButton>
         <WindowButton
           label="Minimize"
           onClick={() => withWindow((win) => void win.minimize())}

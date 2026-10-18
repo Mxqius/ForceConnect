@@ -134,7 +134,9 @@ export function ServerSelect({
           <Select.Popup
             className={cn(
               overlaySurface,
-              "fc-scroll max-h-[360px] w-[var(--anchor-width)] overflow-y-auto rounded-2xl p-1.5",
+              // Capped by the room Base UI measures, so the list still fits
+              // when the window is the compact one.
+              "fc-scroll max-h-[min(360px,var(--available-height))] w-[var(--anchor-width)] overflow-y-auto rounded-2xl p-1.5",
             )}
           >
             <Select.List>
@@ -209,7 +211,10 @@ function Option({
           ) : null}
         </span>
 
-        <span className="mt-1 flex items-center gap-1">
+        {/* Clipped rather than wrapped: in the compact window a server with
+            five protocols is wider than the row, and badges spilling under
+            the latency figure would make both unreadable. */}
+        <span className="mt-1 flex items-center gap-1 overflow-hidden">
           {sortProtocols(server.protocols).map((protocol) => {
             const endpoint = server.endpoints.find(
               (e) => e.protocol === protocol,
@@ -219,7 +224,7 @@ function Option({
               <span
                 key={protocol}
                 className={cn(
-                  "flex items-center gap-0.5 rounded-md px-1.5 py-px text-[10.5px] font-bold",
+                  "flex shrink-0 items-center gap-0.5 rounded-md px-1.5 py-px text-[10.5px] font-bold",
                   endpoint.encrypted
                     ? "bg-accent-cyan-surface text-protocol-encrypted"
                     : "bg-surface-active text-text-secondary",

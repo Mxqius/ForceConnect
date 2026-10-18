@@ -13,6 +13,13 @@ export const commands = {
 	 *  letting it exit.
 	 */
 	setMinimizeToTray: (enabled: boolean) => typedError<null, CommandError>(__TAURI_INVOKE("set_minimize_to_tray", { enabled })),
+	/**
+	 *  Switch the main window between its full and compact sizes.
+	 * 
+	 *  Persisted by the frontend; at launch `window::restore_saved_mode` applies it
+	 *  before the first paint, and this handles every later toggle.
+	 */
+	setCompactMode: (compact: boolean, alwaysOnTop: boolean) => typedError<null, CommandError>(__TAURI_INVOKE("set_compact_mode", { compact, alwaysOnTop })),
 	setTrayStatus: (status: TrayStatus) => typedError<null, CommandError>(__TAURI_INVOKE("set_tray_status", { status })),
 	updaterStatus: () => typedError<UpdaterStatus, CommandError>(__TAURI_INVOKE("updater_status")),
 	/**
