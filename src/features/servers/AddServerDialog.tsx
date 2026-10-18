@@ -13,56 +13,54 @@ import {
 import { useAddCustomServer } from "@/features/servers/useServers";
 import { IpcError, type Protocol } from "@/lib/ipc";
 
+type EncryptedProtocol = Exclude<Protocol, "udp" | "tcp">;
+
 /** Per-protocol guidance, so the address field is never a guess. */
-const HINTS: Record<Protocol, { placeholder: string; help: string }> = {
-  udp: {
-    placeholder: "1.1.1.1, 1.0.0.1",
-    help: "IP addresses, comma separated. Hostnames cannot be used here — resolving one would need the DNS you are about to configure.",
-  },
-  tcp: {
-    placeholder: "1.1.1.1, 1.0.0.1",
-    help: "IP addresses, comma separated. Hostnames cannot be used here — resolving one would need the DNS you are about to configure.",
-  },
-  dot: {
-    placeholder: "dns.example.com",
-    help: "The hostname, optionally with a port. It is checked against the server's certificate, so it has to be the name the provider published.",
-  },
-  doh: {
-    placeholder: "dns.example.com",
-    help: "A hostname is enough — /dns-query is assumed. Paste the full https:// URL instead if your provider serves a different path.",
-  },
-  doq: {
-    placeholder: "dns.example.com",
-    help: "The hostname, optionally with a port. It is checked against the server's certificate, so it has to be the name the provider published.",
-  },
-  doh3: {
-    placeholder: "dns.example.com",
-    help: "A hostname is enough — /dns-query is assumed. Paste the full https:// URL instead if your provider serves a different path.",
-  },
-};
+const HINTS: Record<EncryptedProtocol, { placeholder: string; help: string }> =
+  {
+    dot: {
+      placeholder: "dns.example.com",
+      help: "The hostname, optionally with a port. It is checked against the server's certificate, so it has to be the name the provider published.",
+    },
+    doh: {
+      placeholder: "dns.example.com",
+      help: "A hostname is enough — /dns-query is assumed. Paste the full https:// URL instead if your provider serves a different path.",
+    },
+    doq: {
+      placeholder: "dns.example.com",
+      help: "The hostname, optionally with a port. It is checked against the server's certificate, so it has to be the name the provider published.",
+    },
+    doh3: {
+      placeholder: "dns.example.com",
+      help: "A hostname is enough — /dns-query is assumed. Paste the full https:// URL instead if your provider serves a different path.",
+    },
+  };
 
 const PROTOCOL_OPTIONS = [
-  { value: "udp" as const, label: "DNS", hint: "Unencrypted, UDP/53" },
-  { value: "dot" as const, label: "DoT", hint: "DNS over TLS" },
   { value: "doh" as const, label: "DoH", hint: "DNS over HTTPS" },
+  { value: "dot" as const, label: "DoT", hint: "DNS over TLS" },
   { value: "doq" as const, label: "DoQ", hint: "DNS over QUIC" },
   { value: "doh3" as const, label: "DoH3", hint: "DNS over HTTP/3" },
 ];
 
-/**
- * Whether an encrypted endpoint still needs bootstrap IPs.
- *
- * It only needs them when there is a name to resolve. An endpoint addressed by
- * a literal IP has nothing to look up, so demanding bootstrap there would be
- * asking for the answer to a question nobody is going to ask. This mirrors the
- * backend rule; the backend remains the authority, and this only decides
- * whether the field is marked required.
- */
-function needsBootstrap(protocol: Protocol, addrs: string): boolean {
-  if (protocol === "udp" || protocol === "tcp") return false;
+const splitList = (value: string) =>
+  value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
 
-  const first = addrs.split(",")[0]?.trim() ?? "";
-  if (!first) return true;
+/**
+ * Whether an encrypted address is named by hostname, and so needs IPs to be
+ * reached without a lookup.
+ *
+ * An endpoint addressed by a literal IP has nothing to look up, so demanding
+ * IPs there would be asking for the answer to a question nobody is going to
+ * ask. This mirrors the backend rule; the backend remains the authority, and
+ * this only decides whether the field is marked required.
+ */
+function needsBootstrap(address: string): boolean {
+  const first = address.split(",")[0]?.trim() ?? "";
+  if (!first) return false;
 
   const host = first
     .replace(/^https?:\/\//, "")
@@ -78,19 +76,22 @@ function needsBootstrap(protocol: Protocol, addrs: string): boolean {
 export function AddServerDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [protocol, setProtocol] = useState<Protocol>("doh");
-  const [addrs, setAddrs] = useState("");
-  const [bootstrap, setBootstrap] = useState("");
+  const [ips, setIps] = useState("");
+  const [protocol, setProtocol] = useState<EncryptedProtocol>("doh");
+  const [address, setAddress] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
   const add = useAddCustomServer();
-  const encrypted = protocol !== "udp" && protocol !== "tcp";
-  const bootstrapRequired = needsBootstrap(protocol, addrs);
+  const hasAddress = Boolean(address.trim());
+  // Without an encrypted address the IPs are the server itself; with one named
+  // by hostname they are how it is reached. Only an address that is already an
+  // IP stands on its own.
+  const ipsRequired = !hasAddress || needsBootstrap(address);
 
   function reset() {
     setName("");
-    setAddrs("");
-    setBootstrap("");
+    setIps("");
+    setAddress("");
     setTags([]);
     setProtocol("doh");
   }
@@ -99,9 +100,7 @@ export function AddServerDialog() {
    * Clearing on close rather than only on success.
    *
    * Cancelling used to leave every field populated, so the next "Add server"
-   * opened onto someone else's half-finished entry — and the stale bootstrap
-   * IPs were still being submitted even after switching to a protocol whose
-   * form does not show that field.
+   * opened onto someone else's half-finished entry.
    */
   function handleOpenChange(next: boolean) {
     setOpen(next);
@@ -111,35 +110,26 @@ export function AddServerDialog() {
     }
   }
 
-  const canSubmit = Boolean(
-    name.trim() && addrs.trim() && (!bootstrapRequired || bootstrap.trim()),
-  );
+  const canSubmit = Boolean(name.trim() && (!ipsRequired || ips.trim()));
 
   function submit() {
     if (!canSubmit || add.isPending) return;
 
+    // No encrypted address means plain DNS straight to the IPs. With one, the
+    // same IPs become its bootstrap, so they are never typed twice.
+    const server = hasAddress
+      ? {
+          protocol,
+          addrs: splitList(address),
+          bootstrap: splitList(ips),
+        }
+      : { protocol: "udp" as const, addrs: splitList(ips), bootstrap: [] };
+
     add.mutate(
+      { name, ...server, tags },
       {
-        name,
-        protocol,
-        addrs: addrs
-          .split(",")
-          .map((a) => a.trim())
-          .filter(Boolean),
-        // Plain DNS resolves nothing, so anything left in the field from an
-        // earlier protocol choice would only be a validation failure waiting
-        // to happen.
-        bootstrap: encrypted
-          ? bootstrap
-              .split(",")
-              .map((b) => b.trim())
-              .filter(Boolean)
-          : [],
-        tags,
-      },
-      {
-        onSuccess: (server) => {
-          toast.success(`${server.name} added`);
+        onSuccess: (saved) => {
+          toast.success(`${saved.name} added`);
           handleOpenChange(false);
         },
         onError: (error) => {
@@ -184,7 +174,7 @@ export function AddServerDialog() {
       }
     >
       {/* A real form element, so Enter submits from any field rather than doing
-          nothing — which in a five-field dialog reads as the dialog being
+          nothing — which in a multi-field dialog reads as the dialog being
           broken. */}
       <form
         className="grid gap-4"
@@ -202,47 +192,52 @@ export function AddServerDialog() {
           />
         </Field>
 
-        <Field label="Protocol">
-          <Select
-            label="Protocol"
-            value={protocol}
-            onValueChange={(value) => setProtocol(value ?? "doh")}
-            options={PROTOCOL_OPTIONS}
-          />
-        </Field>
-
-        <Field label="Address" required description={HINTS[protocol].help}>
+        <Field
+          label="IP addresses"
+          required={ipsRequired}
+          description={
+            !hasAddress
+              ? "Comma separated. Enough on their own — the server is saved as plain DNS."
+              : ipsRequired
+                ? "Used to reach the encrypted address without resolving its name — otherwise the first lookup would depend on the resolver being configured."
+                : "Not needed: the encrypted address is already an IP, so there is no name to look up."
+          }
+        >
           <Input
-            value={addrs}
-            onChange={(event) => setAddrs(event.target.value)}
-            placeholder={HINTS[protocol].placeholder}
+            value={ips}
+            onChange={(event) => setIps(event.target.value)}
+            placeholder="1.1.1.1, 1.0.0.1"
             className="font-mono"
             spellCheck={false}
             autoComplete="off"
           />
         </Field>
 
-        {encrypted ? (
-          <Field
-            label="Bootstrap addresses"
-            required={bootstrapRequired}
-            description={
-              bootstrapRequired
-                ? "IPs used to reach the server without resolving its name — otherwise the first lookup would depend on the resolver being configured."
-                : "Not needed: the address above is already an IP, so there is no name to look up."
-            }
-          >
+        <Field
+          label="Encrypted address"
+          description={
+            hasAddress
+              ? HINTS[protocol].help
+              : "Optional. Leave empty to use the IPs above as plain DNS."
+          }
+        >
+          <div className="grid grid-cols-[112px_1fr] gap-2">
+            <Select
+              label="Protocol"
+              value={protocol}
+              onValueChange={(value) => setProtocol(value ?? "doh")}
+              options={PROTOCOL_OPTIONS}
+            />
             <Input
-              value={bootstrap}
-              onChange={(event) => setBootstrap(event.target.value)}
-              placeholder="1.1.1.1, 1.0.0.1"
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
+              placeholder={HINTS[protocol].placeholder}
               className="font-mono"
               spellCheck={false}
               autoComplete="off"
-              disabled={!bootstrapRequired}
             />
-          </Field>
-        ) : null}
+          </div>
+        </Field>
 
         <Field label="Tags" description="Enter or comma to commit.">
           <ChipInput value={tags} onChange={setTags} max={6} />
