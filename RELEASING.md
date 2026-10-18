@@ -6,9 +6,11 @@ for why the updater is shaped this way.
 **Current state:** [`.github/workflows/release.yml`](.github/workflows/release.yml)
 builds the Windows installer, the macOS `.app`/`.dmg` (universal), and the
 Linux `.deb`, `.rpm` and AppImage, and publishes the GitHub release whenever a
-`v*` tag is pushed. It does not sign updater artifacts yet — that needs the
-one-time key setup below, after which the two commented secrets in the
-workflow are uncommented.
+`v*` tag is pushed. Since v2.1.2 it also signs the updater artifacts and
+uploads `latest.json`, using the key pair set up below: the public key is in
+`tauri.conf.json`, and the private key and its password are the
+`TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` repository
+secrets.
 
 The macOS build is ad-hoc signed (`signingIdentity: "-"` in
 [`src-tauri/tauri.macos.conf.json`](src-tauri/tauri.macos.conf.json)), not
