@@ -65,6 +65,24 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The release description lives in the repository, one file per tag, so
+      # it is written and reviewed like any other change. A tag without one
+      # falls back to the short download note.
+      - name: Read release notes
+        id: notes
+        shell: bash
+        run: |
+          file=".github/release-notes/${GITHUB_REF_NAME}.md"
+          {
+            echo 'body<<RELEASE_NOTES_EOF'
+            if [ -f "$file" ]; then
+              cat "$file"
+            else
+              echo "Download the installer for your platform from the assets below."
+            fi
+            echo 'RELEASE_NOTES_EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,14 +92,7 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: ForceConnect ${{ github.ref_name }}
-          releaseBody: |
-            Download the installer for your platform from the assets below.
-
-            **Windows:** run `ForceConnect_*_x64-setup.exe`. Requires Windows 10 (2004) or later.
-
-            **macOS:** open `ForceConnect_*_universal.dmg` and drag the app to Applications. Requires macOS 10.15 or later. The build is not notarized: on first launch, right-click the app and choose Open (or allow it under System Settings → Privacy & Security).
-
-            **Linux:** install the `.deb` (Debian, Ubuntu) or `.rpm` (Fedora, openSUSE), or run the `.AppImage`. Needs NetworkManager or systemd-resolved, and polkit for the administrator prompt.
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
