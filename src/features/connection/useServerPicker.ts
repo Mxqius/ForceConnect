@@ -28,12 +28,11 @@ export function useServerPicker() {
     if (phase === "connected" && chosen) {
       if (active?.serverId === server.id && active.protocol === chosen)
         return true;
-      const endpoint = server.endpoints.find((e) => e.protocol === chosen);
-      if (!endpoint || endpoint.requiresForwarder) {
+      if (!server.endpoints.some((e) => e.protocol === chosen)) {
         // Selecting it would leave the picker pointing at one server while
         // the adapter uses another, with nothing on screen saying which wins.
-        toast.info(`${server.displayName} cannot be used yet`, {
-          description: `${endpoint?.label ?? "That protocol"} needs the local resolver, which is not available yet. Your connection is unchanged.`,
+        toast.info(`${server.displayName} does not offer that protocol`, {
+          description: "Your connection is unchanged.",
         });
         return false;
       }

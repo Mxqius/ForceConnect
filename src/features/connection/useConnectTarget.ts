@@ -41,9 +41,7 @@ export function useConnectTarget() {
     ? "Pick a server to connect to."
     : !adapter
       ? "No network adapter is connected, so there is nowhere to set DNS."
-      : endpoint?.requiresForwarder
-        ? `${endpoint.label} needs the local resolver, which is not available yet. Pick plain DNS to connect.`
-        : null;
+      : null;
 
   return {
     servers,

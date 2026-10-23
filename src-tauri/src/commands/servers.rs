@@ -10,7 +10,7 @@ use crate::commands::CommandResult;
 /// A parse failure here is an authoring mistake in `servers.json`, and the
 /// catalog test in `forceconnect-dns` turns it into a failing build rather than
 /// a panic on a user's machine — so this cannot realistically fail at runtime.
-fn catalog() -> &'static Catalog {
+pub(crate) fn catalog() -> &'static Catalog {
     static CATALOG: OnceLock<Catalog> = OnceLock::new();
     CATALOG.get_or_init(|| Catalog::builtin().expect("built-in catalog is validated by tests"))
 }
@@ -109,10 +109,8 @@ pub(crate) fn to_dto(server: &forceconnect_dns::DnsServer) -> Server {
     }
 }
 
-/// Every built-in server.
-///
-/// Custom servers are merged in once persistence lands; the shape of the
-/// response does not change when they do.
+/// Every built-in server. The user's own come from `list_custom_servers`, and
+/// the frontend merges the two.
 #[tauri::command]
 #[specta::specta]
 pub fn list_servers() -> CommandResult<Vec<Server>> {

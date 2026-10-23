@@ -108,7 +108,9 @@ deliberately the smallest thing that can be:
 │  ├─ DNS forwarder                │ lines │  ├─ set / clear interface DNS │
 │  ├─ adapter enumeration, routes  │◄─────►│  ├─ flush resolver cache      │
 │  ├─ latency probing              │ Unix  │  ├─ restore journal           │
-│  └─ Privileged (client)          │socket │  └─ nothing else              │
+│  └─ Privileged (client)          │socket │  ├─ bind loopback :53, hand   │
+│                                  │       │  │  the sockets over          │
+│                                  │       │  └─ nothing else              │
 └──────────────────────────────────┘       └───────────────────────────────┘
 ```
 
@@ -139,7 +141,12 @@ lists came from Windows:
   is started at launch.
 
 What it costs is a wire protocol, which is kept as small as the API it carries:
-one JSON request per line, one response per line, a six-variant enum. It also
+one JSON request per line, one response per line, one enum of verbs. A single
+verb answers with more than JSON: binding port 53 for the local resolver
+needs root, so the agent binds `127.0.0.1:53` and `[::1]:53` — fixed
+addresses, no arguments — and passes the open sockets to the app with
+`SCM_RIGHTS`. The resolver itself then runs in the unprivileged process, and
+the root one never parses a DNS packet. It also
 buys something the Windows design cannot offer: when the connection closes for
 any reason — a clean quit, a crash, a `kill -9` — the agent restores whatever it
 still owes before it exits, so a hard crash of the interface no longer waits for
@@ -322,14 +329,18 @@ endpoint carries explicit bootstrap IPs, and the catalog test enforces it.
 **Port 53 is often taken.** Internet Connection Sharing binds `0.0.0.0:53` on
 many machines; Hyper-V, WSL, and Docker reserve port ranges. These surface as
 `WSAEACCES` or `WSAEADDRINUSE`, and the user needs to be told _which_ process is
-responsible, not shown an errno. On Linux the usual suspect looks like it is
+responsible, not shown an errno. But a holder on the wildcard is not always a
+conflict: Internet Connection Sharing does not bind exclusively, and a
+`127.0.0.1:53` bind beside it succeeds and receives the loopback traffic. So
+the resolver does not refuse on sight of a holder — the bind is the test, and
+only a failed bind looks the holder up to name it. On Linux the usual suspect looks like it is
 there and is not: systemd-resolved's stub holds `127.0.0.53:53`, which does not
 collide with `127.0.0.1:53`, and resolved forwards to a link server on
 `127.0.0.1` like any other. dnsmasq or a Pi-hole on the wildcard address does
 collide, and is named. Binding port 53 on Linux also needs root or
-`CAP_NET_BIND_SERVICE`, which the interface process does not have; when the
-forwarder is wired up there it will need its socket from the agent. macOS has
-let unprivileged processes bind low ports since 10.14.
+`CAP_NET_BIND_SERVICE`, which the interface process does not have, so there
+the agent binds it and hands the sockets over (see above). macOS has let
+unprivileged processes bind low ports since 10.14.
 
 **Failing closed is worse than failing open.** If the app dies while the adapter
 points at `127.0.0.1`, the machine loses all name resolution — and nothing about

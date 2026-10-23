@@ -290,15 +290,10 @@ const BURST_EMBERS = [
 function Pixels({ rects }: { rects: PixelRect[] }) {
   return (
     <>
-      {rects.map((r) => (
-        <rect
-          key={`${r.x}-${r.y}`}
-          x={r.x}
-          y={r.y}
-          width={r.w}
-          height={1}
-          fill={r.fill}
-        />
+      {/* Indexed: the sprite is fixed data, and two runs can start on the
+          same pixel when one colour is drawn over another. */}
+      {rects.map((r, i) => (
+        <rect key={i} x={r.x} y={r.y} width={r.w} height={1} fill={r.fill} />
       ))}
     </>
   );

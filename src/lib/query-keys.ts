@@ -22,4 +22,5 @@ export const queryKeys = {
   latency: (serverId: string, protocol: string) =>
     ["latency", serverId, protocol] as const,
   connection: ["connection"] as const,
+  resolver: ["resolver"] as const,
 } as const;

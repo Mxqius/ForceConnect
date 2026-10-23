@@ -11,6 +11,7 @@ import {
   History,
   LifeBuoy,
   Loader2,
+  Lock,
   Minimize2,
   Moon,
   Paintbrush,
@@ -38,8 +39,10 @@ import {
   type SelectOption,
 } from "@/design/primitives";
 import { useLayoutPrefs } from "@/app/useLayoutPrefs";
+import { useConnectionPrefs } from "@/features/connection/useConnectionPrefs";
 import { useReleasePolicy } from "@/features/connection/useReleasePolicy";
 import { useDnsTarget } from "@/features/interfaces/useAdapters";
+import { sortProtocols } from "@/features/servers/filter";
 import { useServers } from "@/features/servers/useServers";
 import { useUpdater, useUpdaterStatus } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
@@ -160,12 +163,16 @@ export function SettingsScreen() {
         </Section>
 
         <Section title="Startup" icon={<Power />}>
-          <Row label="Start at login" hint="It does not connect by itself">
+          <Row
+            label="Start at login"
+            hint="Opens ForceConnect when you sign in"
+          >
             <Switch
               checked={autostart}
               onCheckedChange={(checked) => void toggleAutostart(checked)}
             />
           </Row>
+          <AutoConnectRow />
           <Row
             label="Close to tray"
             hint="Keeps your DNS running; quit from the tray icon"
@@ -196,6 +203,10 @@ export function SettingsScreen() {
           </Row>
         </Section>
 
+        <Section title="Encrypted DNS" icon={<Lock />} wide>
+          <BackupRow />
+        </Section>
+
         <Section title="When you disconnect" icon={<LifeBuoy />} wide>
           <ReleaseRows />
         </Section>
@@ -204,6 +215,98 @@ export function SettingsScreen() {
           <UpdateRows />
         </Section>
       </div>
+    </div>
+  );
+}
+
+function AutoConnectRow() {
+  const autoConnect = useConnectionPrefs((state) => state.autoConnect);
+  const setAutoConnect = useConnectionPrefs((state) => state.setAutoConnect);
+  const last = useConnectionPrefs((state) => state.lastConnection);
+  const { data: servers } = useServers();
+
+  const server = servers?.find((s) => s.id === last?.serverId);
+  const label = server?.endpoints.find(
+    (e) => e.protocol === last?.protocol,
+  )?.label;
+
+  return (
+    <Row
+      label="Connect on launch"
+      hint={
+        server && label
+          ? `Reconnects to ${server.displayName} over ${label}`
+          : "Reconnects to the server you used last, once you have connected"
+      }
+    >
+      <Switch
+        checked={autoConnect}
+        onCheckedChange={(checked) => setAutoConnect(checked)}
+      />
+    </Row>
+  );
+}
+
+const NO_BACKUP = "none";
+
+/**
+ * The server the resolver asks when the chosen one does not answer.
+ *
+ * Encrypted endpoints only. A plain-DNS backup would send lookups in the
+ * clear at exactly the moment the user is least likely to notice — when
+ * their encrypted server has gone quiet — which is a downgrade, not a
+ * fallback.
+ */
+function BackupRow() {
+  const backup = useConnectionPrefs((state) => state.backup);
+  const setBackup = useConnectionPrefs((state) => state.setBackup);
+  const { data: servers } = useServers();
+
+  const choices = (servers ?? []).flatMap((server) => {
+    const protocol = sortProtocols(server.protocols).find(
+      (p) => server.endpoints.find((e) => e.protocol === p)?.encrypted,
+    );
+    const endpoint = server.endpoints.find((e) => e.protocol === protocol);
+    return protocol && endpoint ? [{ server, protocol, endpoint }] : [];
+  });
+
+  const options: SelectOption<string>[] = [
+    {
+      value: NO_BACKUP,
+      label: "None",
+      hint: "Lookups fail if your server does",
+    },
+    ...choices.map(({ server, protocol, endpoint }) => ({
+      value: `${server.id}:${protocol}`,
+      label: `${server.displayName} · ${endpoint.label}`,
+      hint: endpoint.addrs[0],
+    })),
+  ];
+
+  return (
+    <div>
+      <Row
+        label="Backup server"
+        hint="Answers when your server does not, so a blocked or failing server does not take the internet with it. Encrypted servers only."
+      >
+        <span className="block w-64">
+          <Select
+            label="Backup server"
+            value={backup ? `${backup.serverId}:${backup.protocol}` : NO_BACKUP}
+            options={options}
+            onValueChange={(value) => {
+              const choice = choices.find(
+                ({ server, protocol }) => `${server.id}:${protocol}` === value,
+              );
+              setBackup(
+                choice
+                  ? { serverId: choice.server.id, protocol: choice.protocol }
+                  : null,
+              );
+            }}
+          />
+        </span>
+      </Row>
     </div>
   );
 }

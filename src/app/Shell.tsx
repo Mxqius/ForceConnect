@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isTauri } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
+  Activity,
   Info,
   Network,
   Settings,
@@ -17,12 +18,17 @@ import { Tooltip } from "@/design/primitives";
 import { TitleBar } from "@/app/TitleBar";
 import { useHydrateLayoutPrefs, useLayoutPrefs } from "@/app/useLayoutPrefs";
 import { CompactView } from "@/features/compact/CompactView";
+import { useAutoConnect } from "@/features/connection/useAutoConnect";
 import {
+  useApplyBackup,
   useConnection,
   useConnectionPhase,
+  useFollowAdapter,
   type ConnectPhase,
 } from "@/features/connection/useConnection";
+import { useHydrateConnectionPrefs } from "@/features/connection/useConnectionPrefs";
 import { useHydrateReleasePolicy } from "@/features/connection/useReleasePolicy";
+import { useResolverHealthAlerts } from "@/features/connection/useResolverStatus";
 import { useHydrateTargetAdapter } from "@/features/interfaces/useAdapters";
 import { useLaunchUpdateCheck } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
@@ -39,6 +45,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: "/", icon: Zap, label: "Connection", end: true },
   { to: "/servers", icon: Shield, label: "Servers" },
+  { to: "/activity", icon: Activity, label: "Activity" },
   { to: "/interfaces", icon: Network, label: "Interfaces" },
   { to: "/settings", icon: Settings, label: "Settings" },
   { to: "/about", icon: Info, label: "About" },
@@ -62,7 +69,12 @@ export function Shell() {
   useHydrateTargetAdapter();
   useHydrateReleasePolicy();
   useLaunchUpdateCheck();
+  useHydrateConnectionPrefs();
   useTrayDisconnect();
+  useFollowAdapter();
+  useApplyBackup();
+  useAutoConnect();
+  useResolverHealthAlerts();
   const navLayout = useLayoutPrefs((state) => state.navLayout);
   const compact = useLayoutPrefs((state) => state.compact);
   const hydrated = useLayoutPrefs((state) => state.hydrated);

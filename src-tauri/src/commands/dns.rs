@@ -203,10 +203,16 @@ pub async fn dns_baseline(state: State<'_, AppState>) -> CommandResult<Vec<Adapt
 /// resolved through the previous server stay valid for their TTL, so a user who
 /// switches server and immediately reloads a page can see the old answer and
 /// conclude nothing happened. It is also useful on its own, with no DNS change
-/// involved at all.
+/// involved at all. The local resolver's cache, when it is running, goes too.
 #[tauri::command]
 #[specta::specta]
 pub async fn flush_dns_cache(state: State<'_, AppState>) -> CommandResult<()> {
+    // The local resolver keeps answers of its own, and they sit behind the
+    // system's: flushing only the OS cache would refill it from ours.
+    if let Some(running) = state.resolver().lock().await.as_ref() {
+        running.resolver.forwarder().clear_cache();
+    }
+
     let writer = state.dns();
 
     blocking(move || writer.flush_cache()).await

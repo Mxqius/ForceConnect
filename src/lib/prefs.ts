@@ -1,6 +1,8 @@
 import { load, type Store } from "@tauri-apps/plugin-store";
 import { isTauri } from "@tauri-apps/api/core";
 
+import type { Protocol } from "@/lib/bindings";
+
 /**
  * Persisted user preferences.
  *
@@ -34,6 +36,12 @@ export interface DefaultDns {
   addrs: string[];
 }
 
+/** A server and one of its protocols, stored by id so a rename does not lose it. */
+export interface UpstreamChoice {
+  serverId: string;
+  protocol: Protocol;
+}
+
 export interface Prefs {
   favourites: string[];
   navLayout: NavLayout;
@@ -61,6 +69,15 @@ export interface Prefs {
   compact: boolean;
   /** Keep the compact window above other windows. Ignored at full size. */
   compactOnTop: boolean;
+  /** Reconnect to `lastConnection` when the app starts. */
+  autoConnect: boolean;
+  /** The last server connected to, for `autoConnect`. */
+  lastConnection: UpstreamChoice | null;
+  /**
+   * Asked by the local resolver when the chosen server does not answer.
+   * Encrypted only — see the backup row in Settings.
+   */
+  backupServer: UpstreamChoice | null;
 }
 
 export const DEFAULT_PREFS: Prefs = {
@@ -75,6 +92,9 @@ export const DEFAULT_PREFS: Prefs = {
   defaultDns: null,
   compact: false,
   compactOnTop: false,
+  autoConnect: false,
+  lastConnection: null,
+  backupServer: null,
 };
 
 const FILE = "preferences.json";

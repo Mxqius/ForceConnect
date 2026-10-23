@@ -1,10 +1,12 @@
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { create } from "zustand";
 
 import { toast } from "@/design/primitives";
+import { useConnectionPrefs } from "@/features/connection/useConnectionPrefs";
 import { useDnsTarget } from "@/features/interfaces/useAdapters";
 import { ipc, type Adapter, type Protocol, type Server } from "@/lib/ipc";
+import type { UpstreamChoice } from "@/lib/prefs";
 import { queryKeys } from "@/lib/query-keys";
 
 interface ActiveConnection {
@@ -15,6 +17,12 @@ interface ActiveConnection {
   encrypted: boolean;
   /** What was written to the adapter, for the interface tile to show. */
   addrs: string[];
+  /**
+   * Whether lookups go through the local resolver. When they do, `addrs` is
+   * loopback and the server's own addresses are in `upstream`.
+   */
+  viaResolver: boolean;
+  upstream: string[];
   adapterLuid: string;
   adapterName: string;
 }
@@ -41,17 +49,23 @@ export type ConnectPhase =
  *
  * - `probe`: ask the server a real query over the chosen transport. Done
  *   first so a dead server fails *before* anything on the machine changes.
+ * - `resolver`: encrypted protocols only. Start the local resolver on
+ *   loopback port 53 — or point the running one at the new server — so the
+ *   adapter has a plain address to be given. Before `apply`, because an
+ *   adapter pointed at a port nothing answers on cannot resolve anything.
  * - `apply`: write the servers to the adapter. The only step that changes
  *   system state, and the point after which a connect cannot be cancelled.
  * - `flush`: drop cached answers, so the very next lookup goes to the new
  *   server instead of being served from what the old one said.
  */
-export type ConnectStep = "probe" | "apply" | "flush";
-export const CONNECT_STEPS: readonly ConnectStep[] = [
-  "probe",
-  "apply",
-  "flush",
-];
+export type ConnectStep = "probe" | "resolver" | "apply" | "flush";
+
+/** The steps a connect runs, which depend on whether it needs the resolver. */
+export function connectSteps(viaResolver: boolean): readonly ConnectStep[] {
+  return viaResolver
+    ? ["probe", "resolver", "apply", "flush"]
+    : ["probe", "apply", "flush"];
+}
 
 export interface ConnectFailure {
   /** `null` when the attempt was refused before any step began. */
@@ -65,6 +79,7 @@ export interface ConnectAttempt {
   protocolLabel: string;
   encrypted: boolean;
   adapterName: string;
+  steps: readonly ConnectStep[];
 }
 
 export type ConnectResult = "connected" | "cancelled" | "failed";
@@ -85,7 +100,7 @@ const DISCONNECT_MIN_MS = 700;
 interface ConnectionState {
   active: ActiveConnection | null;
   phase: ConnectPhase;
-  /** Index into `CONNECT_STEPS` of the step in progress; its length once done. */
+  /** Index into `attempt.steps` of the step in progress; its length once done. */
   step: number;
   attempt: ConnectAttempt | null;
   failure: ConnectFailure | null;
@@ -110,7 +125,8 @@ interface ConnectionState {
   selectProtocol: (protocol: Protocol | null) => void;
 }
 
-const useConnectionStore = create<ConnectionState>((set) => ({
+// Exported for tests only; components go through the hooks below.
+export const useConnectionStore = create<ConnectionState>((set) => ({
   active: null,
   phase: "idle",
   step: 0,
@@ -158,6 +174,9 @@ async function paced<T>(work: () => Promise<T>, minMs: number): Promise<T> {
 const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 
+/** Backend messages end without a full stop; one is needed before another sentence. */
+const sentence = (text: string) => (/[.!?]$/.test(text) ? text : `${text}.`);
+
 const isBusy = (phase: ConnectPhase) =>
   phase === "connecting" || phase === "switching" || phase === "disconnecting";
 
@@ -176,6 +195,15 @@ export function useConnectionPhase(): ConnectPhase {
   return useConnectionStore((state) => state.phase);
 }
 
+/**
+ * The backup the resolver should fall back on, unless it is the server being
+ * connected to: a server cannot stand in for itself.
+ */
+function backupFor(serverId: string): UpstreamChoice | null {
+  const { backup } = useConnectionPrefs.getState();
+  return backup && backup.serverId !== serverId ? backup : null;
+}
+
 async function runConnect(
   client: QueryClient,
   adapter: Adapter | undefined,
@@ -183,6 +211,7 @@ async function runConnect(
   protocol: Protocol,
 ): Promise<ConnectResult> {
   const { getState, setState } = useConnectionStore;
+  await following;
   const before = getState();
   if (isBusy(before.phase)) return "cancelled";
 
@@ -221,15 +250,14 @@ async function runConnect(
     setState({ attempt: null });
     return fail(null, `${server.displayName} does not offer that protocol.`);
   }
-  if (endpoint.requiresForwarder) {
-    // Setting plain DNS behind the user's back and letting them believe
-    // traffic is encrypted would be worse than refusing.
-    setState({ attempt: null });
-    return fail(
-      null,
-      `${endpoint.label} needs the local resolver, which is not available yet. Pick plain DNS for now.`,
-    );
-  }
+
+  // Encrypted protocols cannot be handed to the OS, which takes plain IP
+  // addresses only: the adapter is pointed at the local resolver instead, and
+  // the resolver speaks the encrypted protocol to the server.
+  const viaResolver = endpoint.requiresForwarder;
+  const wasViaResolver = before.active?.viaResolver ?? false;
+  const steps = connectSteps(viaResolver);
+  const stepOf = (id: ConnectStep) => steps.indexOf(id);
 
   const run = before.run + 1;
   setState({
@@ -243,6 +271,7 @@ async function runConnect(
       protocolLabel: endpoint.label,
       encrypted: endpoint.encrypted,
       adapterName: adapter.name,
+      steps,
     },
   });
   const orphaned = () => getState().run !== run;
@@ -274,23 +303,69 @@ async function runConnect(
     );
   }
 
-  setState({ step: 1 });
+  let addrs = endpoint.addrs;
+  if (viaResolver) {
+    setState({ step: stepOf("resolver") });
+    try {
+      const status = await paced(
+        () => ipc.startResolver(server.id, protocol, backupFor(server.id)),
+        STEP_MIN_MS,
+      );
+      addrs = status.listen;
+    } catch (error) {
+      // A switch that fails leaves the running resolver on its old server,
+      // so there is nothing to undo here either way.
+      return fail(
+        "resolver",
+        `The local resolver could not start: ${messageOf(error)}. Nothing was changed.`,
+      );
+    }
+  }
+
+  setState({ step: stepOf("apply") });
   try {
-    await paced(() => ipc.setDns(adapter.luid, endpoint.addrs), STEP_MIN_MS);
+    await paced(() => ipc.setDns(adapter.luid, addrs), STEP_MIN_MS);
   } catch (error) {
+    if (viaResolver) {
+      // Leave the resolver as the adapter still expects it: back on the old
+      // server if the adapter was already pointed at it, or stopped if not.
+      const previous = before.active;
+      await (
+        wasViaResolver && previous
+          ? ipc.startResolver(
+              previous.serverId,
+              previous.protocol,
+              backupFor(previous.serverId),
+            )
+          : ipc.stopResolver()
+      ).catch(() => undefined);
+    }
     return fail(
       "apply",
       `The system did not accept the change: ${messageOf(error)}`,
     );
   }
 
-  setState({ step: 2 });
+  // A switch made after traffic moved to another adapter, before the move was
+  // followed: the old adapter still carries the previous servers, and nothing
+  // else will ever let go of it.
+  if (before.active && before.active.adapterLuid !== adapter.luid) {
+    void ipc.releaseDns(before.active.adapterLuid).catch(() => undefined);
+  }
+
+  // Moving from encrypted to plain: the adapter no longer points at loopback,
+  // so nothing needs the resolver any more.
+  if (!viaResolver && wasViaResolver) {
+    void ipc.stopResolver().catch(() => undefined);
+  }
+
+  setState({ step: stepOf("flush") });
   // Best-effort: the new servers are already in place, and a cache that could
   // not be flushed only means a few stale answers until they expire. Failing
   // the whole connect over it would misreport what state the machine is in.
   await paced(() => ipc.flushDnsCache().catch(() => undefined), STEP_MIN_MS);
 
-  setState({ step: 3 });
+  setState({ step: steps.length });
   await delay(SETTLE_MS);
 
   const connection: ActiveConnection = {
@@ -299,7 +374,9 @@ async function runConnect(
     protocol,
     protocolLabel: endpoint.label,
     encrypted: endpoint.encrypted,
-    addrs: endpoint.addrs,
+    addrs,
+    viaResolver,
+    upstream: endpoint.addrs,
     adapterLuid: adapter.luid,
     adapterName: adapter.name,
   };
@@ -317,6 +394,10 @@ async function runConnect(
     protocol,
   });
 
+  useConnectionPrefs.getState().rememberConnection({
+    serverId: server.id,
+    protocol,
+  });
   void client.invalidateQueries({ queryKey: queryKeys.adapters });
   void ipc.setTrayStatus({
     connected: true,
@@ -332,6 +413,7 @@ async function runDisconnect(
   adapter: Adapter | undefined,
 ): Promise<void> {
   const { getState, setState } = useConnectionStore;
+  await following;
   const { active, phase } = getState();
   if (isBusy(phase)) return;
 
@@ -353,6 +435,11 @@ async function runDisconnect(
     return;
   }
 
+  // Only once the adapter has let go of loopback: stopping first would leave
+  // it pointed at a port nothing answers on, however briefly. A no-op when
+  // the connection was plain DNS.
+  await ipc.stopResolver().catch(() => undefined);
+
   setState({ active: null, phase: "idle", connectedAt: null, step: 0 });
   void client.invalidateQueries({ queryKey: queryKeys.adapters });
   void ipc.setTrayStatus({
@@ -360,6 +447,121 @@ async function runDisconnect(
     serverName: null,
     protocolLabel: null,
   });
+}
+
+/**
+ * A move of the connection to another adapter, while one is in flight.
+ *
+ * Connect and disconnect wait on it rather than refusing: it takes a fraction
+ * of a second, and a disconnect that silently did nothing because it landed
+ * mid-move would be worse than one that waits.
+ */
+let following: Promise<void> | null = null;
+/** The adapter a move last failed to reach, so a poll does not retry it. */
+let unreachable: string | null = null;
+
+/**
+ * Keep the connection on the adapter traffic actually leaves by.
+ *
+ * DNS is set per adapter, and the one traffic uses changes underneath a
+ * connection: Wi-Fi gives way to a cable, a VPN comes up and its tunnel takes
+ * the default route. The adapter that was set keeps the chosen servers, but
+ * lookups now leave by one that still has the network's — and the screen goes
+ * on saying "Connected". So the connection follows: the new adapter is set
+ * first, so there is no moment where neither is, and only then is the old one
+ * let go, back to wherever the release policy says.
+ */
+export async function runFollow(
+  client: QueryClient,
+  adapter: Adapter | undefined,
+): Promise<void> {
+  const { getState, setState } = useConnectionStore;
+  const { active, phase } = getState();
+  if (phase !== "connected" || !active || !adapter) return;
+  if (adapter.luid === active.adapterLuid || adapter.luid === unreachable)
+    return;
+
+  try {
+    await ipc.setDns(adapter.luid, active.addrs);
+  } catch (error) {
+    unreachable = adapter.luid;
+    toast.error(`Could not move DNS to ${adapter.name}`, {
+      description: `${sentence(messageOf(error))} Lookups through ${adapter.name} use the network’s DNS until you reconnect.`,
+    });
+    return;
+  }
+  unreachable = null;
+
+  // Best-effort: an adapter that was unplugged is not there to release, and
+  // the exit handler still covers one that comes back.
+  await ipc.releaseDns(active.adapterLuid).catch(() => undefined);
+  await ipc.flushDnsCache().catch(() => undefined);
+
+  setState({
+    active: { ...active, adapterLuid: adapter.luid, adapterName: adapter.name },
+  });
+  void client.invalidateQueries({ queryKey: queryKeys.adapters });
+  toast.info(`DNS moved to ${adapter.name}`, {
+    description: `Traffic now leaves through ${adapter.name}, so ${active.serverName} is set there too.`,
+  });
+}
+
+/**
+ * Run `runFollow` whenever the adapter DNS belongs on stops being the one the
+ * connection is on. Mounted once, in `Shell`, so it works from any screen —
+ * and from the tray, with the window hidden.
+ */
+export function useFollowAdapter() {
+  const client = useQueryClient();
+  const { adapter } = useDnsTarget();
+  const phase = useConnectionStore((state) => state.phase);
+  const activeLuid = useConnectionStore((state) => state.active?.adapterLuid);
+
+  useEffect(() => {
+    if (phase !== "connected" || !adapter || adapter.luid === activeLuid)
+      return;
+    if (following) return;
+
+    following = runFollow(client, adapter).finally(() => {
+      following = null;
+    });
+  }, [client, adapter, phase, activeLuid]);
+}
+
+/**
+ * Hand a backup chosen in Settings to the resolver that is already running.
+ *
+ * Without this the choice would only take effect at the next connect, while
+ * Settings said it was in place. Reacts to changes only: a connect passes the
+ * backup itself.
+ */
+export function useApplyBackup() {
+  const backup = useConnectionPrefs((state) => state.backup);
+  const hydrated = useConnectionPrefs((state) => state.hydrated);
+  const seen = useRef<UpstreamChoice | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const previous = seen.current;
+    seen.current = backup;
+    // The first value after hydrating is the stored one, not a change.
+    if (previous === undefined || previous === backup) return;
+
+    const { active, phase } = useConnectionStore.getState();
+    if (phase !== "connected" || !active?.viaResolver) return;
+
+    ipc
+      .startResolver(
+        active.serverId,
+        active.protocol,
+        backupFor(active.serverId),
+      )
+      .catch((error: unknown) => {
+        toast.error("Could not change the backup server", {
+          description: messageOf(error),
+        });
+      });
+  }, [backup, hydrated]);
 }
 
 export function useConnection() {

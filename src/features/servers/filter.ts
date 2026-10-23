@@ -66,8 +66,22 @@ export function protocolLabel(protocol: Protocol): string {
   return PROTOCOL_LABELS[protocol];
 }
 
-/** Display order for protocol tabs: plain first, then increasingly modern. */
-const PROTOCOL_ORDER: Protocol[] = ["udp", "tcp", "dot", "doh", "doq", "doh3"];
+/** Display order: encrypted first, the most widely served leading. */
+const PROTOCOL_ORDER: Protocol[] = ["doh", "dot", "doq", "doh3", "udp", "tcp"];
+
+const PROTOCOL_DESCRIPTIONS: Record<Protocol, string> = {
+  doh: "DNS over HTTPS",
+  dot: "DNS over TLS",
+  doq: "DNS over QUIC",
+  doh3: "DNS over HTTP/3",
+  udp: "Plain DNS over UDP",
+  tcp: "Plain DNS over TCP",
+};
+
+/** The protocol picker's second line, e.g. "DNS over HTTPS". */
+export function protocolDescription(protocol: Protocol): string {
+  return PROTOCOL_DESCRIPTIONS[protocol];
+}
 
 export function sortProtocols(protocols: readonly Protocol[]): Protocol[] {
   return [...protocols].sort(
@@ -76,19 +90,12 @@ export function sortProtocols(protocols: readonly Protocol[]): Protocol[] {
 }
 
 /**
- * The protocol to preselect for a server.
- *
- * The first one, in display order, that can be connected today. Encrypted
- * endpoints need the local resolver, so until it ships they are shown but not
- * picked by default: preselecting a choice that cannot connect would make the
- * very first press of the power button fail.
+ * The protocol to preselect for a server: the first in display order, so
+ * encrypted whenever the server offers it. The local resolver carries the
+ * encrypted ones, so every protocol can connect.
  */
 export function preferredProtocol(server: Server): Protocol | null {
-  const usable = server.endpoints
-    .filter((endpoint) => !endpoint.requiresForwarder)
-    .map((endpoint) => endpoint.protocol);
-
-  return sortProtocols(usable)[0] ?? sortProtocols(server.protocols)[0] ?? null;
+  return sortProtocols(server.protocols)[0] ?? null;
 }
 
 /** `no-logging` to "No logging"; two-letter tags are country codes, so "IR". */

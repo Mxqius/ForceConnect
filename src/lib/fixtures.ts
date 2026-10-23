@@ -4,7 +4,11 @@ import type {
   AppInfo,
   UpdaterStatus,
   LatencyResult,
+  LeakReport,
   Protocol,
+  QueryLogEntry,
+  QueryOutcome,
+  ResolverStatus,
   Server,
 } from "@/lib/bindings";
 
@@ -284,3 +288,50 @@ export function latency(serverId: string, protocol: Protocol): LatencyResult {
     rounds: 4,
   };
 }
+
+export const resolverStatus: ResolverStatus = {
+  running: true,
+  serverId: "cloudflare",
+  protocol: "doh",
+  backup: { serverId: "quad9", protocol: "dot" },
+  usingBackup: false,
+  listen: ["127.0.0.1", "::1"],
+  queries: 1284,
+  failed: 3,
+  cached: 517,
+  answeredByBackup: 2,
+  cacheEntries: 211,
+  failingStreak: 0,
+};
+
+const LOG_SAMPLE: [string, string, QueryOutcome, string, number][] = [
+  ["github.com", "A", "answered", "NoError", 38],
+  ["github.com", "AAAA", "answered", "NoError", 41],
+  ["avatars.githubusercontent.com", "A", "cached", "NoError", 0.2],
+  ["use-application-dns.net", "A", "blocked", "NXDomain", 0.1],
+  ["api.github.com", "HTTPS", "answered", "NoError", 36],
+  ["telemetry.example", "A", "answered", "NXDomain", 44],
+  ["fonts.gstatic.com", "A", "backup", "NoError", 4120],
+  ["collector.example.net", "A", "failed", "", 4003],
+  ["www.wikipedia.org", "A", "answered", "NoError", 52],
+  ["upload.wikimedia.org", "AAAA", "cached", "NoError", 0.3],
+];
+
+/** A short, varied log: every outcome the screen has to draw at least once. */
+export const queryLog: QueryLogEntry[] = LOG_SAMPLE.map(
+  ([name, recordType, outcome, responseCode, elapsedMs], index) => ({
+    id: index + 1,
+    at: Date.UTC(2026, 9, 24, 9, 30, index * 3),
+    name,
+    recordType,
+    outcome,
+    responseCode,
+    elapsedMs,
+  }),
+);
+
+export const leakReport: LeakReport = {
+  throughResolver: true,
+  egress: ["172.71.124.8"],
+  egressOwner: "Cloudflare, Inc.",
+};

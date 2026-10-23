@@ -135,43 +135,34 @@ describe("countByProtocol", () => {
 });
 
 describe("sortProtocols", () => {
-  it("orders plain first, then by protocol generation", () => {
+  it("orders encrypted first, then plain", () => {
     expect(sortProtocols(["doh3", "udp", "dot", "doh"])).toEqual([
-      "udp",
-      "dot",
       "doh",
+      "dot",
       "doh3",
+      "udp",
     ]);
   });
 });
 
 describe("preferredProtocol", () => {
-  it("picks the first protocol that can connect without the resolver", () => {
+  it("prefers an encrypted protocol over plain DNS", () => {
     const s = server(
       "a",
       "A",
       null,
       [],
       [
-        endpoint("doh", "https://a.example/dns-query"),
         endpoint("udp", "1.1.1.1"),
+        endpoint("doh", "https://a.example/dns-query"),
       ],
     );
-    expect(preferredProtocol(s)).toBe("udp");
+    expect(preferredProtocol(s)).toBe("doh");
   });
 
-  it("falls back to the first protocol when every endpoint needs the resolver", () => {
-    const s = server(
-      "b",
-      "B",
-      null,
-      [],
-      [
-        endpoint("doh", "https://b.example/dns-query"),
-        endpoint("dot", "b.example"),
-      ],
-    );
-    expect(preferredProtocol(s)).toBe("dot");
+  it("falls back to plain DNS when that is all a server offers", () => {
+    const s = server("b", "B", null, [], [endpoint("udp", "9.9.9.9")]);
+    expect(preferredProtocol(s)).toBe("udp");
   });
 
   it("returns null for a server with no endpoints", () => {

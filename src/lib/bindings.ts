@@ -30,10 +30,8 @@ export const commands = {
 	 */
 	listAdapters: () => typedError<Adapter[], CommandError>(__TAURI_INVOKE("list_adapters")),
 	/**
-	 *  Every built-in server.
-	 * 
-	 *  Custom servers are merged in once persistence lands; the shape of the
-	 *  response does not change when they do.
+	 *  Every built-in server. The user's own come from `list_custom_servers`, and
+	 *  the frontend merges the two.
 	 */
 	listServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_servers")),
 	/**
@@ -74,11 +72,11 @@ export const commands = {
 	 *  resolved through the previous server stay valid for their TTL, so a user who
 	 *  switches server and immediately reloads a page can see the old answer and
 	 *  conclude nothing happened. It is also useful on its own, with no DNS change
-	 *  involved at all.
+	 *  involved at all. The local resolver's cache, when it is running, goes too.
 	 */
 	flushDnsCache: () => typedError<null, CommandError>(__TAURI_INVOKE("flush_dns_cache")),
 	/**
-	 *  Probe every server that offers a protocol.
+	 *  Probe every server that offers a protocol, the user's own included.
 	 * 
 	 *  Concurrency is bounded: firing 20+ TLS and QUIC handshakes at once is both
 	 *  slow and a distinctive network signature. Rounds within one server stay
@@ -96,6 +94,35 @@ export const commands = {
 	 *  anywhere else.
 	 */
 	probeServer: (serverId: string, protocol: Protocol) => typedError<LatencyResult, CommandError>(__TAURI_INVOKE("probe_server", { serverId, protocol })),
+	/**
+	 *  Forward to a server through the local resolver, starting it if needed.
+	 * 
+	 *  Already running, this swaps the upstream in place: the listener stays up,
+	 *  so a switch between two encrypted servers never has a moment where the
+	 *  adapter points at a port nothing answers on.
+	 */
+	startResolver: (serverId: string, protocol: Protocol, backup: {
+	serverId: string,
+	protocol: Protocol,
+} | null) => typedError<ResolverStatus, CommandError>(__TAURI_INVOKE("start_resolver", { serverId, protocol, backup })),
+	/**  Stop the local resolver. A no-op when it is not running. */
+	stopResolver: () => typedError<null, CommandError>(__TAURI_INVOKE("stop_resolver")),
+	/**  What the resolver is doing, for the connection screen to poll. */
+	resolverStatus: () => typedError<ResolverStatus, CommandError>(__TAURI_INVOKE("resolver_status")),
+	/**
+	 *  Lookups newer than `after`, oldest first. Empty when the resolver is not
+	 *  running: the log is memory only and goes with it.
+	 */
+	resolverLog: (after: number) => typedError<QueryLogEntry[], CommandError>(__TAURI_INVOKE("resolver_log", { after })),
+	clearResolverLog: () => typedError<null, CommandError>(__TAURI_INVOKE("clear_resolver_log")),
+	/**
+	 *  Check where this machine's lookups actually go.
+	 * 
+	 *  `server_id` and `protocol` name the connected server: the ownership
+	 *  lookups are sent to it directly, over its own protocol, so the test adds no
+	 *  lookups of its own to whatever path is being tested.
+	 */
+	leakTest: (serverId: string, protocol: Protocol) => typedError<LeakReport, CommandError>(__TAURI_INVOKE("leak_test", { serverId, protocol })),
 	/**  Every server: built-ins first, then the user's own. */
 	listCustomServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_custom_servers")),
 	/**
@@ -247,6 +274,19 @@ export type LatencyResult = {
 	rounds: number,
 };
 
+export type LeakReport = {
+	/**
+	 *  Whether a lookup made through the operating system reached the local
+	 *  resolver. `None` when the connection is plain DNS, which does not pass
+	 *  through anything of ours to check against.
+	 */
+	throughResolver: boolean | null,
+	/**  The resolver address the internet saw the lookup come from. */
+	egress: string[],
+	/**  Who that address belongs to, when it could be found out. */
+	egressOwner: string | null,
+};
+
 /**  What the add-server form sends. */
 export type NewServer = {
 	name: string,
@@ -262,6 +302,23 @@ export type NewServer = {
 };
 
 export type Protocol = "udp" | "tcp" | "dot" | "doh" | "doq" | "doh3";
+
+/**  One lookup the resolver handled. */
+export type QueryLogEntry = {
+	id: number,
+	/**
+	 *  Milliseconds since the Unix epoch. A float, not a `u64`, so it crosses
+	 *  into JavaScript as an ordinary number.
+	 */
+	at: number | null,
+	name: string,
+	recordType: string,
+	outcome: QueryOutcome,
+	responseCode: string,
+	elapsedMs: number | null,
+};
+
+export type QueryOutcome = "answered" | "backup" | "cached" | "failed" | "blocked";
 
 /**
  *  Where adapters go on disconnect, on exit, and after a crash.
@@ -282,6 +339,43 @@ export type ReleasePolicy =
 export type ReleasedDns = {
 	v4: FamilyDns | null,
 	v6: FamilyDns | null,
+};
+
+export type ResolverStatus = {
+	running: boolean,
+	serverId: string | null,
+	protocol: Protocol | null,
+	/**  The server asked when the chosen one does not answer, if one is set. */
+	backup: UpstreamRef | null,
+	/**
+	 *  The chosen server has stopped answering and lookups are going to the
+	 *  backup first, until it is tried again.
+	 */
+	usingBackup: boolean,
+	/**
+	 *  The addresses the adapter should be pointed at — `127.0.0.1`, and `::1`
+	 *  when the machine has IPv6.
+	 */
+	listen: string[],
+	/**
+	 *  Counters since the resolver started. `u32` and saturating rather than
+	 *  the `u64` underneath: it crosses into JavaScript as a plain number,
+	 *  and four billion queries is more than any session will see.
+	 */
+	queries: number,
+	failed: number,
+	/**  Queries answered from the cache without going upstream. */
+	cached: number,
+	/**  Queries the backup answered. */
+	answeredByBackup: number,
+	cacheEntries: number,
+	/**
+	 *  Lookups no server answered in a row, reset by the next answer and by a
+	 *  switch of server. What the UI warns on: a growing streak means nothing
+	 *  is reachable — blocked, down, or the network gone — while the adapter
+	 *  still points at us, so nothing resolves.
+	 */
+	failingStreak: number,
 };
 
 export type Server = {
@@ -332,6 +426,12 @@ export type UpdaterStatus = {
 	/**  A signing key and at least one endpoint are both present. */
 	configured: boolean,
 	endpoints: string[],
+};
+
+/**  A server and one of its protocols, as the frontend names them. */
+export type UpstreamRef = {
+	serverId: string,
+	protocol: Protocol,
 };
 
 /* Tauri Specta runtime */

@@ -178,8 +178,6 @@ function Option({
   reading: LatencyReading | undefined;
 }) {
   const tone = classifyLatency(reading?.ms);
-  const usable = server.endpoints.some((e) => !e.requiresForwarder);
-
   return (
     <Select.Item
       value={server.id}
@@ -228,7 +226,6 @@ function Option({
                   endpoint.encrypted
                     ? "bg-accent-cyan-surface text-protocol-encrypted"
                     : "bg-surface-active text-text-secondary",
-                  endpoint.requiresForwarder && "opacity-60",
                 )}
               >
                 {endpoint.encrypted ? <Lock className="size-2.5" /> : null}
@@ -237,9 +234,7 @@ function Option({
             );
           })}
           <span className="text-text-muted ml-1 truncate text-xs">
-            {usable
-              ? server.tags.slice(0, 2).map(humanTag).join(" · ")
-              : "Encrypted only · not supported yet"}
+            {server.tags.slice(0, 2).map(humanTag).join(" · ")}
           </span>
         </span>
       </span>
@@ -268,11 +263,5 @@ function Option({
 function describe(server: Server): string {
   const protocol = preferredProtocol(server);
   const endpoint = server.endpoints.find((e) => e.protocol === protocol);
-  const parts = [
-    server.variant,
-    endpoint && !endpoint.requiresForwarder ? endpoint.addrs[0] : null,
-  ].filter(Boolean);
-  return parts.length > 0
-    ? parts.join(" · ")
-    : "Encrypted only · not supported yet";
+  return [server.variant, endpoint?.addrs[0]].filter(Boolean).join(" · ");
 }

@@ -43,6 +43,12 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::dns::flush_dns_cache,
         commands::probe::probe_servers,
         commands::probe::probe_server,
+        commands::resolver::start_resolver,
+        commands::resolver::stop_resolver,
+        commands::resolver::resolver_status,
+        commands::resolver::resolver_log,
+        commands::resolver::clear_resolver_log,
+        commands::resolver::leak_test,
         commands::custom::list_custom_servers,
         commands::custom::add_custom_server,
         commands::custom::remove_custom_server,
@@ -84,7 +90,8 @@ pub fn run() {
     let builder = specta_builder();
 
     // Regenerated on every debug run so the bindings can never drift from the
-    // Rust signatures. The file is gitignored for the same reason.
+    // Rust signatures. The file is committed (see `.gitignore`) so a fresh
+    // clone typechecks without a Rust toolchain, and changes show in review.
     #[cfg(debug_assertions)]
     export_bindings(BINDINGS_PATH).expect("failed to export TypeScript bindings");
 

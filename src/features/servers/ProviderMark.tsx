@@ -1,12 +1,30 @@
 import { cn } from "@/lib/cn";
 
 /**
- * Stand-in provider mark.
+ * Provider logos, by key: `src/assets/providers/<provider>.svg` (or `.png`,
+ * `.webp`) is picked up at build time, where `<provider>` is the server's
+ * `provider` field in `servers.json` — `cloudflare.svg`, `quad9.svg`. Adding a
+ * logo is a file drop, with no code to change. SVG is preferred: the marks
+ * are drawn at several sizes, and a small bitmap blurs on a HiDPI display.
+ */
+const LOGOS: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>("../../assets/providers/*.{svg,png,webp}", {
+      eager: true,
+      query: "?url",
+      import: "default",
+    }),
+  ).map(([path, url]) => [
+    path.slice(path.lastIndexOf("/") + 1, path.lastIndexOf(".")),
+    url,
+  ]),
+);
+
+/**
+ * A provider's logo, or a monogram where there is none.
  *
- * Real logos are pending — the 1.x app shipped 431-byte PNGs that would not
- * survive a HiDPI display, so they were not worth carrying over. A generated
- * monogram is honest about being a placeholder while still giving each row a
- * stable, scannable anchor. The hue is derived from the provider key so a
+ * The monogram is honest about being a stand-in while still giving each row a
+ * stable, scannable anchor. Its hue is derived from the provider key, so a
  * given provider always looks the same.
  */
 export function ProviderMark({
@@ -18,6 +36,26 @@ export function ProviderMark({
   name: string;
   className?: string;
 }) {
+  const logo = LOGOS[provider];
+  if (logo) {
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          "bg-surface-inset flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md",
+          className,
+        )}
+      >
+        <img
+          src={logo}
+          alt=""
+          draggable={false}
+          className="size-[70%] object-contain"
+        />
+      </span>
+    );
+  }
+
   const hue = hashHue(provider);
   const initial = name.trim().charAt(0).toUpperCase() || "?";
 

@@ -7,7 +7,11 @@ import { ProviderMark } from "@/features/servers/ProviderMark";
 import { cn } from "@/lib/cn";
 import { classifyLatency, type LatencyTone } from "@/lib/latency";
 import type { Protocol, Server } from "@/lib/ipc";
-import { humanTag, sortProtocols } from "@/features/servers/filter";
+import {
+  humanTag,
+  preferredProtocol,
+  sortProtocols,
+} from "@/features/servers/filter";
 
 interface ServerCardProps {
   server: Server;
@@ -39,7 +43,7 @@ export function ServerCard({
 }: ServerCardProps) {
   const shown =
     server.endpoints.find((e) => e.protocol === focusProtocol) ??
-    server.endpoints.find((e) => !e.requiresForwarder) ??
+    server.endpoints.find((e) => e.protocol === preferredProtocol(server)) ??
     server.endpoints[0];
 
   // The card is the control, but it contains buttons of its own, and a

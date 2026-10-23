@@ -3,11 +3,11 @@
 use std::path::PathBuf;
 
 use forceconnect_dns::server::{DnsServer, Endpoint as CatalogEndpoint, Source};
-use forceconnect_dns::{Catalog, Protocol as CatalogProtocol};
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 
-use crate::commands::servers::{Protocol, Server, to_dto};
+use crate::commands::probe::to_catalog_protocol;
+use crate::commands::servers::{Protocol, Server, catalog, to_dto};
 use crate::commands::{CommandError, CommandResult};
 
 /// What the add-server form sends.
@@ -136,17 +136,6 @@ fn normalize_addr(protocol: Protocol, addr: &str) -> String {
     }
 }
 
-fn to_catalog_protocol(protocol: Protocol) -> CatalogProtocol {
-    match protocol {
-        Protocol::Udp => CatalogProtocol::Udp,
-        Protocol::Tcp => CatalogProtocol::Tcp,
-        Protocol::Dot => CatalogProtocol::Dot,
-        Protocol::Doh => CatalogProtocol::Doh,
-        Protocol::Doq => CatalogProtocol::Doq,
-        Protocol::Doh3 => CatalogProtocol::Doh3,
-    }
-}
-
 /// Every server: built-ins first, then the user's own.
 #[tauri::command]
 #[specta::specta]
@@ -222,11 +211,7 @@ pub fn add_custom_server(app: AppHandle, server: NewServer) -> CommandResult<Ser
 
     // Reject an id that already exists in the built-in catalog, which would
     // make the two indistinguishable everywhere the id is used as a key.
-    if Catalog::builtin()
-        .map_err(CommandError::from)?
-        .get(&candidate.id)
-        .is_some()
-    {
+    if catalog().get(&candidate.id).is_some() {
         return Err(CommandError::Internal(
             "that name collides with a built-in server".into(),
         ));

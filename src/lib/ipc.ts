@@ -8,6 +8,7 @@ import {
   type ReleasePolicy,
   type Server,
   type TrayStatus,
+  type UpstreamRef,
 } from "@/lib/bindings";
 import * as fixtures from "@/lib/fixtures";
 
@@ -22,14 +23,19 @@ export type {
   Endpoint,
   FamilyDns,
   LatencyResult,
+  LeakReport,
   NewServer,
+  QueryLogEntry,
+  QueryOutcome,
   Protocol,
   ReleasedDns,
   ReleasePolicy,
+  ResolverStatus,
   Server,
   ServerSource,
   TrayStatus,
   UpdaterStatus,
+  UpstreamRef,
 } from "@/lib/bindings";
 
 /**
@@ -142,6 +148,31 @@ export const ipc = {
     useFixtures
       ? Promise.reject(new Error("flushing the cache needs the desktop app"))
       : unwrap(commands.flushDnsCache()),
+
+  startResolver: (
+    serverId: string,
+    protocol: Protocol,
+    backup: UpstreamRef | null,
+  ) =>
+    useFixtures
+      ? Promise.reject(new Error("the local resolver needs the desktop app"))
+      : unwrap(commands.startResolver(serverId, protocol, backup)),
+  stopResolver: () =>
+    useFixtures ? fixture(null) : unwrap(commands.stopResolver()),
+  resolverStatus: () =>
+    useFixtures
+      ? fixture(fixtures.resolverStatus)
+      : unwrap(commands.resolverStatus()),
+  resolverLog: (after: number) =>
+    useFixtures
+      ? fixture(fixtures.queryLog.filter((entry) => entry.id > after))
+      : unwrap(commands.resolverLog(after)),
+  clearResolverLog: () =>
+    useFixtures ? fixture(null) : unwrap(commands.clearResolverLog()),
+  leakTest: (serverId: string, protocol: Protocol) =>
+    useFixtures
+      ? fixture(fixtures.leakReport)
+      : unwrap(commands.leakTest(serverId, protocol)),
 
   probeServers: (protocol: Protocol) =>
     useFixtures ? fixture([]) : unwrap(commands.probeServers(protocol)),

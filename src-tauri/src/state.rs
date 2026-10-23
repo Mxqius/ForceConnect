@@ -1,7 +1,20 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use forceconnect_dns::LocalResolver;
 use forceconnect_privileged::Privileged;
+use tauri::async_runtime::Mutex;
+
+use crate::commands::resolver::UpstreamRef;
+use crate::commands::servers::Protocol;
+
+/// The local resolver while it is running, and what it is forwarding to.
+pub struct RunningResolver {
+    pub resolver: LocalResolver,
+    pub server_id: String,
+    pub protocol: Protocol,
+    pub backup: Option<UpstreamRef>,
+}
 
 /// Application state shared across commands.
 ///
@@ -19,6 +32,12 @@ pub struct AppState {
     /// handler can read synchronously, kept in sync by
     /// `set_minimize_to_tray` on hydrate and on every toggle.
     minimize_to_tray: AtomicBool,
+    /// The local resolver, when an encrypted server is connected.
+    ///
+    /// An async mutex because starting and stopping it await socket binds and
+    /// a graceful shutdown; holding a std lock across those would block a
+    /// runtime worker.
+    resolver: Mutex<Option<RunningResolver>>,
 }
 
 impl Default for AppState {
@@ -26,6 +45,7 @@ impl Default for AppState {
         Self {
             dns: Arc::new(Privileged::default()),
             minimize_to_tray: AtomicBool::new(false),
+            resolver: Mutex::new(None),
         }
     }
 }
@@ -38,6 +58,10 @@ impl AppState {
     /// thread rather than across an await point.
     pub fn dns(&self) -> Arc<Privileged> {
         Arc::clone(&self.dns)
+    }
+
+    pub fn resolver(&self) -> &Mutex<Option<RunningResolver>> {
+        &self.resolver
     }
 
     /// Put every adapter back the way it was, on the way out of the process.

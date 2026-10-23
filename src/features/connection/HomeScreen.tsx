@@ -25,10 +25,12 @@ import { ServerSelect } from "@/features/connection/ServerSelect";
 import { useConnectTarget } from "@/features/connection/useConnectTarget";
 import { useConnection } from "@/features/connection/useConnection";
 import { useLatencyHistory } from "@/features/connection/useLatencyHistory";
+import { useResolverStatus } from "@/features/connection/useResolverStatus";
 import { useServerPicker } from "@/features/connection/useServerPicker";
 import {
   humanTag,
   preferredProtocol,
+  protocolDescription,
   sortProtocols,
 } from "@/features/servers/filter";
 import { useLatencies } from "@/features/servers/useLatencies";
@@ -38,7 +40,7 @@ import {
   formatLatency,
   type LatencyTone,
 } from "@/lib/latency";
-import type { Endpoint, Protocol, Server } from "@/lib/ipc";
+import type { Endpoint, Protocol, ResolverStatus, Server } from "@/lib/ipc";
 
 export function HomeScreen() {
   const {
@@ -104,15 +106,11 @@ function ServerTile({
   const protocolOptions: SegmentedOption<Protocol>[] = selected
     ? sortProtocols(selected.protocols).map((value) => {
         const option = selected.endpoints.find((e) => e.protocol === value);
-        const waiting = option?.requiresForwarder ?? false;
         return {
           value,
           label: option?.label ?? value,
           icon: option?.encrypted ? <Lock /> : undefined,
-          disabled: waiting,
-          hint: waiting
-            ? "Needs the local resolver, which arrives in a later version"
-            : undefined,
+          hint: protocolDescription(value),
         };
       })
     : [];
@@ -141,7 +139,7 @@ function ServerTile({
           value={selected}
           liveId={live ? activeServerId : null}
           detail={
-            endpoint && !endpoint.requiresForwarder
+            endpoint
               ? [selected?.variant, endpoint.addrs.join(", ")]
                   .filter(Boolean)
                   .join(" · ")
@@ -164,9 +162,9 @@ function ServerTile({
         </DetailRow>
       ) : null}
 
-      {endpoint && !endpoint.requiresForwarder ? (
+      {endpoint ? (
         <DetailRow label="Address" className="mt-3">
-          <span className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+          <span className="flex min-w-0 flex-wrap justify-end gap-x-3 gap-y-1">
             {endpoint.addrs.map((addr) => (
               <CopyableValue key={addr} value={addr} />
             ))}
@@ -241,7 +239,6 @@ function FastestHint({
   );
 
   const measured = servers
-    .filter((server) => server.endpoints.some((e) => !e.requiresForwarder))
     .map((server) => ({ server, ms: latencies.get(server.id)?.ms }))
     .filter(
       (entry): entry is { server: Server; ms: number } =>
@@ -481,6 +478,30 @@ function InterfaceTile({
 }) {
   const { active, phase } = useConnection();
   const routed = phase === "connected" || phase === "switching";
+  const viaResolver = routed && (active?.viaResolver ?? false);
+  const resolver = useResolverStatus(viaResolver);
+
+  const pill = (
+    <div
+      className={cn(
+        "mt-3 flex items-center gap-2 truncate rounded-xl px-3 py-2 font-mono text-xs",
+        routed
+          ? active?.encrypted
+            ? "bg-accent-cyan-surface text-protocol-encrypted"
+            : "bg-accent-surface text-accent-bright"
+          : "bg-surface-inset text-text-secondary",
+      )}
+    >
+      {routed && active?.encrypted ? (
+        <Lock className="size-3.5 shrink-0" strokeWidth={2.4} />
+      ) : (
+        <ArrowRight className="size-3.5 shrink-0" strokeWidth={2.4} />
+      )}
+      <span className="truncate">
+        DNS {routed ? active?.addrs[0] : (networkDns ?? "automatic")}
+      </span>
+    </div>
+  );
 
   return (
     <Tile>
@@ -510,29 +531,62 @@ function InterfaceTile({
         ) : null}
       </div>
       <p className="text-text-muted mt-0.5 truncate text-[13px]">
-        {pinned ? "Chosen" : "Automatic"}
-        {description ? ` · ${description}` : ""}
+        {viaResolver
+          ? `Local resolver · ${describeQueries(resolver)}`
+          : `${pinned ? "Chosen" : "Automatic"}${description ? ` · ${description}` : ""}`}
       </p>
 
-      <div
-        className={cn(
-          "mt-3 flex items-center gap-2 truncate rounded-xl px-3 py-2 font-mono text-xs",
-          routed
-            ? active?.encrypted
-              ? "bg-accent-cyan-surface text-protocol-encrypted"
-              : "bg-accent-surface text-accent-bright"
-            : "bg-surface-inset text-text-secondary",
-        )}
-      >
-        {routed && active?.encrypted ? (
-          <Lock className="size-3.5 shrink-0" strokeWidth={2.4} />
-        ) : (
-          <ArrowRight className="size-3.5 shrink-0" strokeWidth={2.4} />
-        )}
-        <span className="truncate">
-          DNS {routed ? active?.addrs[0] : (networkDns ?? "automatic")}
-        </span>
-      </div>
+      {viaResolver && resolver ? (
+        // The resolver's figures go in a tooltip rather than beside the
+        // address: the tile is narrow, and the address is what it is for.
+        <Tooltip content={<ResolverDetail status={resolver} />}>{pill}</Tooltip>
+      ) : (
+        pill
+      )}
     </Tile>
+  );
+}
+
+const count = new Intl.NumberFormat();
+
+function describeQueries(status: ResolverStatus | undefined): string {
+  if (!status) return "starting";
+  return status.queries === 1
+    ? "1 query"
+    : `${count.format(status.queries)} queries`;
+}
+
+/** What the resolver is doing, for the Interface tile's tooltip. */
+function ResolverDetail({ status }: { status: ResolverStatus }) {
+  const rows: [string, string][] = [
+    ["Listening on", status.listen.join(", ")],
+    ["Queries", count.format(status.queries)],
+    [
+      "From cache",
+      status.queries > 0
+        ? `${count.format(status.cached)} (${Math.round((status.cached / status.queries) * 100)}%)`
+        : "0",
+    ],
+    ...(status.backup
+      ? [
+          ["By backup", count.format(status.answeredByBackup)] as [
+            string,
+            string,
+          ],
+        ]
+      : []),
+    ["Failed", count.format(status.failed)],
+    ["Cached names", count.format(status.cacheEntries)],
+  ];
+
+  return (
+    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+      {rows.map(([label, value]) => (
+        <div key={label} className="contents">
+          <dt className="text-text-muted">{label}</dt>
+          <dd className="text-text-primary text-right font-mono">{value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

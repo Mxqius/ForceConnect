@@ -11,7 +11,6 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { Popover, Tile, Tooltip, toast } from "@/design/primitives";
 import {
-  CONNECT_STEPS,
   useConnection,
   type ConnectPhase,
   type ConnectStep,
@@ -21,6 +20,9 @@ import {
   onDefaultDns,
   useReleasePolicy,
 } from "@/features/connection/useReleasePolicy";
+import { useResolverHealth } from "@/features/connection/useResolverStatus";
+import { useServerPicker } from "@/features/connection/useServerPicker";
+import { sortProtocols } from "@/features/servers/filter";
 import { ProviderMark } from "@/features/servers/ProviderMark";
 import { cn } from "@/lib/cn";
 import type { Endpoint, Server } from "@/lib/ipc";
@@ -66,6 +68,7 @@ export function ConnectionHero({
   } = useConnection();
 
   const lit = LIT.has(phase);
+  const health = useResolverHealth();
   const working =
     phase === "connecting" ||
     phase === "switching" ||
@@ -123,9 +126,20 @@ export function ConnectionHero({
       text: restoring,
       pulse: true,
     },
-    connected: active?.encrypted
-      ? { tone: "bg-[#7dffb6]", text: `Encrypted · ${active.protocolLabel}` }
-      : { tone: "bg-[#ffd56b]", text: "Plain DNS · not encrypted" },
+    connected: health.failing
+      ? {
+          tone: "bg-[#ffd56b]",
+          text: `Not answering · ${active?.protocolLabel ?? ""}`,
+          pulse: true,
+        }
+      : health.usingBackup
+        ? { tone: "bg-[#7dffb6]", text: "Encrypted · via backup" }
+        : active?.encrypted
+          ? {
+              tone: "bg-[#7dffb6]",
+              text: `Encrypted · ${active.protocolLabel}`,
+            }
+          : { tone: "bg-[#ffd56b]", text: "Plain DNS · not encrypted" },
     failed: {
       tone: "bg-danger",
       text: failure?.step === "apply" ? "Not connected" : "Nothing was changed",
@@ -150,9 +164,13 @@ export function ConnectionHero({
     connecting: null,
     switching: `Moving to ${attempt?.serverName ?? "the new server"}. Your current DNS stays in place until the new one is set.`,
     connected: active
-      ? active.encrypted
-        ? `Every lookup is encrypted and answered by ${active.serverName}.`
-        : `Lookups now go straight to ${active.serverName}.`
+      ? health.failing
+        ? `${active.serverName} has not answered the last ${health.streak} lookups, so pages may not load.`
+        : health.usingBackup
+          ? `${active.serverName} is not answering, so your backup server is answering in its place. Still encrypted.`
+          : active.encrypted
+            ? `Every lookup is encrypted and answered by ${active.serverName}.`
+            : `Lookups now go straight to ${active.serverName}.`
       : null,
     disconnecting:
       releaseMode === "fallback" && defaultDns
@@ -181,7 +199,7 @@ export function ConnectionHero({
         <div
           className="fc-progress"
           style={{
-            width: `${Math.min(100, ((step + 0.5) / CONNECT_STEPS.length) * 100)}%`,
+            width: `${Math.min(100, ((step + 0.5) / (attempt?.steps.length ?? 3)) * 100)}%`,
           }}
         />
       ) : null}
@@ -223,8 +241,13 @@ export function ConnectionHero({
             </p>
           ) : null}
 
+          {phase === "connected" && health.failing ? (
+            <QuickFix server={selected} />
+          ) : null}
+
           {(phase === "connecting" || phase === "failed") && attempt ? (
             <StepList
+              steps={attempt.steps}
               step={step}
               failedStep={phase === "failed" ? (failure?.step ?? null) : null}
               labels={{
@@ -232,6 +255,7 @@ export function ConnectionHero({
                   `Checking ${attempt.serverName} answers`,
                   attempt.protocolLabel,
                 ],
+                resolver: ["Starting the local resolver", "127.0.0.1:53"],
                 apply: [`Setting DNS on ${attempt.adapterName}`, ""],
                 flush: ["Clearing the DNS cache", ""],
               }}
@@ -319,22 +343,58 @@ export function ConnectionHero({
   );
 }
 
+/**
+ * One click to the likeliest fix when the server stops answering.
+ *
+ * Blocking usually targets one transport — QUIC and HTTP/3 are commonly
+ * dropped while TLS on 853 or 443 gets through — so the same server over
+ * another encrypted protocol is the first thing worth trying. Only encrypted
+ * alternatives are offered: dropping to plain DNS is a choice the user makes
+ * on purpose, never one a button makes for them.
+ */
+function QuickFix({ server }: { server: Server | null }) {
+  const { active } = useConnection();
+  const { pick } = useServerPicker();
+  if (!server || !active || server.id !== active.serverId) return null;
+
+  const alternative = sortProtocols(server.protocols).find(
+    (protocol) =>
+      protocol !== active.protocol &&
+      server.endpoints.find((e) => e.protocol === protocol)?.encrypted,
+  );
+  const label = server.endpoints.find((e) => e.protocol === alternative)?.label;
+  if (!alternative || !label) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={() => pick(server, alternative)}
+      className="mt-4 flex h-10 w-fit items-center gap-2 rounded-full bg-white/18 px-5 text-sm font-semibold text-white hover:bg-white/25"
+    >
+      <RefreshCw className="size-4" strokeWidth={2.4} />
+      Switch to {label}
+    </button>
+  );
+}
+
 type StepStatus = "pending" | "running" | "done" | "failed";
 
 function StepList({
+  steps,
   step,
   failedStep,
   labels,
 }: {
+  steps: readonly ConnectStep[];
   step: number;
   failedStep: ConnectStep | null;
   labels: Record<ConnectStep, [string, string]>;
 }) {
-  const failedIndex = failedStep ? CONNECT_STEPS.indexOf(failedStep) : -1;
+  const failedIndex = failedStep ? steps.indexOf(failedStep) : -1;
 
   return (
     <ol className="mt-5 flex flex-col gap-1" aria-label="Connection steps">
-      {CONNECT_STEPS.map((id, index) => {
+      {steps.map((id, index) => {
         const status: StepStatus =
           index === failedIndex
             ? "failed"

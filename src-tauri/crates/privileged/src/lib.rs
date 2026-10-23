@@ -35,7 +35,10 @@ mod session;
 
 #[cfg(any(unix, test))]
 mod exec;
+#[cfg(unix)]
+mod handover;
 
+pub use agent::{BoundSocket, RESOLVER_ADDRS, SocketKind, open_resolver_sockets};
 pub use session::Privileged;
 
 use std::collections::HashMap;

@@ -2,7 +2,8 @@ import { fileURLToPath, URL } from "node:url";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+// Vitest's `defineConfig` is Vite's with the `test` block typed in.
+import { configDefaults, defineConfig } from "vitest/config";
 
 // Set by `tauri dev --host` when testing on a physical device over the network.
 const host = process.env.TAURI_DEV_HOST;
@@ -42,5 +43,12 @@ export default defineConfig({
     // path that requires installing esbuild separately.
     sourcemap: isTauriDebug,
     minify: !isTauriDebug,
+  },
+
+  test: {
+    // `.claude/worktrees` holds whole checkouts of this repository on other
+    // branches; collecting their tests runs stale copies against this one's
+    // source, through the `@` alias, and fails on every change they predate.
+    exclude: [...configDefaults.exclude, ".claude/**", "website/**"],
   },
 });

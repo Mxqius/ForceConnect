@@ -1,10 +1,10 @@
 use forceconnect_dns::probe::{ProbeSpec, Verdict, probe_endpoint};
-use forceconnect_dns::{Catalog, Endpoint as CatalogEndpoint, Protocol as CatalogProtocol};
+use forceconnect_dns::{Endpoint as CatalogEndpoint, Protocol as CatalogProtocol};
 use futures_util::stream::{self, StreamExt};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use crate::commands::servers::Protocol;
+use crate::commands::servers::{Protocol, catalog};
 use crate::commands::{CommandError, CommandResult};
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
@@ -26,7 +26,7 @@ pub struct LatencyResult {
     pub rounds: u8,
 }
 
-/// Probe every server that offers a protocol.
+/// Probe every server that offers a protocol, the user's own included.
 ///
 /// Concurrency is bounded: firing 20+ TLS and QUIC handshakes at once is both
 /// slow and a distinctive network signature. Rounds within one server stay
@@ -34,13 +34,17 @@ pub struct LatencyResult {
 /// rather than round-trip time.
 #[tauri::command]
 #[specta::specta]
-pub async fn probe_servers(protocol: Protocol) -> CommandResult<Vec<LatencyResult>> {
-    let catalog = Catalog::builtin().map_err(CommandError::from)?;
+pub async fn probe_servers(
+    app: AppHandle,
+    protocol: Protocol,
+) -> CommandResult<Vec<LatencyResult>> {
     let wanted = to_catalog_protocol(protocol);
+    let custom = crate::commands::custom::read_all(&app)?;
 
-    let targets: Vec<_> = catalog
+    let targets: Vec<_> = catalog()
         .servers()
         .iter()
+        .chain(&custom)
         .filter_map(|server| {
             server
                 .endpoint(wanted)
@@ -82,14 +86,12 @@ pub async fn probe_server(
 }
 
 /// Locate an endpoint in the built-in catalog, then among the user's own.
-fn find_endpoint(
+pub(crate) fn find_endpoint(
     app: &AppHandle,
     server_id: &str,
     protocol: CatalogProtocol,
 ) -> Result<CatalogEndpoint, CommandError> {
-    let builtin = Catalog::builtin().map_err(CommandError::from)?;
-
-    let server = builtin.get(server_id).cloned().map_or_else(
+    let server = catalog().get(server_id).cloned().map_or_else(
         || {
             crate::commands::custom::read_all(app)?
                 .into_iter()
@@ -130,7 +132,7 @@ fn to_dto(
     }
 }
 
-fn to_catalog_protocol(protocol: Protocol) -> CatalogProtocol {
+pub(crate) fn to_catalog_protocol(protocol: Protocol) -> CatalogProtocol {
     match protocol {
         Protocol::Udp => CatalogProtocol::Udp,
         Protocol::Tcp => CatalogProtocol::Tcp,

@@ -1,6 +1,7 @@
 import { createHashRouter, type RouteObject } from "react-router";
 
 import { Shell } from "@/app/Shell";
+import { ActivityScreen } from "@/features/activity/ActivityScreen";
 import { HomeScreen } from "@/features/connection/HomeScreen";
 import { AboutScreen } from "@/features/about/AboutScreen";
 import { InterfacesScreen } from "@/features/interfaces/InterfacesScreen";
@@ -33,6 +34,7 @@ export const router = createHashRouter([
       { index: true, Component: HomeScreen },
       { path: "interfaces", Component: InterfacesScreen },
       { path: "servers", Component: ServersScreen },
+      { path: "activity", Component: ActivityScreen },
       { path: "settings", Component: SettingsScreen },
       { path: "about", Component: AboutScreen },
       ...devRoutes,

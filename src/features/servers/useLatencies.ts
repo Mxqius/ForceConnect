@@ -58,24 +58,40 @@ export function useLatencies(
   return readings;
 }
 
+/**
+ * Probes in flight at once during "Test all" — the same bound the backend's
+ * own batch prober keeps. Firing a handshake at every server simultaneously
+ * is slower overall, skews the figures (they all compete for the same link),
+ * and is a distinctive burst on the network.
+ */
+const PROBE_CONCURRENCY = 8;
+
 /** Measure every target again, ignoring anything cached. */
 export function useProbeAll() {
   const client = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (targets: readonly LatencyTarget[]) =>
-      Promise.allSettled(
-        targets.flatMap(({ server, protocol }) =>
-          protocol
-            ? [
-                client.fetchQuery({
-                  ...options(server, protocol),
-                  staleTime: 0,
-                }),
-              ]
-            : [],
-        ),
-      ),
+    mutationFn: async (targets: readonly LatencyTarget[]) => {
+      const queue = targets.flatMap(({ server, protocol }) =>
+        protocol ? [{ server, protocol }] : [],
+      );
+
+      // A fixed set of workers each taking the next target, so a slow server
+      // holds up one lane rather than the whole batch.
+      const worker = async () => {
+        for (let next = queue.shift(); next; next = queue.shift()) {
+          await client
+            .fetchQuery({
+              ...options(next.server, next.protocol),
+              staleTime: 0,
+            })
+            .catch(() => undefined);
+        }
+      };
+      await Promise.all(
+        Array.from({ length: PROBE_CONCURRENCY }, () => worker()),
+      );
+    },
   });
 
   return {

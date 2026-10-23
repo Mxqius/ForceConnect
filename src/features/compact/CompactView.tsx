@@ -23,6 +23,7 @@ import {
   type ConnectPhase,
 } from "@/features/connection/useConnection";
 import { usePing } from "@/features/connection/usePing";
+import { useResolverHealth } from "@/features/connection/useResolverStatus";
 import {
   onDefaultDns,
   useReleasePolicy,
@@ -76,6 +77,7 @@ export function CompactView() {
     disconnect,
     cancel,
   } = useConnection();
+  const health = useResolverHealth();
   const { pick } = useServerPicker();
   const releaseMode = useReleasePolicy((state) => state.mode);
   const defaultDns = useReleasePolicy((state) => state.defaultDns);
@@ -109,9 +111,11 @@ export function CompactView() {
     connecting: "Connecting",
     switching: "Switching",
     disconnecting: "Disconnecting",
-    connected: active?.encrypted
-      ? `Encrypted · ${active.protocolLabel}`
-      : "Plain DNS",
+    connected: health.failing
+      ? "Not answering"
+      : active?.encrypted
+        ? `Encrypted · ${active.protocolLabel}`
+        : "Plain DNS",
     failed: failure?.step === "apply" ? "Not connected" : "Nothing changed",
   }[phase];
 
@@ -129,7 +133,8 @@ export function CompactView() {
     connecting: "bg-accent-bright animate-pulse",
     switching: "bg-white animate-pulse",
     disconnecting: "bg-text-muted animate-pulse",
-    connected: active?.encrypted ? "bg-[#7dffb6]" : "bg-[#ffd56b]",
+    connected:
+      active?.encrypted && !health.failing ? "bg-[#7dffb6]" : "bg-[#ffd56b]",
     failed: "bg-danger",
   }[phase];
 
@@ -214,7 +219,7 @@ export function CompactView() {
             value={selected}
             liveId={lit ? activeServerId : null}
             detail={
-              endpoint && !endpoint.requiresForwarder
+              endpoint
                 ? `${endpoint.label} · ${endpoint.addrs[0] ?? ""}`
                 : undefined
             }

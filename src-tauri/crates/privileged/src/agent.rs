@@ -36,13 +36,18 @@
 //! state, exactly as it is when the verbs are called in-process. The
 //! interface is not trusted any more than the frontend is.
 //!
+//! One verb answers with more than JSON: [`Request::OpenResolverSockets`]
+//! binds loopback port 53 — which needs root on Linux — and hands the open
+//! sockets to the interface (see `handover`), so the resolver itself runs
+//! unprivileged.
+//!
 //! When the connection closes for any reason — a clean quit, a crash, a
 //! `kill -9` — the agent restores whatever it still owes before it exits. That
 //! is a stronger guarantee than the in-process design can give, where a hard
 //! crash leaves the restore to the next launch.
 
 use std::io::{self, BufRead, Read, Write};
-use std::net::IpAddr;
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, TcpListener, UdpSocket};
 
 use forceconnect_net::{DnsConfig, Family, InterfaceLuid};
 use serde::{Deserialize, Serialize};
@@ -85,6 +90,10 @@ pub enum Request {
     Release {
         luid: InterfaceLuid,
     },
+    /// Bind the local resolver's sockets and hand them over. No arguments on
+    /// purpose: the addresses are fixed, so this opens loopback port 53 —
+    /// [`RESOLVER_ADDRS`] — and nothing else.
+    OpenResolverSockets,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -95,9 +104,78 @@ pub enum Reply {
     Pending(bool),
     Baseline(Vec<(String, Family, DnsConfig)>),
     Released(Vec<(Family, DnsConfig)>),
+    /// What was handed over, in the order the descriptors arrived.
+    Sockets(Vec<SocketSpec>),
 }
 
 pub type Response = Result<Reply, PrivilegedError>;
+
+/// Where the local resolver listens: loopback, port 53, both families.
+pub const RESOLVER_ADDRS: [SocketAddr; 2] = [
+    SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 53),
+    SocketAddr::new(IpAddr::V6(Ipv6Addr::LOCALHOST), 53),
+];
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SocketKind {
+    Udp,
+    Tcp,
+}
+
+/// One handed-over socket, as the reply describes it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SocketSpec {
+    pub addr: SocketAddr,
+    pub kind: SocketKind,
+}
+
+/// An open, bound listening socket.
+#[derive(Debug)]
+pub enum BoundSocket {
+    Udp(UdpSocket),
+    Tcp(TcpListener),
+}
+
+impl BoundSocket {
+    pub fn spec(&self) -> io::Result<SocketSpec> {
+        Ok(match self {
+            Self::Udp(socket) => SocketSpec {
+                addr: socket.local_addr()?,
+                kind: SocketKind::Udp,
+            },
+            Self::Tcp(listener) => SocketSpec {
+                addr: listener.local_addr()?,
+                kind: SocketKind::Tcp,
+            },
+        })
+    }
+}
+
+/// Bind the resolver's sockets.
+///
+/// IPv4 is required. IPv6 is taken when the machine has it: with IPv6 off
+/// there is no IPv6 DNS for the OS to resolve around the resolver with.
+pub fn open_resolver_sockets() -> Result<Vec<BoundSocket>, PrivilegedError> {
+    let mut sockets = Vec::with_capacity(4);
+
+    for (index, addr) in RESOLVER_ADDRS.into_iter().enumerate() {
+        match (UdpSocket::bind(addr), TcpListener::bind(addr)) {
+            (Ok(udp), Ok(tcp)) => {
+                sockets.push(BoundSocket::Udp(udp));
+                sockets.push(BoundSocket::Tcp(tcp));
+            }
+            (Err(err), _) | (_, Err(err)) if index == 0 => {
+                return Err(PrivilegedError::Os(format!("could not bind {addr}: {err}")));
+            }
+            (Err(err), _) | (_, Err(err)) => {
+                tracing::info!("the resolver will listen on IPv4 only: {addr}: {err}");
+            }
+        }
+    }
+
+    Ok(sockets)
+}
 
 /// What the agent does with a request.
 ///
@@ -113,7 +191,9 @@ pub trait Verbs {
     fn capture_baseline(&mut self);
     fn baseline(&self) -> Vec<(String, Family, DnsConfig)>;
     fn set_policy(&mut self, policy: ReleasePolicy) -> Result<(), PrivilegedError>;
-    fn release(&mut self, luid: InterfaceLuid) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError>;
+    fn release(&mut self, luid: InterfaceLuid)
+    -> Result<Vec<(Family, DnsConfig)>, PrivilegedError>;
+    fn open_resolver_sockets(&self) -> Result<Vec<BoundSocket>, PrivilegedError>;
 }
 
 impl Verbs for DnsWriter {
@@ -153,8 +233,54 @@ impl Verbs for DnsWriter {
         DnsWriter::set_policy(self, policy)
     }
 
-    fn release(&mut self, luid: InterfaceLuid) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
+    fn release(
+        &mut self,
+        luid: InterfaceLuid,
+    ) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
         DnsWriter::release(self, luid)
+    }
+
+    fn open_resolver_sockets(&self) -> Result<Vec<BoundSocket>, PrivilegedError> {
+        open_resolver_sockets()
+    }
+}
+
+/// A writer that can also hand open sockets to the other end.
+pub trait SocketWriter: Write {
+    /// Send the handover marker, carrying `sockets`. Called with none on a
+    /// refusal, so the reader always finds the marker before the reply.
+    fn hand_over(&mut self, sockets: &[BoundSocket]) -> io::Result<()>;
+}
+
+impl<W: SocketWriter + ?Sized> SocketWriter for &mut W {
+    fn hand_over(&mut self, sockets: &[BoundSocket]) -> io::Result<()> {
+        (**self).hand_over(sockets)
+    }
+}
+
+/// An in-memory connection has nowhere to send descriptors; it records the
+/// marker so tests can see the handover happened, and in which order.
+#[cfg(test)]
+impl SocketWriter for Vec<u8> {
+    fn hand_over(&mut self, _sockets: &[BoundSocket]) -> io::Result<()> {
+        self.push(b'S');
+        Ok(())
+    }
+}
+
+#[cfg(unix)]
+impl SocketWriter for std::os::unix::net::UnixStream {
+    fn hand_over(&mut self, sockets: &[BoundSocket]) -> io::Result<()> {
+        use std::os::fd::AsRawFd;
+
+        let fds: Vec<_> = sockets
+            .iter()
+            .map(|socket| match socket {
+                BoundSocket::Udp(udp) => udp.as_raw_fd(),
+                BoundSocket::Tcp(tcp) => tcp.as_raw_fd(),
+            })
+            .collect();
+        crate::handover::send(self, &fds)
     }
 }
 
@@ -177,6 +303,10 @@ pub fn handle(verbs: &mut impl Verbs, request: Request) -> Response {
         Request::Baseline => Ok(Reply::Baseline(verbs.baseline())),
         Request::SetPolicy { policy } => verbs.set_policy(policy).map(|()| Reply::Done),
         Request::Release { luid } => verbs.release(luid).map(Reply::Released),
+        // Answered by `serve`, which has the connection to send them over.
+        Request::OpenResolverSockets => Err(PrivilegedError::Invalid(
+            "sockets can only be handed over the agent's own connection".into(),
+        )),
     }
 }
 
@@ -187,7 +317,7 @@ pub fn handle(verbs: &mut impl Verbs, request: Request) -> Response {
 /// oversized line — because every one of those means the interface is gone,
 /// and an adapter left pointing at a resolver nobody is running is the failure
 /// this whole crate exists to prevent.
-pub fn serve(verbs: &mut impl Verbs, reader: impl BufRead, writer: impl Write) {
+pub fn serve(verbs: &mut impl Verbs, reader: impl BufRead, writer: impl SocketWriter) {
     if let Err(err) = serve_until_closed(verbs, reader, writer) {
         tracing::debug!("agent connection ended: {err}");
     }
@@ -202,7 +332,7 @@ pub fn serve(verbs: &mut impl Verbs, reader: impl BufRead, writer: impl Write) {
 fn serve_until_closed(
     verbs: &mut impl Verbs,
     mut reader: impl BufRead,
-    mut writer: impl Write,
+    mut writer: impl SocketWriter,
 ) -> io::Result<()> {
     let mut line = String::new();
 
@@ -220,6 +350,21 @@ fn serve_until_closed(
         }
 
         let response: Response = match serde_json::from_str::<Request>(&line) {
+            Ok(Request::OpenResolverSockets) => {
+                let opened = verbs.open_resolver_sockets().and_then(|sockets| {
+                    let specs = sockets
+                        .iter()
+                        .map(BoundSocket::spec)
+                        .collect::<io::Result<Vec<_>>>()
+                        .map_err(|err| PrivilegedError::Os(err.to_string()))?;
+                    Ok((sockets, specs))
+                });
+
+                let handed = opened.as_ref().map_or(&[][..], |(sockets, _)| sockets);
+                writer.hand_over(handed)?;
+                // The agent's own copies close here; the interface's stay open.
+                opened.map(|(_, specs)| Reply::Sockets(specs))
+            }
             Ok(request) => handle(verbs, request),
             Err(err) => Err(PrivilegedError::Invalid(format!(
                 "malformed request: {err}"
@@ -254,11 +399,20 @@ impl<R: BufRead, W: Write> Connection<R, W> {
 
     /// Send one request and wait for its reply.
     pub fn call(&mut self, request: &Request) -> Result<Reply, CallError> {
+        self.send(request)?;
+        self.reply()
+    }
+
+    fn send(&mut self, request: &Request) -> Result<(), CallError> {
         let lost = |err: io::Error| CallError::Lost(err.to_string());
 
         serde_json::to_writer(&mut self.writer, request).map_err(|e| lost(e.into()))?;
         self.writer.write_all(b"\n").map_err(lost)?;
-        self.writer.flush().map_err(lost)?;
+        self.writer.flush().map_err(lost)
+    }
+
+    fn reply(&mut self) -> Result<Reply, CallError> {
+        let lost = |err: io::Error| CallError::Lost(err.to_string());
 
         let mut line = String::new();
         if self.reader.read_line(&mut line).map_err(lost)? == 0 {
@@ -269,6 +423,42 @@ impl<R: BufRead, W: Write> Connection<R, W> {
             Ok(Ok(reply)) => Ok(reply),
             Ok(Err(refused)) => Err(CallError::Refused(refused)),
             Err(err) => Err(CallError::Lost(format!("unreadable reply: {err}"))),
+        }
+    }
+}
+
+#[cfg(unix)]
+impl Connection<io::BufReader<std::os::unix::net::UnixStream>, std::os::unix::net::UnixStream> {
+    /// Ask the agent for the resolver's sockets.
+    ///
+    /// The descriptors arrive on the marker byte ahead of the reply line, and
+    /// are read straight off the socket: the buffered reader would take the
+    /// byte and silently close what it carried.
+    pub fn open_resolver_sockets(&mut self) -> Result<Vec<BoundSocket>, CallError> {
+        self.send(&Request::OpenResolverSockets)?;
+
+        // The protocol is strictly one reply per request, so nothing can be
+        // buffered here; if something is, the two ends are out of step.
+        if !self.reader.buffer().is_empty() {
+            return Err(CallError::Lost(
+                "the agent sent bytes nobody asked for".into(),
+            ));
+        }
+        let fds = crate::handover::receive(&self.writer)
+            .map_err(|err| CallError::Lost(err.to_string()))?;
+
+        match self.reply()? {
+            Reply::Sockets(specs) if specs.len() == fds.len() => Ok(specs
+                .into_iter()
+                .zip(fds)
+                .map(|(spec, fd)| match spec.kind {
+                    SocketKind::Udp => BoundSocket::Udp(UdpSocket::from(fd)),
+                    SocketKind::Tcp => BoundSocket::Tcp(TcpListener::from(fd)),
+                })
+                .collect()),
+            other => Err(CallError::Lost(format!(
+                "the agent's handover did not match its reply: {other:?}"
+            ))),
         }
     }
 }
@@ -562,6 +752,7 @@ mod tests {
         calls: Vec<String>,
         pending: bool,
         restored: bool,
+        refuse_sockets: bool,
     }
 
     impl Verbs for Fake {
@@ -618,6 +809,18 @@ mod tests {
             self.calls.push(format!("release {}", luid.0));
             self.pending = false;
             Ok(vec![(Family::V4, DnsConfig::Dhcp)])
+        }
+
+        /// Ephemeral ports, not 53: the protocol is what is under test, and
+        /// port 53 needs rights a test run does not have.
+        fn open_resolver_sockets(&self) -> Result<Vec<BoundSocket>, PrivilegedError> {
+            if self.refuse_sockets {
+                return Err(PrivilegedError::Os("port 53 is taken".into()));
+            }
+            Ok(vec![
+                BoundSocket::Udp(UdpSocket::bind("127.0.0.1:0").unwrap()),
+                BoundSocket::Tcp(TcpListener::bind("127.0.0.1:0").unwrap()),
+            ])
         }
     }
 
@@ -817,5 +1020,89 @@ mod tests {
         assert_eq!(shell_quote("plain"), "'plain'");
         assert_eq!(shell_quote("it's"), r"'it'\''s'");
         assert_eq!(applescript_string(r#"a"b\c"#), r#"a\"b\\c"#);
+    }
+
+    #[test]
+    fn a_socket_handover_puts_the_marker_before_its_reply() {
+        let input = [
+            line(&Request::OpenResolverSockets),
+            line(&Request::HasPending),
+        ]
+        .concat();
+        let mut fake = Fake::default();
+        let mut output = Vec::new();
+
+        serve(&mut fake, Cursor::new(input), &mut output);
+
+        assert_eq!(output.first(), Some(&b'S'));
+        let replies = responses(&output[1..]);
+        let Ok(Reply::Sockets(specs)) = &replies[0] else {
+            panic!("expected sockets, got {:?}", replies[0]);
+        };
+        assert_eq!(
+            specs.iter().map(|s| s.kind).collect::<Vec<_>>(),
+            [SocketKind::Udp, SocketKind::Tcp]
+        );
+        // The stream stays in step after it.
+        assert!(matches!(replies[1], Ok(Reply::Pending(false))));
+    }
+
+    #[test]
+    fn a_refused_handover_still_sends_the_marker() {
+        let mut fake = Fake {
+            refuse_sockets: true,
+            ..Fake::default()
+        };
+        let mut output = Vec::new();
+
+        serve(
+            &mut fake,
+            Cursor::new(line(&Request::OpenResolverSockets)),
+            &mut output,
+        );
+
+        assert_eq!(output.first(), Some(&b'S'));
+        assert!(matches!(
+            responses(&output[1..])[0],
+            Err(PrivilegedError::Os(_))
+        ));
+    }
+
+    #[test]
+    fn the_resolver_addresses_are_loopback_port_53_only() {
+        for addr in RESOLVER_ADDRS {
+            assert!(addr.ip().is_loopback());
+            assert_eq!(addr.port(), 53);
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn sockets_cross_a_real_connection_and_the_protocol_stays_in_step() {
+        use std::io::BufReader;
+        use std::os::unix::net::UnixStream;
+
+        let (agent, interface) = UnixStream::pair().unwrap();
+        let server = std::thread::spawn(move || {
+            let mut fake = Fake::default();
+            let reader = BufReader::new(agent.try_clone().unwrap());
+            serve(&mut fake, reader, agent);
+        });
+
+        let reader = BufReader::new(interface.try_clone().unwrap());
+        let mut connection = Connection::new(reader, interface);
+
+        let sockets = connection.open_resolver_sockets().unwrap();
+        assert_eq!(sockets.len(), 2);
+        for socket in &sockets {
+            assert!(socket.spec().unwrap().addr.ip().is_loopback());
+        }
+        assert!(matches!(
+            connection.call(&Request::HasPending),
+            Ok(Reply::Pending(false))
+        ));
+
+        drop(connection);
+        server.join().unwrap();
     }
 }

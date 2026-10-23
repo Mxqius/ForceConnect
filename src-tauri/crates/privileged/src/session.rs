@@ -15,9 +15,9 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use forceconnect_net::{DnsConfig, Family, InterfaceLuid};
 
-use crate::{PrivilegedError, ReleasePolicy};
 #[cfg(windows)]
 use crate::{DnsWriter, journal};
+use crate::{PrivilegedError, ReleasePolicy};
 
 #[cfg(unix)]
 use crate::agent::{self, CallError, Reply, Request};
@@ -91,7 +91,10 @@ impl Privileged {
         lock(&self.writer).set_policy(policy)
     }
 
-    pub fn release(&self, luid: InterfaceLuid) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
+    pub fn release(
+        &self,
+        luid: InterfaceLuid,
+    ) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
         lock(&self.writer).release(luid)
     }
 
@@ -172,19 +175,17 @@ impl Privileged {
             // After recovery, so the snapshot is the user's configuration and
             // not whatever a crashed run left on the adapter.
             let next = match next {
-                State::Ready(mut connection) => {
-                    match connection.call(&Request::CaptureBaseline) {
-                        Err(CallError::Lost(err)) => {
-                            tracing::error!("the privileged agent exited during startup: {err}");
-                            State::Unavailable
-                        }
-                        Err(CallError::Refused(err)) => {
-                            tracing::warn!("could not capture the launch DNS baseline: {err}");
-                            State::Ready(connection)
-                        }
-                        Ok(_) => State::Ready(connection),
+                State::Ready(mut connection) => match connection.call(&Request::CaptureBaseline) {
+                    Err(CallError::Lost(err)) => {
+                        tracing::error!("the privileged agent exited during startup: {err}");
+                        State::Unavailable
                     }
-                }
+                    Err(CallError::Refused(err)) => {
+                        tracing::warn!("could not capture the launch DNS baseline: {err}");
+                        State::Ready(connection)
+                    }
+                    Ok(_) => State::Ready(connection),
+                },
                 other => other,
             };
 
@@ -224,7 +225,10 @@ impl Privileged {
         self.call(Request::SetPolicy { policy }).map(drop)
     }
 
-    pub fn release(&self, luid: InterfaceLuid) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
+    pub fn release(
+        &self,
+        luid: InterfaceLuid,
+    ) -> Result<Vec<(Family, DnsConfig)>, PrivilegedError> {
         match self.call(Request::Release { luid })? {
             Reply::Released(written) => Ok(written),
             other => Err(unexpected(&other)),
@@ -236,6 +240,25 @@ impl Privileged {
         match self.call(Request::Baseline)? {
             Reply::Baseline(entries) => Ok(entries),
             other => Err(unexpected(&other)),
+        }
+    }
+
+    /// Loopback port 53, bound by the agent and handed over, for the local
+    /// resolver — which the interface cannot bind itself without root.
+    pub fn open_resolver_sockets(&self) -> Result<Vec<crate::BoundSocket>, PrivilegedError> {
+        let mut state = self.settled();
+        let State::Ready(connection) = &mut *state else {
+            return Err(PrivilegedError::NotElevated);
+        };
+
+        match connection.open_resolver_sockets() {
+            Ok(sockets) => Ok(sockets),
+            Err(CallError::Refused(err)) => Err(err),
+            Err(CallError::Lost(err)) => {
+                tracing::error!("lost the privileged agent: {err}");
+                *state = State::Unavailable;
+                Err(PrivilegedError::NotElevated)
+            }
         }
     }
 
@@ -288,5 +311,7 @@ impl Privileged {
 /// protocol, which only a mismatched build could produce.
 #[cfg(unix)]
 fn unexpected(reply: &Reply) -> PrivilegedError {
-    PrivilegedError::Os(format!("the privileged agent answered unexpectedly: {reply:?}"))
+    PrivilegedError::Os(format!(
+        "the privileged agent answered unexpectedly: {reply:?}"
+    ))
 }
