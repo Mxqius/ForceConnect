@@ -29,7 +29,7 @@ import type {
  */
 
 export const appInfo: AppInfo = {
-  version: "2.1.2",
+  version: "2.2.0",
   os: "windows x86_64",
   elevated: true,
   pid: 4242,
