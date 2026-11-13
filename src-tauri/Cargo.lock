@@ -1162,7 +1162,7 @@ checksum = "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb"
 
 [[package]]
 name = "forceconnect"
-version = "2.2.0"
+version = "2.3.0"
 dependencies = [
  "forceconnect-dns",
  "forceconnect-net",
@@ -1194,7 +1194,7 @@ dependencies = [
 
 [[package]]
 name = "forceconnect-dns"
-version = "2.2.0"
+version = "2.3.0"
 dependencies = [
  "async-trait",
  "forceconnect-net",
@@ -1212,7 +1212,7 @@ dependencies = [
 
 [[package]]
 name = "forceconnect-net"
-version = "2.2.0"
+version = "2.3.0"
 dependencies = [
  "libc",
  "serde",
@@ -1223,7 +1223,7 @@ dependencies = [
 
 [[package]]
 name = "forceconnect-privileged"
-version = "2.2.0"
+version = "2.3.0"
 dependencies = [
  "forceconnect-net",
  "libc",
