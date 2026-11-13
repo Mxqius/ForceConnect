@@ -57,6 +57,8 @@ export interface Prefs {
   interfaceLuid: string | null;
   /** Check for a new release on launch. */
   autoUpdate: boolean;
+  /** A release the user chose not to be told about again. */
+  skippedUpdate: string | null;
   /**
    * "reduced" swaps the connect bloom, shimmer and ripples for plain fades.
    * Windows' own "Animation effects" setting is honoured either way; this is
@@ -87,6 +89,7 @@ export const DEFAULT_PREFS: Prefs = {
   minimizeToTray: false,
   interfaceLuid: null,
   autoUpdate: true,
+  skippedUpdate: null,
   motion: "full",
   releaseMode: "restore",
   defaultDns: null,

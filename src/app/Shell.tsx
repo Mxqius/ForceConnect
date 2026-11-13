@@ -30,6 +30,7 @@ import { useHydrateConnectionPrefs } from "@/features/connection/useConnectionPr
 import { useHydrateReleasePolicy } from "@/features/connection/useReleasePolicy";
 import { useResolverHealthAlerts } from "@/features/connection/useResolverStatus";
 import { useHydrateTargetAdapter } from "@/features/interfaces/useAdapters";
+import { UpdatePrompt } from "@/features/settings/UpdatePrompt";
 import { useLaunchUpdateCheck } from "@/features/settings/useUpdater";
 import { cn } from "@/lib/cn";
 import { ipc } from "@/lib/ipc";
@@ -116,6 +117,8 @@ export function Shell() {
 
         {docked ? <Dock phase={phase} /> : null}
       </div>
+
+      <UpdatePrompt />
     </div>
   );
 }

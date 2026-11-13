@@ -477,7 +477,7 @@ function UpdateRows() {
     <>
       <Row
         label="Check on launch"
-        hint="Looks for a newer release at startup. It never installs anything on its own."
+        hint="Looks for a newer release at startup and every few hours, and tells you when there is one. It never installs anything on its own."
       >
         <Switch
           checked={autoUpdate}

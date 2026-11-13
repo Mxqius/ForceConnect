@@ -63,10 +63,26 @@ interface UpdaterState {
    */
   pending: Update | null;
   checkedOnLaunch: boolean;
+  /**
+   * The version the popup is announcing, or `null` when it is closed.
+   *
+   * Separate from `stage` on purpose: Settings shows the stage whenever it is
+   * opened, but only a check the app made on its own should interrupt the user
+   * — a manual "Check now" already has its answer on screen.
+   */
+  promptVersion: string | null;
+  /** Never announce this version again (persisted). */
+  skippedVersion: string | null;
+  /** "Later": not announced again until the app restarts. */
+  dismissedVersion: string | null;
 
   setAutoUpdate: (enabled: boolean) => void;
   hydrate: () => Promise<void>;
   check: () => Promise<void>;
+  /** A check the app makes unprompted, which opens the popup if it finds one. */
+  checkAndAnnounce: () => Promise<void>;
+  dismissPrompt: () => void;
+  skipVersion: () => void;
   install: () => Promise<void>;
 }
 
@@ -83,6 +99,9 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
   hydrated: false,
   pending: null,
   checkedOnLaunch: false,
+  promptVersion: null,
+  skippedVersion: null,
+  dismissedVersion: null,
 
   setAutoUpdate: (autoUpdate) => {
     set({ autoUpdate });
@@ -90,8 +109,41 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
   },
 
   hydrate: async () => {
-    const autoUpdate = await readPref("autoUpdate");
-    set({ autoUpdate, hydrated: true });
+    const [autoUpdate, skippedVersion] = await Promise.all([
+      readPref("autoUpdate"),
+      readPref("skippedUpdate"),
+    ]);
+    set({ autoUpdate, skippedVersion, hydrated: true });
+  },
+
+  checkAndAnnounce: async () => {
+    // A check mid-download would replace the release being installed.
+    const { kind } = get().stage;
+    if (kind === "checking" || kind === "downloading" || kind === "installing")
+      return;
+
+    await get().check();
+
+    const { stage, skippedVersion, dismissedVersion } = get();
+    if (
+      stage.kind === "available" &&
+      stage.version !== skippedVersion &&
+      stage.version !== dismissedVersion
+    ) {
+      set({ promptVersion: stage.version });
+    }
+  },
+
+  dismissPrompt: () =>
+    set((state) => ({
+      promptVersion: null,
+      dismissedVersion: state.promptVersion ?? state.dismissedVersion,
+    })),
+
+  skipVersion: () => {
+    const version = get().promptVersion;
+    set({ promptVersion: null, skippedVersion: version });
+    void writePref("skippedUpdate", version);
   },
 
   check: async () => {
@@ -208,12 +260,15 @@ export function useUpdaterStatus() {
   });
 }
 
+/** The app lives in the tray for days, so a launch check alone would miss most releases. */
+const RECHECK_EVERY_MS = 6 * 60 * 60 * 1000;
+
 /**
- * Load the preference and, if it is on, check once at startup.
+ * Load the preference and, if it is on, check at startup and every few hours.
  *
- * Checking only. It never downloads on its own: this app runs elevated and the
- * update replaces the running binary, which is not something to do without
- * being asked.
+ * Checking and announcing only. It never downloads on its own: this app runs
+ * elevated and the update replaces the running binary, which is not something
+ * to do without being asked.
  */
 export function useLaunchUpdateCheck() {
   const hydrated = useUpdaterStore((state) => state.hydrated);
@@ -230,11 +285,21 @@ export function useLaunchUpdateCheck() {
     // Guarded in the store rather than with a ref: React 19's StrictMode runs
     // effects twice in development, and two checks racing would leave two
     // `Update` handles fighting over one `pending` slot.
-    const { checkedOnLaunch, check: run } = useUpdaterStore.getState();
+    const { checkedOnLaunch, checkAndAnnounce } = useUpdaterStore.getState();
     if (checkedOnLaunch) return;
 
     useUpdaterStore.setState({ checkedOnLaunch: true });
-    void run();
+    void checkAndAnnounce();
+  }, [hydrated, autoUpdate]);
+
+  useEffect(() => {
+    if (!hydrated || !autoUpdate || !isTauri()) return;
+
+    const timer = setInterval(
+      () => void useUpdaterStore.getState().checkAndAnnounce(),
+      RECHECK_EVERY_MS,
+    );
+    return () => clearInterval(timer);
   }, [hydrated, autoUpdate]);
 }
 
