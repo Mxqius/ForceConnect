@@ -30,15 +30,16 @@ export const commands = {
 	 */
 	listAdapters: () => typedError<Adapter[], CommandError>(__TAURI_INVOKE("list_adapters")),
 	/**
-	 *  Every built-in server. The user's own come from `list_custom_servers`, and
-	 *  the frontend merges the two.
+	 *  Every default server the user has not removed. The user's own come from
+	 *  `list_custom_servers`, and the frontend merges the two.
 	 */
 	listServers: () => typedError<Server[], CommandError>(__TAURI_INVOKE("list_servers")),
 	/**
-	 *  Protocols represented anywhere in the catalog, in display order.
+	 *  Protocols represented anywhere in the list, in display order.
 	 * 
-	 *  Drives the server browser's tabs, so a protocol nobody offers never gets a
-	 *  tab that would always be empty.
+	 *  Drives the server browser's filters, so a protocol nobody offers — which is
+	 *  what removing the last server of one leaves behind — never gets a filter
+	 *  that would always be empty.
 	 */
 	listProtocols: () => typedError<Protocol[], CommandError>(__TAURI_INVOKE("list_protocols")),
 	/**
@@ -135,6 +136,29 @@ export const commands = {
 	 */
 	addCustomServer: (server: NewServer) => typedError<Server, CommandError>(__TAURI_INVOKE("add_custom_server", { server })),
 	removeCustomServer: (id: string) => typedError<null, CommandError>(__TAURI_INVOKE("remove_custom_server", { id })),
+	/**
+	 *  Take default servers off the user's list.
+	 * 
+	 *  Returns how many were actually removed; ids that are not a current default
+	 *  (already removed, or a custom server) are ignored rather than failing the
+	 *  batch, so a double-click or a stale selection does not turn into an error.
+	 */
+	removeBuiltinServers: (ids: string[]) => typedError<number, CommandError>(__TAURI_INVOKE("remove_builtin_servers", { ids })),
+	/**
+	 *  Put specific default servers back on the list — the undo for a removal.
+	 * 
+	 *  Unlike [`restore_default_servers`] this stays offline and touches only the
+	 *  ids it is given.
+	 */
+	reinstateBuiltinServers: (ids: string[]) => typedError<null, CommandError>(__TAURI_INVOKE("reinstate_builtin_servers", { ids })),
+	/**
+	 *  Bring every default server back, preferring the current list on GitHub.
+	 * 
+	 *  Offline is not a dead end: the user asked for their servers back, and the
+	 *  bundled copy can do that without the network. The report says which one they
+	 *  got, so the UI does not claim GitHub answered when it did not.
+	 */
+	restoreDefaultServers: () => typedError<RestoreReport, CommandError>(__TAURI_INVOKE("restore_default_servers")),
 };
 
 /* Types */
@@ -224,6 +248,16 @@ export type AppInfo = {
 
 /**  Anything a command can fail with, in a shape the UI can branch on. */
 export type CommandError = { kind: "network"; message: string } | { kind: "elevation"; message: string } | { kind: "catalog"; message: string } | { kind: "internal"; message: string };
+
+/**  Where a restore got its list from. */
+export type DefaultsOrigin = 
+/**  Fetched from GitHub just now. */
+"github" | 
+/**
+ *  GitHub could not be reached, so this is the copy already on the
+ *  computer: the one bundled with the app, plus any earlier download.
+ */
+"local";
 
 export type DnsSource = 
 /**  Servers come from DHCP. */
@@ -376,6 +410,14 @@ export type ResolverStatus = {
 	 *  still points at us, so nothing resolves.
 	 */
 	failingStreak: number,
+};
+
+export type RestoreReport = {
+	origin: DefaultsOrigin,
+	/**  Servers that are on the list now and were not before. */
+	restored: number,
+	/**  Default servers on the list afterwards. */
+	total: number,
 };
 
 export type Server = {

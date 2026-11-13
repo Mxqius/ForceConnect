@@ -1,4 +1,5 @@
 import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { ipc, type LatencyResult, type Protocol, type Server } from "@/lib/ipc";
 import { queryKeys } from "@/lib/query-keys";
@@ -46,16 +47,21 @@ export function useLatencies(
     })),
   });
 
-  const readings = new Map<string, LatencyReading>();
-  targets.forEach(({ server }, index) => {
-    const query = results[index];
-    readings.set(server.id, {
-      ms: query?.data ? query.data.medianMs : undefined,
-      result: query?.data,
-      probing: Boolean(query?.isFetching),
+  // Memoized so a consumer that feeds this into a table does not hand it fresh
+  // data on every render: the table rebuilds its row models whenever the data
+  // changes identity.
+  return useMemo(() => {
+    const readings = new Map<string, LatencyReading>();
+    targets.forEach(({ server }, index) => {
+      const query = results[index];
+      readings.set(server.id, {
+        ms: query?.data ? query.data.medianMs : undefined,
+        result: query?.data,
+        probing: Boolean(query?.isFetching),
+      });
     });
-  });
-  return readings;
+    return readings;
+  }, [targets, results]);
 }
 
 /**

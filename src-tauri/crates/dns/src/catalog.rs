@@ -7,7 +7,11 @@
 
 use std::collections::HashSet;
 
-use crate::server::{DnsServer, Protocol, ValidationError};
+use crate::server::{DnsServer, Protocol, Source, ValidationError};
+
+/// Ids the user's own servers are minted under. A catalog entry that used one
+/// would be indistinguishable from a custom server wherever the id is a key.
+const CUSTOM_ID_PREFIX: &str = "custom-";
 
 const BUILTIN_JSON: &str = include_str!("../servers.json");
 
@@ -21,6 +25,9 @@ pub enum CatalogError {
 
     #[error("duplicate server id '{0}'")]
     DuplicateId(String),
+
+    #[error("server id '{0}' is reserved for custom servers")]
+    ReservedId(String),
 }
 
 #[derive(Debug, Clone, Default)]
@@ -50,6 +57,46 @@ impl Catalog {
         }
 
         Ok(Self { servers })
+    }
+
+    /// Load a catalog fetched from outside the binary.
+    ///
+    /// Everything `from_json` checks, plus the two things a file the app did not
+    /// ship must not be able to claim: that its servers are the user's own, and
+    /// an id from the namespace custom servers are minted in.
+    pub fn from_remote_json(json: &str) -> Result<Self, CatalogError> {
+        let mut catalog = Self::from_json(json)?;
+        for server in &mut catalog.servers {
+            if server.id.starts_with(CUSTOM_ID_PREFIX) {
+                return Err(CatalogError::ReservedId(server.id.clone()));
+            }
+            server.source = Source::Builtin;
+        }
+        Ok(catalog)
+    }
+
+    /// The default servers a user actually sees: this catalog with `downloaded`
+    /// laid over it, minus the ones they removed.
+    ///
+    /// A downloaded entry replaces the bundled one with the same id, in place,
+    /// and an entry the binary has never heard of is appended. Layering rather
+    /// than replacing means a newer app version's bundled additions still show
+    /// up for someone who restored once, long ago, and a server dropped from
+    /// GitHub does not vanish from under an older install until they ask.
+    pub fn effective(&self, downloaded: Option<&Catalog>, removed: &[String]) -> Vec<DnsServer> {
+        let mut servers = self.servers.clone();
+
+        if let Some(downloaded) = downloaded {
+            for incoming in &downloaded.servers {
+                match servers.iter_mut().find(|s| s.id == incoming.id) {
+                    Some(existing) => *existing = incoming.clone(),
+                    None => servers.push(incoming.clone()),
+                }
+            }
+        }
+
+        servers.retain(|s| !removed.contains(&s.id));
+        servers
     }
 
     pub fn servers(&self) -> &[DnsServer] {
@@ -156,6 +203,61 @@ mod tests {
         let cloudflare = catalog.filter(None, "cloudflare");
         assert!(!cloudflare.is_empty());
         assert!(cloudflare.iter().all(|s| s.matches("cloudflare")));
+    }
+
+    fn one(id: &str, addr: &str) -> String {
+        format!(
+            r#"{{"id":"{id}","name":"{id}","provider":"{id}","endpoints":[{{"protocol":"udp","addrs":["{addr}"]}}]}}"#
+        )
+    }
+
+    #[test]
+    fn effective_hides_removed_servers() {
+        let base = Catalog::from_json(&format!(
+            "[{},{}]",
+            one("a", "1.1.1.1"),
+            one("b", "8.8.8.8")
+        ))
+        .unwrap();
+
+        let shown = base.effective(None, &["a".to_owned()]);
+        assert_eq!(shown.len(), 1);
+        assert_eq!(shown[0].id, "b");
+    }
+
+    #[test]
+    fn downloaded_entries_replace_in_place_and_new_ones_append() {
+        let base = Catalog::from_json(&format!(
+            "[{},{}]",
+            one("a", "1.1.1.1"),
+            one("b", "8.8.8.8")
+        ))
+        .unwrap();
+        let downloaded = Catalog::from_remote_json(&format!(
+            "[{},{}]",
+            one("b", "9.9.9.9"),
+            one("c", "4.4.4.4")
+        ))
+        .unwrap();
+
+        let shown = base.effective(Some(&downloaded), &[]);
+        let ids: Vec<_> = shown.iter().map(|s| s.id.as_str()).collect();
+        assert_eq!(ids, ["a", "b", "c"]);
+        assert_eq!(shown[1].endpoints[0].addrs[0], "9.9.9.9");
+    }
+
+    #[test]
+    fn remote_catalogs_cannot_claim_custom_ids_or_sources() {
+        let reserved = one("custom-mine", "1.1.1.1");
+        assert!(matches!(
+            Catalog::from_remote_json(&format!("[{reserved}]")),
+            Err(CatalogError::ReservedId(_))
+        ));
+
+        let claimed =
+            one("a", "1.1.1.1").replace("\"endpoints\"", "\"source\":\"custom\",\"endpoints\"");
+        let catalog = Catalog::from_remote_json(&format!("[{claimed}]")).unwrap();
+        assert_eq!(catalog.servers()[0].source, Source::Builtin);
     }
 
     #[test]

@@ -52,6 +52,9 @@ fn specta_builder() -> Builder<tauri::Wry> {
         commands::custom::list_custom_servers,
         commands::custom::add_custom_server,
         commands::custom::remove_custom_server,
+        commands::defaults::remove_builtin_servers,
+        commands::defaults::reinstate_builtin_servers,
+        commands::defaults::restore_default_servers,
     ])
 }
 

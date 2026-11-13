@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   countByProtocol,
   filterServers,
+  latencySortValue,
   preferredProtocol,
   sortProtocols,
 } from "@/features/servers/filter";
@@ -167,5 +168,16 @@ describe("preferredProtocol", () => {
 
   it("returns null for a server with no endpoints", () => {
     expect(preferredProtocol(server("c", "C", null, [], []))).toBeNull();
+  });
+});
+
+describe("latencySortValue", () => {
+  it("passes measurements through and leaves unmeasured rows undefined", () => {
+    expect(latencySortValue(23)).toBe(23);
+    expect(latencySortValue(undefined)).toBeUndefined();
+  });
+
+  it("ranks an unreachable server after every slow one", () => {
+    expect(latencySortValue(null)).toBeGreaterThan(latencySortValue(5000)!);
   });
 });

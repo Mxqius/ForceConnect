@@ -11,6 +11,7 @@
 pub mod adapters;
 pub mod app;
 pub mod custom;
+pub mod defaults;
 pub mod dns;
 pub mod probe;
 pub mod resolver;

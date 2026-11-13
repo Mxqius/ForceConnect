@@ -99,6 +99,17 @@ log = "0.4"
 # is no direct tokio dependency here — only the stream combinators.
 futures-util = "0.3"
 
+# Fetching the default server list from GitHub. Same shape as the updater's own
+# reqwest — `rustls-no-provider` reuses the platform verifier and the `ring`
+# provider it already links, rather than pulling in aws-lc and a C toolchain.
+reqwest = { version = "0.13", default-features = false, features = [
+    "rustls-no-provider",
+] }
+rustls = { version = "0.23", default-features = false, features = [
+    "ring",
+    "std",
+] }
+
 # The Tauri 2 line of specta is still tagged rc upstream but is the standard
 # type-generation stack for Tauri 2. Pinned exactly so a contributor's build
 # cannot drift onto a different rc.

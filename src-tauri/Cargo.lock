@@ -1169,6 +1169,8 @@ dependencies = [
  "forceconnect-privileged",
  "futures-util",
  "log",
+ "reqwest",
+ "rustls",
  "serde",
  "serde_json",
  "specta",

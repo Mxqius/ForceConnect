@@ -6,6 +6,7 @@ import {
   type NewServer,
   type Protocol,
   type ReleasePolicy,
+  type RestoreReport,
   type Server,
   type TrayStatus,
   type UpstreamRef,
@@ -19,6 +20,7 @@ export type {
   AdapterStatus,
   AppInfo,
   CommandError,
+  DefaultsOrigin,
   DnsSource,
   Endpoint,
   FamilyDns,
@@ -31,6 +33,7 @@ export type {
   ReleasedDns,
   ReleasePolicy,
   ResolverStatus,
+  RestoreReport,
   Server,
   ServerSource,
   TrayStatus,
@@ -90,6 +93,11 @@ async function fixture<T>(value: T): Promise<T> {
   return value;
 }
 
+/** Default servers "removed" in the browser, so removing and restoring can be
+    worked on without the desktop shell. Gone on reload, like everything else
+    here. */
+const fixtureRemoved = new Set<string>();
+
 /** Typed, unwrapped wrappers over the generated command surface. */
 export const ipc = {
   appInfo: () =>
@@ -109,11 +117,40 @@ export const ipc = {
   listAdapters: () =>
     useFixtures ? fixture(fixtures.adapters) : unwrap(commands.listAdapters()),
   listServers: () =>
-    useFixtures ? fixture(fixtures.servers) : unwrap(commands.listServers()),
+    useFixtures
+      ? fixture(fixtures.servers.filter((s) => !fixtureRemoved.has(s.id)))
+      : unwrap(commands.listServers()),
   listProtocols: () =>
     useFixtures
       ? fixture(fixtures.protocols)
       : unwrap(commands.listProtocols()),
+  removeBuiltinServers: (ids: string[]) =>
+    useFixtures
+      ? fixture(ids.filter((id) => !fixtureRemoved.has(id)).length).then(
+          (count) => {
+            ids.forEach((id) => fixtureRemoved.add(id));
+            return count;
+          },
+        )
+      : unwrap(commands.removeBuiltinServers(ids)),
+  reinstateBuiltinServers: (ids: string[]) =>
+    useFixtures
+      ? fixture(null).then(() => {
+          ids.forEach((id) => fixtureRemoved.delete(id));
+          return null;
+        })
+      : unwrap(commands.reinstateBuiltinServers(ids)),
+  restoreDefaultServers: (): Promise<RestoreReport> =>
+    useFixtures
+      ? fixture(fixtureRemoved.size).then((restored) => {
+          fixtureRemoved.clear();
+          return {
+            origin: "github" as const,
+            restored,
+            total: fixtures.servers.length,
+          };
+        })
+      : unwrap(commands.restoreDefaultServers()),
 
   listCustomServers: () =>
     useFixtures

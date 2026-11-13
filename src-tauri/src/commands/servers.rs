@@ -1,11 +1,16 @@
 use std::sync::OnceLock;
 
+use std::collections::HashSet;
+
 use forceconnect_dns::{Catalog, Protocol as CatalogProtocol, Source as CatalogSource};
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
 
-use crate::commands::CommandResult;
+use crate::commands::{CommandResult, custom, defaults};
 
-/// The built-in catalog is immutable and parsed once.
+/// The catalog bundled in the binary is immutable and parsed once. What the
+/// user sees is this with their removals and any GitHub download applied — see
+/// `commands::defaults`.
 ///
 /// A parse failure here is an authoring mistake in `servers.json`, and the
 /// catalog test in `forceconnect-dns` turns it into a failing build rather than
@@ -109,20 +114,32 @@ pub(crate) fn to_dto(server: &forceconnect_dns::DnsServer) -> Server {
     }
 }
 
-/// Every built-in server. The user's own come from `list_custom_servers`, and
-/// the frontend merges the two.
+/// Every default server the user has not removed. The user's own come from
+/// `list_custom_servers`, and the frontend merges the two.
 #[tauri::command]
 #[specta::specta]
-pub fn list_servers() -> CommandResult<Vec<Server>> {
-    Ok(catalog().servers().iter().map(to_dto).collect())
+pub fn list_servers(app: AppHandle) -> CommandResult<Vec<Server>> {
+    Ok(defaults::builtin_servers(&app)?
+        .iter()
+        .map(to_dto)
+        .collect())
 }
 
-/// Protocols represented anywhere in the catalog, in display order.
+/// Protocols represented anywhere in the list, in display order.
 ///
-/// Drives the server browser's tabs, so a protocol nobody offers never gets a
-/// tab that would always be empty.
+/// Drives the server browser's filters, so a protocol nobody offers — which is
+/// what removing the last server of one leaves behind — never gets a filter
+/// that would always be empty.
 #[tauri::command]
 #[specta::specta]
-pub fn list_protocols() -> CommandResult<Vec<Protocol>> {
-    Ok(catalog().protocols().into_iter().map(Into::into).collect())
+pub fn list_protocols(app: AppHandle) -> CommandResult<Vec<Protocol>> {
+    let mut protocols: Vec<CatalogProtocol> = defaults::builtin_servers(&app)?
+        .iter()
+        .chain(&custom::read_all(&app)?)
+        .flat_map(|s| s.endpoints.iter().map(|e| e.protocol))
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .collect();
+    protocols.sort_unstable();
+    Ok(protocols.into_iter().map(Into::into).collect())
 }

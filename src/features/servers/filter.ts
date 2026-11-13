@@ -104,3 +104,20 @@ export function humanTag(tag: string): string {
   const text = tag.replace(/-/g, " ");
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
+
+/**
+ * What the latency column sorts on.
+ *
+ * Three states share one column: a number is a measurement, `null` is a probe
+ * that got no answer, and `undefined` is a server nobody has measured. An
+ * unreachable server sorts after every slow one — it is the worst result, not
+ * a missing one — while unmeasured rows return `undefined` so the table keeps
+ * them at the bottom in either direction rather than mixing them into the
+ * ranking.
+ */
+export function latencySortValue(
+  ms: number | null | undefined,
+): number | undefined {
+  if (ms === undefined) return undefined;
+  return ms === null ? Number.MAX_SAFE_INTEGER : ms;
+}

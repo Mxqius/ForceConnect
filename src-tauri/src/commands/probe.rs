@@ -4,7 +4,8 @@ use futures_util::stream::{self, StreamExt};
 use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 
-use crate::commands::servers::{Protocol, catalog};
+use crate::commands::defaults;
+use crate::commands::servers::Protocol;
 use crate::commands::{CommandError, CommandResult};
 
 #[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
@@ -41,8 +42,8 @@ pub async fn probe_servers(
     let wanted = to_catalog_protocol(protocol);
     let custom = crate::commands::custom::read_all(&app)?;
 
-    let targets: Vec<_> = catalog()
-        .servers()
+    let builtin = defaults::builtin_servers(&app)?;
+    let targets: Vec<_> = builtin
         .iter()
         .chain(&custom)
         .filter_map(|server| {
@@ -91,7 +92,7 @@ pub(crate) fn find_endpoint(
     server_id: &str,
     protocol: CatalogProtocol,
 ) -> Result<CatalogEndpoint, CommandError> {
-    let server = catalog().get(server_id).cloned().map_or_else(
+    let server = defaults::find_builtin(app, server_id)?.map_or_else(
         || {
             crate::commands::custom::read_all(app)?
                 .into_iter()
